@@ -1,0 +1,57 @@
+﻿@{
+
+}
+<div class="iq-sidebar">
+    <div class="iq-sidebar-logo d-flex justify-content-between">
+        <a href="index.html">
+            <div class="iq-light-logo">
+                <img src="~/images/logo.gif" class="img-fluid" alt="">
+            </div>
+            <div class="iq-dark-logo">
+                <img src="~/images/logo-dark.gif" class="img-fluid" alt="">
+            </div>
+            <span>Syso</span>
+        </a>
+        <div class="iq-menu-bt-sidebar">
+            <div class="iq-menu-bt align-self-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-scrollbar">
+        <nav class="iq-sidebar-menu">
+            <ul id="iq-sidebar-toggle" class="iq-menu">
+                <li class="iq-menu-title"><i class="ri-subtract-line"></i><span>Home</span></li>
+                <li>
+                    <a href="index.html" class="iq-waves-effect"><i class="ri-home-4-line"></i><span>Dashboard</span></a>
+                </li>
+
+                <li class="iq-menu-title"><i class="ri-subtract-line"></i><span>Chamados</span></li>
+                <li><a href="calendar.html" class="iq-waves-effect"><i class="ri-calendar-2-line"></i><span>Todos</span></a></li>
+                <li><a href="chat.html" class="iq-waves-effect"><i class="ri-message-line"></i><span>Abertos</span></a></li>
+                <li><a href="chat.html" class="iq-waves-effect"><i class="ri-message-line"></i><span>Remarcados</span></a></li>
+                <li><a href="chat.html" class="iq-waves-effect"><i class="ri-message-line"></i><span>Finalizados</span></a></li>
+
+                <li class="iq-menu-title"><i class="ri-subtract-line"></i><span>Administrador</span></li>
+                <li>
+                    <a href="#ui-elements" class="iq-waves-effect collapsed" data-toggle="collapse" aria-expanded="false"><i class="ri-pencil-ruler-line"></i><span>Contratos</span><i class="ri-arrow-right-s-line iq-arrow-right"></i></a>
+                    <ul id="ui-elements" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
+                        <li><a href="ui-list-group.html"><i class="ri-file-list-3-line"></i>Contratos Ativos</a></li>
+                        <li><a href="ui-alerts.html"><i class="ri-alert-line"></i>Contratos Cancelados</a></li>
+                        <li><a href="ui-popovers.html"><i class="ri-folder-shield-2-line"></i>Licenças</a></li>
+                    </ul>
+                    <a href="#ui-cadastro" class="iq-waves-effect collapsed" data-toggle="collapse" aria-expanded="false"><i class="ri-pencil-ruler-line"></i><span>Cadastros</span><i class="ri-arrow-right-s-line iq-arrow-right"></i></a>
+                    <ul id="ui-cadastro" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
+                        <li><a href="ui-list-group.html"><i class="ri-file-list-3-line"></i>Lista de Usuários</a></li>
+                        <li><a href="ui-list-group.html"><i class="ri-file-list-3-line"></i>Lista de Sistemas</a></li>
+                    </ul>
+                </li>
+               
+            </ul>
+        </nav>
+        <div class="p-3"></div>
+    </div>
+</div>
