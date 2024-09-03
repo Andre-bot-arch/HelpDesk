@@ -126,6 +126,10 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.SituacaoContrato).HasMaxLength(50);
             entity.Property(e => e.Valor).HasColumnType("decimal(18, 2)");
 
+            entity.HasOne(d => d.FkCliente).WithMany(p => p.Contratos)
+                .HasForeignKey(d => d.FkClienteId)
+                .HasConstraintName("FK_Contratos_Clientes");
+
             entity.HasOne(d => d.FkPlataforma).WithMany(p => p.Contratos)
                 .HasForeignKey(d => d.FkPlataformaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -147,6 +151,10 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.Urlacesso)
                 .HasMaxLength(255)
                 .HasColumnName("URLAcesso");
+
+            entity.HasOne(d => d.FkContrato).WithMany(p => p.Licencas)
+                .HasForeignKey(d => d.FkContratoId)
+                .HasConstraintName("FK_Licencas_Contratos");
         });
 
         modelBuilder.Entity<PlataformasContratos>(entity =>
