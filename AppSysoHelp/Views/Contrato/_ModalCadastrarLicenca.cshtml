@@ -1,0 +1,38 @@
+﻿
+<div id="cadastroDeLicenca" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenteredScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenteredScrollableTitle">Cadastrar Licença</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form class="was-validated" action="/" method="post">
+                <div class="modal-body">
+                    <label>Data Ativação</label>
+                    <div class="mb-3">
+                        <input type="month" class="form-control is-invalid" id="exampleInputmonth" placeholder="Data Inicial" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="url" maxlength="100" class="form-control is-invalid" id="validationTooltip01" placeholder="Url de acesso" required>
+                        <div class="invalid-feedback">Ex: syso.tecnologia.com.br:8081</div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" maxlength="100" class="form-control is-invalid" id="validationTooltip01" placeholder="Detalhes da Licença" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" maxlength="100" class="form-control is-invalid" id="validationTooltip01" placeholder="Modelo da Licença" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" maxlength="100" class="form-control is-invalid" id="validationTooltip01" placeholder="MAC ou nº Serie" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">sair</button>
+                    <button type="submit" style="width: 80px" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
