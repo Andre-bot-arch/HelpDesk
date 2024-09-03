@@ -13,7 +13,9 @@ namespace AppSysoHelp.Service
 
         internal IList<Contratos> BuscarContratos()
         {
-            return _context.Contratos.Include(a=> a.Plataforma).ToList();
+            return _context.Contratos.Include(a=> a.FkPlataforma)
+                                     .Include(a=> a.FkCliente)
+                                     .ToList();
         }
     }
 }

@@ -1,4 +1,66 @@
 ﻿
+<style>
+    .select2-container--default .select2-selection--single {
+        height: 38px; /* Ajusta a altura para combinar com o Material Design */
+    }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 36px; /* Ajusta o alinhamento do texto */
+        }
+
+    #results {
+        margin-top: 20px;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+     
+        $('#searchSelect').select2({
+            placeholder: 'Selecione uma opção...',
+            ajax: {
+                url: '/Contrato/GetOptions', 
+                dataType: 'json',
+                delay: 250,
+                processResults: function (data) {
+                  
+                    return {
+                        results: data.map(function (item) {
+                            return {
+                                id: item.value, 
+                                text: item.label 
+                            };
+                        })
+                    };
+                },
+                cache: true
+            },
+            minimumResultsForSearch: Infinity 
+        });
+
+      
+        $('#searchSelect').on('select2:select', function (e) {
+            var selectedValue = e.params.data.id;
+
+            if (selectedValue) {
+                $.ajax({
+                    url: '/Contrato/GetDetailedResults',
+                    type: 'GET',
+                    data: { query: selectedValue },
+                    success: function (response) {                       
+                        $('#results').html(response);
+                    },
+                    error: function () {
+                        $('#results').html('<p>Ocorreu um erro ao buscar os resultados.</p>');
+                    }
+                });
+            } else {
+                $('#results').empty();
+            }
+        });
+    });
+</script>
 <div id="exampleModalCenteredScrollable" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenteredScrollableTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -9,14 +71,15 @@
                 </button>
             </div>
             <form class="was-validated" action="/" method="post">
-                <div class="modal-body">
+                <div class="modal-body">                   
                     <div class="form-group">
-                        <select class="custom-select" required>
+                        <select class="custom-select" id="searchSelect" required>
                             <option value="">Selecione um Sistema</option>
                             <option value="1">One</option>
                             <option value="2">Two</option>
                             <option value="3">Three</option>
                         </select>
+                        <div id="results"></div>
                         @*   <div class="invalid-feedback">Campo obrigatório</div> *@
                     </div>
                     <div class="form-group">
