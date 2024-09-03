@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace AppSysoHelp.Controllers
 {
-    //[Authorize(Policy = "AdminOrManager")]
+    [Authorize(Policy = "AdminOrManager")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -21,7 +21,6 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Index()
         {
-            var teste = _context.SubcategoriasSetores.ToList();
             return View();
         }
 
