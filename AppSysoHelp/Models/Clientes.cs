@@ -5,7 +5,7 @@ namespace AppSysoHelp.Models;
 
 public partial class Clientes
 {
-    public int ClienteId { get; set; }
+    public long ClienteId { get; set; }
 
     public string NomeCliente { get; set; } = null!;
 
@@ -14,4 +14,6 @@ public partial class Clientes
     public string? Setor { get; set; }
 
     public virtual ICollection<Chamados> Chamados { get; set; } = new List<Chamados>();
+
+    public virtual ICollection<Contratos> Contratos { get; set; } = new List<Contratos>();
 }

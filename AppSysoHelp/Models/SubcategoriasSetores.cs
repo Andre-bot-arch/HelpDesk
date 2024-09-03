@@ -9,7 +9,7 @@ public partial class SubcategoriasSetores
 
     public string NomeSubcategoria { get; set; } = null!;
 
-    public int? SetorId { get; set; }
+    public int? FkSetorId { get; set; }
 
-    public virtual SetoresChamados? Setor { get; set; }
+    public virtual SetoresChamados? FkSetor { get; set; }
 }

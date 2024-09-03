@@ -20,4 +20,8 @@ public partial class Licencas
     public string? RegistroDispositivos { get; set; }
 
     public string? LogAcesso { get; set; }
+
+    public long? FkContratoId { get; set; }
+
+    public virtual Contratos? FkContrato { get; set; }
 }

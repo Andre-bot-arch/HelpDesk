@@ -5,9 +5,9 @@ namespace AppSysoHelp.Models;
 
 public partial class Contratos
 {
-    public int ContratoId { get; set; }
+    public long ContratoId { get; set; }
 
-    public int PlataformaId { get; set; }
+    public long FkPlataformaId { get; set; }
 
     public DateOnly DataInicio { get; set; }
 
@@ -23,5 +23,11 @@ public partial class Contratos
 
     public int PontosContratados { get; set; }
 
-    public virtual PlataformasContratos Plataforma { get; set; } = null!;
+    public long? FkClienteId { get; set; }
+
+    public virtual Clientes? FkCliente { get; set; }
+
+    public virtual PlataformasContratos FkPlataforma { get; set; } = null!;
+
+    public virtual ICollection<Licencas> Licencas { get; set; } = new List<Licencas>();
 }

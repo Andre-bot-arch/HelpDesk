@@ -5,13 +5,13 @@ namespace AppSysoHelp.Models;
 
 public partial class Atendimentos
 {
-    public int AtendimentoId { get; set; }
+    public long AtendimentoId { get; set; }
 
-    public int ChamadoId { get; set; }
+    public long FkChamadoId { get; set; }
 
     public string ProcedimentosAplicados { get; set; } = null!;
 
-    public int? TecnicoId { get; set; }
+    public long? FkTecnicoId { get; set; }
 
     public DateTime? NovaDataAtendimento { get; set; }
 
@@ -19,7 +19,7 @@ public partial class Atendimentos
 
     public string? SatisfacaoCliente { get; set; }
 
-    public virtual Chamados Chamado { get; set; } = null!;
+    public virtual Chamados FkChamado { get; set; } = null!;
 
-    public virtual TecnicosSupervisores? Tecnico { get; set; }
+    public virtual TecnicosSupervisores? FkTecnico { get; set; }
 }
