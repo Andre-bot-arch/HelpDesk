@@ -49,16 +49,18 @@ public partial class HelpdesksysoContext : DbContext
 
             entity.ToTable("Atendimentos", "dbo");
 
+            entity.Property(e => e.FkChamadoId).HasColumnName("Fk_ChamadoId");
+            entity.Property(e => e.FkTecnicoId).HasColumnName("Fk_TecnicoId");
             entity.Property(e => e.NovaDataAtendimento).HasColumnType("datetime");
             entity.Property(e => e.SatisfacaoCliente).HasMaxLength(500);
 
-            entity.HasOne(d => d.Chamado).WithMany(p => p.Atendimentos)
-                .HasForeignKey(d => d.ChamadoId)
+            entity.HasOne(d => d.FkChamado).WithMany(p => p.Atendimentos)
+                .HasForeignKey(d => d.FkChamadoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Atendimen__Chama__75A278F5");
 
-            entity.HasOne(d => d.Tecnico).WithMany(p => p.Atendimentos)
-                .HasForeignKey(d => d.TecnicoId)
+            entity.HasOne(d => d.FkTecnico).WithMany(p => p.Atendimentos)
+                .HasForeignKey(d => d.FkTecnicoId)
                 .HasConstraintName("FK__Atendimen__Tecni__76969D2E");
         });
 
@@ -69,25 +71,29 @@ public partial class HelpdesksysoContext : DbContext
             entity.ToTable("Chamados", "dbo");
 
             entity.Property(e => e.Contato).HasMaxLength(150);
+            entity.Property(e => e.FkClienteId).HasColumnName("Fk_ClienteId");
+            entity.Property(e => e.FkSituacaoChamadoId).HasColumnName("Fk_SituacaoChamadoId");
+            entity.Property(e => e.FkTecnicoId).HasColumnName("Fk_TecnicoId");
+            entity.Property(e => e.FkTipoChamadoId).HasColumnName("Fk_TipoChamadoId");
             entity.Property(e => e.TelefoneContato).HasMaxLength(20);
 
-            entity.HasOne(d => d.Cliente).WithMany(p => p.Chamados)
-                .HasForeignKey(d => d.ClienteId)
+            entity.HasOne(d => d.FkCliente).WithMany(p => p.Chamados)
+                .HasForeignKey(d => d.FkClienteId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Chamados__Client__6C190EBB");
 
-            entity.HasOne(d => d.SituacaoChamado).WithMany(p => p.Chamados)
-                .HasForeignKey(d => d.SituacaoChamadoId)
+            entity.HasOne(d => d.FkSituacaoChamado).WithMany(p => p.Chamados)
+                .HasForeignKey(d => d.FkSituacaoChamadoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Chamados__Situac__6EF57B66");
 
-            entity.HasOne(d => d.Tecnico).WithMany(p => p.Chamados)
-                .HasForeignKey(d => d.TecnicoId)
+            entity.HasOne(d => d.FkTecnico).WithMany(p => p.Chamados)
+                .HasForeignKey(d => d.FkTecnicoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Chamados__Tecnic__6E01572D");
 
-            entity.HasOne(d => d.TipoChamado).WithMany(p => p.Chamados)
-                .HasForeignKey(d => d.TipoChamadoId)
+            entity.HasOne(d => d.FkTipoChamado).WithMany(p => p.Chamados)
+                .HasForeignKey(d => d.FkTipoChamadoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Chamados__TipoCh__6D0D32F4");
         });
@@ -112,14 +118,16 @@ public partial class HelpdesksysoContext : DbContext
             entity.HasIndex(e => e.IdContrato, "UQ__Contrato__567F8F7021D861FD").IsUnique();
 
             entity.Property(e => e.DescricaoContrato).HasMaxLength(255);
+            entity.Property(e => e.FkClienteId).HasColumnName("Fk_ClienteId");
+            entity.Property(e => e.FkPlataformaId).HasColumnName("Fk_PlataformaId");
             entity.Property(e => e.IdContrato)
                 .HasMaxLength(50)
                 .HasColumnName("ID_CONTRATO");
             entity.Property(e => e.SituacaoContrato).HasMaxLength(50);
             entity.Property(e => e.Valor).HasColumnType("decimal(18, 2)");
 
-            entity.HasOne(d => d.Plataforma).WithMany(p => p.Contratos)
-                .HasForeignKey(d => d.PlataformaId)
+            entity.HasOne(d => d.FkPlataforma).WithMany(p => p.Contratos)
+                .HasForeignKey(d => d.FkPlataformaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Contratos__Plata__7D439ABD");
         });
@@ -133,6 +141,7 @@ public partial class HelpdesksysoContext : DbContext
             entity.HasIndex(e => e.NumeroSerie, "UQ__Licencas__C5455177A4669547").IsUnique();
 
             entity.Property(e => e.Descricao).HasMaxLength(255);
+            entity.Property(e => e.FkContratoId).HasColumnName("Fk_ContratoId");
             entity.Property(e => e.Modelo).HasMaxLength(100);
             entity.Property(e => e.NumeroSerie).HasMaxLength(100);
             entity.Property(e => e.Urlacesso)
@@ -174,10 +183,11 @@ public partial class HelpdesksysoContext : DbContext
 
             entity.ToTable("SubcategoriasSetores", "dbo");
 
+            entity.Property(e => e.FkSetorId).HasColumnName("Fk_SetorId");
             entity.Property(e => e.NomeSubcategoria).HasMaxLength(100);
 
-            entity.HasOne(d => d.Setor).WithMany(p => p.SubcategoriasSetores)
-                .HasForeignKey(d => d.SetorId)
+            entity.HasOne(d => d.FkSetor).WithMany(p => p.SubcategoriasSetores)
+                .HasForeignKey(d => d.FkSetorId)
                 .HasConstraintName("FK__Subcatego__Setor__59FA5E80");
         });
 

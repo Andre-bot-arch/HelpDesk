@@ -5,7 +5,7 @@ namespace AppSysoHelp.Models;
 
 public partial class Clientes
 {
-    public int ClienteId { get; set; }
+    public long ClienteId { get; set; }
 
     public string NomeCliente { get; set; } = null!;
 

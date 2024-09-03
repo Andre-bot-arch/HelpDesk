@@ -5,7 +5,7 @@ namespace AppSysoHelp.Models;
 
 public partial class SituacoesChamados
 {
-    public int SituacaoChamadoId { get; set; }
+    public long SituacaoChamadoId { get; set; }
 
     public string DescricaoSituacao { get; set; } = null!;
 

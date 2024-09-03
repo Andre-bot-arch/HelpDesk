@@ -5,7 +5,7 @@ namespace AppSysoHelp.Models;
 
 public partial class TecnicosSupervisores
 {
-    public int PkId { get; set; }
+    public long PkId { get; set; }
 
     public string NomeCompleto { get; set; } = null!;
 

@@ -5,7 +5,7 @@ namespace AppSysoHelp.Models;
 
 public partial class PlataformasContratos
 {
-    public int PlataformaId { get; set; }
+    public long PlataformaId { get; set; }
 
     public string NomePlataforma { get; set; } = null!;
 

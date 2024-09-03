@@ -5,7 +5,7 @@ namespace AppSysoHelp.Models;
 
 public partial class TiposChamados
 {
-    public int TipoChamadoId { get; set; }
+    public long TipoChamadoId { get; set; }
 
     public string DescricaoTipoChamado { get; set; } = null!;
 
