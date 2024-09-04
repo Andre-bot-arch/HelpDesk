@@ -1,0 +1,72 @@
+﻿@model IEnumerable<AppSysoHelp.Models.PlataformasContratos>
+@{
+}
+<div class="iq-card">
+    <div class="iq-card-header d-flex justify-content-between">
+        <div class="iq-header-title">
+            <h4 class="card-title"> Lista de Plataformas</h4>
+        </div>
+        <div class="text-end">
+            <button type="button" data-toggle="modal" data-target="#modalCadastrarPlataforma" class="btn dark-icon btn-primary mb-3">Adicionar <i class="ri-add-box-line"></i></button>
+        </div>
+    </div>
+    <div class="iq-card-body">
+        <div class="row">
+            <div class="container mt-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><b>Syso Coletor</b></h5>
+                        <div class="row align-items-center">
+                            <div class="col-10">
+                                <label class="card-title">Descrição:</label>
+                                <p class="card-text mb-0">
+                                    Um aplicativo móvel para conferência de estoque permite que os usuários
+                                    façam auditorias e verificações de inventário de maneira rápida e eficiente. Ele oferece
+                                    recursos para escanear códigos de barras, registrar quantidades de produtos, comparar dados
+                                    em tempo real com o inventário registrado no sistema, e gerar relatórios de divergências.
+                                    Ideal para empresas que precisam manter o controle preciso de seus estoques, o app simplifica
+                                    o processo de conferência, reduz erros e melhora a precisão dos dados, acessível diretamente pelo
+                                    smartphone ou tablet.
+                                </p>
+                            </div>
+                            <div class="col-2 text-right">
+                                <button type="button" class="btn dark-icon btn-info">Editar <i class="ri-edit-box-fill"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="container mt-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><b>Syso Coletor</b></h5>
+                        <div class="row align-items-center">
+                            <div class="col-10">
+                                <label class="card-title">Descrição:</label>
+                                <p class="card-text mb-0">
+                                    Um aplicativo móvel para conferência de estoque permite que os usuários
+                                    façam auditorias e verificações de inventário de maneira rápida e eficiente. Ele oferece
+                                    recursos para escanear códigos de barras, registrar quantidades de produtos, comparar dados
+                                    em tempo real com o inventário registrado no sistema, e gerar relatórios de divergências.
+                                    Ideal para empresas que precisam manter o controle preciso de seus estoques, o app simplifica
+                                    o processo de conferência, reduz erros e melhora a precisão dos dados, acessível diretamente pelo
+                                    smartphone ou tablet.
+                                </p>
+                            </div>
+                            <div class="col-2 text-right">
+                                <button type="button" class="btn dark-icon btn-info">Editar <i class="ri-edit-box-fill"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+        </div>
+    </div>
+</div>
+
+ <partial name="_ModalCadastrarPlataforma.cshtml" />
+ <script src="~/assets/js/plataforma.js"></script>
+@* <partial name="_ModalCadastrarLicenca.cshtml" /> *@
+ 
