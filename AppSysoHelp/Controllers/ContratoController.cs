@@ -36,6 +36,11 @@ namespace AppSysoHelp.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult Detalhar(long ContratoId)
+        {
+            var contrato = _contrato.BuscarContratos().FirstOrDefault(a => a.ContratoId == ContratoId);
+            return View(contrato);
+        }
 
         public async Task<IActionResult> GetSugestaoCliente(string query)
         {

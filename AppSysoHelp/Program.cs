@@ -12,7 +12,7 @@ builder.Services.AddDbContext<HelpdesksysoContext>(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Login/Index"; 
+        options.LoginPath = "/Login/Index";
     });
 
 builder.Services.AddAuthorization(options =>
@@ -45,6 +45,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Inicio}/{action=Index}/{id?}");
 
 app.Run();
