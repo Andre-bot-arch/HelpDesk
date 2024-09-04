@@ -10,6 +10,43 @@
     <link rel="stylesheet" href="~/css/typography.css">
     <link rel="stylesheet" href="~/css/style.css">
     <link rel="stylesheet" href="~/css/responsive.css">
+
+    <!-- Links e scripts para o Select2 e jQuery -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <style>
+        /* Estilizando o select para ficar semelhante aos inputs */
+        .custom-select,
+        .select2-container--default .select2-selection--single {
+            width: 100%;
+            height: calc(2.25rem + 2px);
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+            .custom-select:focus,
+            .select2-container--default .select2-selection--single:focus {
+                border-color: #80bdff;
+                outline: 0;
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
+
+            /* Removendo a seta padrão do select para manter o estilo */
+            .select2-container--default .select2-selection--single .select2-selection__arrow b {
+                display: none;
+            }
+
+    </style>
+    
 </head>
 <body>
    

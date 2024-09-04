@@ -1,6 +1,8 @@
 ﻿using AppSysoHelp.Models;
 using AppSysoHelp.Service;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace AppSysoHelp.Controllers
 {
@@ -23,36 +25,45 @@ namespace AppSysoHelp.Controllers
             return View(lista);
         }
 
-      
-        public JsonResult GetSuggestions(string query)
+        public IActionResult Gravar(Contratos c)
         {
-            var suggestions = _context.Clientes
-                                .Where(e => e.NomeCliente.Contains(query))
-                                .Select(e => new
-                                {
-                                    value = e.ClienteId, 
-                                    label = e.NomeCliente
-                                })
-                                .ToList();
+            c.SituacaoContrato = "1";
+            _context.Add(c);
+            _context.SaveChanges();
 
-            return Json(suggestions);
+            return RedirectToAction("Index");
         }
 
-      
-        public JsonResult GetDetailedResults(long query)
+
+        public async Task<IActionResult> GetSugestaoCliente(string query)
         {
-            if (query == 0)
+            var results = await _context.Clientes
+            .Where(e => e.NomeCliente.Contains(query))
+            .Select(e => new
             {
-                return Json(new { error = "Nenhum resultado encontrado." });
-            }
+                value = e.ClienteId,
+                label = e.NomeCliente.ToUpper()
+            })
+            .ToListAsync();
 
-            var results = _context.Clientes
-                            .Where(e => e.ClienteId == query)
-                            .ToList();
-            
-            var htmlResults = results.Select(e => $"<p>{e.NomeCliente}</p>").ToArray();
-
-            return Json(new { html = string.Join("", htmlResults) });
+            return Ok(results);
         }
+
+        public async Task<IActionResult> GetSugestaoSistema(string query)
+        {
+            var results = await _context.PlataformasContratos
+            .Where(e => e.NomePlataforma.Contains(query))
+            .Select(e => new
+            {
+                value = e.PlataformaId,
+                label = e.NomePlataforma.ToUpper()
+            })
+            .ToListAsync();
+
+            return Ok(results);
+        }
+
+
+
     }
 }
