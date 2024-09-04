@@ -1,0 +1,31 @@
+﻿<div id="modalEditarPlataforma" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalEditarPlataforma" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarPlataforma">Editar Plataforma</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form id="formEditarPlataforma" class="was-validated">
+                <input type="hidden" id="plataformaId" name="plataformaId" />
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="mb-3">
+                            <input name="NomePlataforma" type="text" maxlength="100" class="form-control is-invalid" id="nomePlataforma" placeholder="Nome da Plataforma" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="mb-3">
+                            <textarea name="Descricao" maxlength="500" rows="3" class="form-control is-invalid" id="descricao" placeholder="Detalhes da Plataforma" required></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">Sair</button>
+                    <button type="button" id="btnEditar" style="width: 80px" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
