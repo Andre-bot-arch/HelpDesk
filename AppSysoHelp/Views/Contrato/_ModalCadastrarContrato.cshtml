@@ -9,11 +9,11 @@
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <form class="was-validated" asp-controller="Contrato" asp-action="Gravar" method="post">
+            <form class="was-validated" asp-action="Gravar" method="post">
                 <div class="modal-body">
                     <div class="form-group">
                         <select id="sistemaSelect" name="FkPlataformaId" required style="width: 100%">
-                            <option value="">Selecione um Sistema</option>
+                            <option value="">'Buscar Sistema</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -23,14 +23,14 @@
                     </div>
                     <div class="form-group">
                         <div class="mb-3">
-                            <input type="text" maxlength="100" name="DescricaoContrato" class="form-control is-invalid" id="validationTooltip01" placeholder="Detalhes do Contrato" required>
+                            <input type="text" name="DescricaoContrato" maxlength="100" class="form-control is-invalid" id="validationTooltip01" placeholder="Detalhes do Contrato" required>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-sm-8">
                             <div class="mb-3">
-                                <input type="number" maxlength="100" name="Valor" class="form-control is-invalid" id="validationTooltip01" placeholder="Valor do Contrato" required>
+                                <input type="text" name="Valor" maxlength="100" class="form-control is-invalid" id="validationTooltip01" placeholder="Valor do Contrato" required>
                             </div>
                         </div>
                         <div class="col-sm-4">
@@ -63,4 +63,63 @@
     </div>
 </div>
 
-<script src="~/page_js/autoComplete.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#clienteSelect').select2({
+            placeholder: 'Buscar Cliente',
+            minimumInputLength: 4,
+            ajax: {
+                url: '/Contrato/GetSugestaoCliente',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                delay: 250,
+                data: function (params) {
+                    return {
+                        query: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.map(function (item) {
+                            return {
+                                id: item.value,
+                                text: item.label
+                            };
+                        })
+                    };
+                },
+
+                cache: true
+            }
+        });
+
+        $('#sistemaSelect').select2({
+            placeholder: 'Buscar Sistema',
+            minimumInputLength: 4,
+            ajax: {
+                url: '/Contrato/GetSugestaoSistema',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                delay: 250,
+                data: function (params) {
+                    return {
+                        query: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.map(function (item) {
+                            return {
+                                id: item.value,
+                                text: item.label
+                            };
+                        })
+                    };
+                },
+
+                cache: true
+            }
+        });
+    });
+
+</script>

@@ -25,10 +25,12 @@ namespace AppSysoHelp.Controllers
             return View(lista);
         }
 
-        public IActionResult Gravar(Contratos c)
+        public IActionResult Gravar(Contratos c, string valor)
         {
-            c.SituacaoContrato = "1";
-            _context.Add(c);
+            c.Valor = Convert.ToDecimal(valor.Replace(".", ","));
+            c.SituacaoContrato = "Ativo";
+            c.IdContrato = " ";
+            _context.Contratos.Add(c);
             _context.SaveChanges();
 
             return RedirectToAction("Index");
