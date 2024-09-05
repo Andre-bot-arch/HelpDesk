@@ -17,5 +17,12 @@ namespace AppSysoHelp.Service
                                      .Include(a=> a.FkCliente)
                                      .ToList();
         }
+
+        internal Contratos BuscarContratosPorId(long contratoId)
+        {
+            return _context.Contratos.Include(a => a.FkPlataforma)
+                                     .Include(a => a.FkCliente)
+                                     .FirstOrDefault(a=> a.ContratoId == contratoId);
+        }
     }
 }

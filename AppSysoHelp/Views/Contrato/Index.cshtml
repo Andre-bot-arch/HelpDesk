@@ -34,7 +34,7 @@
                                     </div>
                                     <div class="col-4 text-right d-flex justify-content-between">
                                         <button style="width: 45%" type="button" class="btn dark-icon btn-info btn-edit" data-id="@contrato.ContratoId">Editar <i class="ri-edit-box-fill"></i></button>
-                                        <a style="width: 45%" href="~/Contrato/Detalhes" class="btn dark-icon btn-primary" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></a>
+                                        <a style="width: 45%" asp-action="Detalhar" asp-route-id="@contrato.ContratoId"  class="btn dark-icon btn-primary" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></a>
                                     </div>
                                 </div>
                             }
