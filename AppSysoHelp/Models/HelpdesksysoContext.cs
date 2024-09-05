@@ -37,6 +37,10 @@ public partial class HelpdesksysoContext : DbContext
 
     public virtual DbSet<TiposChamados> TiposChamados { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Data Source=mssql2017.hostingzone.com.br,1433;Initial Catalog=helpdesksyso;Persist Security Info=True;User ID=helpdesk;Password=syso@3680;Encrypt=True;TrustServerCertificate=True;");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -104,9 +108,23 @@ public partial class HelpdesksysoContext : DbContext
 
             entity.ToTable("Clientes", "dbo");
 
+            entity.Property(e => e.Bairro).IsUnicode(false);
+            entity.Property(e => e.Cep)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Cidade).IsUnicode(false);
+            entity.Property(e => e.Documento)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Logradouro).IsUnicode(false);
             entity.Property(e => e.NomeCliente).HasMaxLength(100);
-            entity.Property(e => e.Setor).HasMaxLength(50);
+            entity.Property(e => e.Numero)
+                .HasMaxLength(20)
+                .IsUnicode(false);
             entity.Property(e => e.TelefoneCliente).HasMaxLength(20);
+            entity.Property(e => e.Uf)
+                .HasMaxLength(20)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Contratos>(entity =>
@@ -163,7 +181,7 @@ public partial class HelpdesksysoContext : DbContext
 
             entity.ToTable("PlataformasContratos", "dbo");
 
-            entity.Property(e => e.Descricao).HasMaxLength(255);
+            entity.Property(e => e.Descricao).HasMaxLength(500);
             entity.Property(e => e.NomePlataforma).HasMaxLength(100);
         });
 
