@@ -22,10 +22,15 @@ namespace AppSysoHelp.Controllers
         [HttpPost]
         public IActionResult GravarLicenca(Licencas l)
         {
-           if(_generico.GravarGenerico(l))
+            if (l.LicencaId > 0)
+            {
+                if (_generico.UpdateGenerico(l))
+                    return Json(new { success = true, data = l });
+            }
+            else if (_generico.GravarGenerico(l))
                 return Json(new { success = true, data = l });
 
-            return Json(new { success = false, message = "Erro ao buscar os Gravar: "});
+            return Json(new { success = false, message = "Erro ao buscar os Gravar: " });
         }
     }
 }

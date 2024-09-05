@@ -10,9 +10,16 @@ namespace AppSysoHelp.Service
             _context = context;
         }
 
-        public bool GravarGenerico(dynamic obj)
+        internal bool GravarGenerico(dynamic obj)
         {
             _context.Add(obj);
+            _context.SaveChanges();
+            return true;
+        }
+
+        internal bool UpdateGenerico(dynamic obj)
+        {
+            _context.Update(obj);
             _context.SaveChanges();
             return true;
         }

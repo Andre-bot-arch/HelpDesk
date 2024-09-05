@@ -1,4 +1,23 @@
 $(document).ready(function () {
+
+    $(".btn-editar_licenca").click(function () {
+        var data = $(this).data("ativacao");
+        var partes = data.split('/');
+        var dia = partes[0];
+        var mes = partes[1];
+        var ano = partes[2];
+
+        var anoMes = ano + '-' + mes;
+
+        $("#LicencaId").val($(this).data("id"));
+        $("#_Descricao").val($(this).data("desc"));
+        $("#Urlacesso").val($(this).data("url"));
+        $("#DataAtivacao").val(anoMes);
+        $("#Modelo").val($(this).data("modelo"));
+        $("#NumeroSerie").val($(this).data("mac"));
+        $('#cadastroDeLicenca').modal('show');
+    });
+
     $('.btn-salvar').click(function () {
         var form = $('#salvarLicenca');
         var id = $('#ContratoId').val();

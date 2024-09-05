@@ -1,6 +1,7 @@
 ﻿@model AppSysoHelp.Models.Contratos
 @{
     var contrato = Model;
+    int usados = Model.Licencas.Sum(licenca => licenca.LicencasDispositivos.Count);
 }
 <div class="row">
     <div class="col-sm-12 mt-5">
@@ -26,7 +27,7 @@
                             <div class="col-sm-12 col-md-6">
                                 <ul class="nav nav-pills d-flex align-items-end float-right profile-feed-items p-0 m-0">
                                     <li>
-                                        <a class="nav-link active" data-toggle="pill" href="#profile-feed">@Model.PontosContratados</a>
+                                        <a class="nav-link active" data-toggle="pill" href="#profile-feed"> @usados <span> / </span> @Model.PontosContratados</a>
                                     </li>
                                     <li>
                                         <a class="nav-link" data-toggle="pill" href="#profile-activity">@Model.Valor.ToString("C2")</a>
@@ -74,7 +75,9 @@
                                         <td class="text-center"><div class="badge badge-pill iq-bg-success"> ATIVO </div></td>
                                         @*   <td class="text-center"><div class="badge badge-pill iq-bg-danger">Past Due</div></td> *@
                                         <td>
-                                            <i class="ri-ball-pen-fill text-success pr-1"></i>
+                                            <a href="#" class="btn-editar_licenca" data-id="@item.LicencaId" data-desc="@item.Descricao" data-url="@item.Urlacesso" data-ativacao="@item.DataAtivacao" data-modelo="@item.Modelo" data-mac="@item.NumeroSerie"  >
+                                                <i class="ri-ball-pen-fill text-success pr-1"></i>
+                                                </a> 
                                             <i class="ri-delete-bin-5-line text-danger"></i>
                                         </td>
                                     </tr>
@@ -90,3 +93,5 @@
 </div>
 
 <partial name="_ModalCadastrarLicenca.cshtml" />
+<script src="~/assets/js/licenca.js"></script>
+

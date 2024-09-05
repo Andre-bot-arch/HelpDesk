@@ -25,6 +25,8 @@ public partial class HelpdesksysoContext : DbContext
 
     public virtual DbSet<Licencas> Licencas { get; set; }
 
+    public virtual DbSet<LicencasDispositivos> LicencasDispositivos { get; set; }
+
     public virtual DbSet<PlataformasContratos> PlataformasContratos { get; set; }
 
     public virtual DbSet<SetoresChamados> SetoresChamados { get; set; }
@@ -36,6 +38,10 @@ public partial class HelpdesksysoContext : DbContext
     public virtual DbSet<TecnicosSupervisores> TecnicosSupervisores { get; set; }
 
     public virtual DbSet<TiposChamados> TiposChamados { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Data Source=mssql2017.hostingzone.com.br,1433;Initial Catalog=helpdesksyso;Persist Security Info=True;User ID=helpdesk;Password=syso@3680;Encrypt=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -169,6 +175,20 @@ public partial class HelpdesksysoContext : DbContext
             entity.HasOne(d => d.FkContrato).WithMany(p => p.Licencas)
                 .HasForeignKey(d => d.FkContratoId)
                 .HasConstraintName("FK_Licencas_Contratos");
+        });
+
+        modelBuilder.Entity<LicencasDispositivos>(entity =>
+        {
+            entity.HasKey(e => e.DispositivoId).HasName("PK__Licencas__724C27A1E6704811");
+
+            entity.ToTable("Licencas_Dispositivos", "dbo");
+
+            entity.Property(e => e.DataAtivacao).HasColumnType("datetime");
+            entity.Property(e => e.FkLicenca).HasColumnName("Fk_Licenca");
+
+            entity.HasOne(d => d.FkLicencaNavigation).WithMany(p => p.LicencasDispositivos)
+                .HasForeignKey(d => d.FkLicenca)
+                .HasConstraintName("FK_Licencas_Dispositivos_Licencas");
         });
 
         modelBuilder.Entity<PlataformasContratos>(entity =>

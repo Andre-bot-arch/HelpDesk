@@ -10,23 +10,24 @@
             </div>
             <form class="was-validated" id="salvarLicenca">
                 <input type="hidden" name="FkContratoId" id="idDoContrato" />
+                <input type="hidden" name="LicencaId" id="LicencaId" />
                 <div class="modal-body">
                     <label>Data Ativação</label>
                     <div class="mb-3">
-                        <input type="month" class="form-control is-invalid" name="DataAtivacao" id="exampleInputmonth" placeholder="Data Inicial" required>
+                        <input type="month" class="form-control is-invalid" name="DataAtivacao" id="DataAtivacao" placeholder="Data Inicial" required>
                     </div>
                     <div class="mb-3">
-                        <input type="url" maxlength="100" name="Urlacesso" class="form-control is-invalid" id="validationTooltip01" placeholder="Url de acesso" required>
+                        <input type="url" maxlength="100" name="Urlacesso" class="form-control is-invalid" id="Urlacesso" placeholder="Url de acesso" required>
                         <div class="invalid-feedback">Ex: syso.tecnologia.com.br:8081</div>
                     </div>
                     <div class="mb-3">
-                        <input type="text" maxlength="100" name="Descricao" class="form-control is-invalid" id="validationTooltip01" placeholder="Detalhes da Licença" required>
+                        <input type="text" maxlength="100" name="Descricao" class="form-control is-invalid" id="_Descricao" placeholder="Detalhes da Licença" required>
                     </div>
                     <div class="mb-3">
-                        <input type="text" maxlength="100" name="Modelo" class="form-control is-invalid" id="validationTooltip01" placeholder="Modelo da Licença" required>
+                        <input type="text" maxlength="100" name="Modelo" class="form-control is-invalid" id="Modelo" placeholder="Modelo da Licença" required>
                     </div>
                     <div class="mb-3">
-                        <input type="text" maxlength="100" name="NumeroSerie" class="form-control is-invalid" id="validationTooltip01" placeholder="MAC ou nº Serie" required>
+                        <input type="text" maxlength="100" name="NumeroSerie" class="form-control is-invalid" id="NumeroSerie" placeholder="MAC ou nº Serie" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -38,5 +39,3 @@
     </div>
 </div>
 
-<script src="~/assets/js/licenca.js">
-</script>
