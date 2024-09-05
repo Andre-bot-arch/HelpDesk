@@ -1,0 +1,172 @@
+﻿@{
+}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f4;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    table, th, td {
+        border: 1px solid #ddd;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #BEB5E0;
+        color: white;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .collapse-content {
+        display: none;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+        background-color: #fafafa;
+    }
+
+    .collapse-btn {
+        cursor: pointer;
+        background-color: #BEB5E0;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 5px 0;
+        border-radius: 3px;
+    }
+
+    @@media screen and (max-width: 768px) {
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+
+            thead tr {
+                display: none;
+            }
+
+        tr {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+
+        td {
+            text-align: right;
+            padding-left: 50%;
+            position: relative;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: bold;
+                color: #333;
+            }
+
+        .collapse-btn {
+            display: block;
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="iq-card">
+    <div class="iq-card-header d-flex justify-content-between">
+        <div class="iq-header-title">
+            <h4 class="card-title"> Lista de Clientes</h4>
+        </div>
+    </div>
+    <div class="iq-card-body">
+        <div class="row">
+            <div class="container-fluid">
+                <table id="datatable">
+                    <thead>
+                        <tr>
+                            <th>ID Cliente</th>
+                            <th>Nome</th>
+                            <th>Documento</th>
+                            <th>Whatsapp</th>
+                            <th>Telefone</th>
+                            <th>Email</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="ID Cliente">1</td>
+                            <td data-label="Nome">João da Silva</td>
+                            <td data-label="Documento">123.456.789-00</td>
+                            <td data-label="Whatsapp">(31) 91234-5678</td>
+                            <td data-label="Telefone">(31) 3234-5678</td>
+                            <td data-label="Email">joao.silva@email.com</td>
+                            <td><button class="collapse-btn" onclick="toggleCollapse(this)">Mostrar Endereço</button></td>
+                        </tr>
+                        <tr class="collapse-content">
+                            <td colspan="9">
+                                <div>
+                                    <b>CEP:</b> 30130-010 | <b>Logradouro:</b> Av. Afonso Pena, Apto 101, <b>Nº:</b> 1500, <b>Bairro:</b> Centro,
+                                    <b>Cidade:</b> Belo Horizonte, <b>UF:</b> MG
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td data-label="ID Cliente">2</td>
+                            <td data-label="Nome">Maria Oliveira</td>
+                            <td data-label="Documento">987.654.321-00</td>
+                            <td data-label="Whatsapp">(11) 98765-4321</td>
+                            <td data-label="Telefone">(11) 4567-8901</td>
+                            <td data-label="Email">maria.oliveira@email.com</td>
+                            <td><button class="collapse-btn" onclick="toggleCollapse(this)">Mostrar Endereço</button></td>
+                        </tr>
+                        <tr class="collapse-content">
+                            <td colspan="9">
+                                <div>
+                                    <b>CEP:</b> 01234-567 | <b>Logradouro:</b> Rua das Flores, Sala 202, <b>Nº:</b> 789, <b>Bairro:</b> Jardim Paulista,
+                                    <b>Cidade:</b> São Paulo, <b>UF:</b> SP
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function toggleCollapse(button) {
+        const row = button.parentElement.parentElement.nextElementSibling;
+        const isExpanded = row.style.display === "table-row";
+        row.style.display = isExpanded ? "none" : "table-row";
+        button.textContent = isExpanded ? "Mostrar Endereço" : "Ocultar Endereço";
+    }
+</script>
+@* <partial name="_ModalCadastrarPlataforma.cshtml" />
+<partial name="_ModalEditarPlataforma.cshtml" />
+<script src="~/assets/js/plataforma.js"></script> *@
