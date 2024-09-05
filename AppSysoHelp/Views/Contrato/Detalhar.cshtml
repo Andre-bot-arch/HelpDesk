@@ -17,7 +17,8 @@
                                         </div>
                                         <div class="profile-detail">
                                             <h5>@Model.DescricaoContrato</h5>
-                                            <h6>Cliente: @Model.FkCliente.NomeCliente</h6>
+                                            <h6>Cliente: @Model.FkCliente?.NomeCliente</h6>
+                                            <input type="hidden" asp-for="@Model.ContratoId" />
                                         </div>
                                     </div>
                                 </div>
