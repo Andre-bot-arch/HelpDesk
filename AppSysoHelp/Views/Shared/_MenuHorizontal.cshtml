@@ -1,14 +1,14 @@
 ﻿@using System.Security.Claims
 @{
-    
+
     var claims = User.Claims;
-   
+
     var nameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
     var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
     var roleClaim = User.FindFirst("Role")?.Value;
 }
-<div class="iq-top-navbar">
-    <div class="iq-navbar-custom">
+<div class="iq-top-navbar" style="background-color: #222e35">
+    <div class="iq-navbar-custom" style="background-color: #111b21">
         <div class="iq-sidebar-logo">
             <div class="top-logo">
                 <a href="index.html" class="logo">
@@ -22,45 +22,45 @@
                 </a>
             </div>
         </div>
-        <nav class="navbar navbar-expand-lg navbar-light p-0">
+        <nav class="navbar navbar-expand-lg p-0" >
             <div class="navbar-left">
                 <ul id="topbar-data-icon" class="d-flex p-0 topbar-menu-icon">
                     <li class="nav-item">
-                        <a href="index.html" class="nav-link font-weight-bold search-box-toggle"><i class="ri-home-4-line"></i></a>
+                        <a href="index.html" class="nav-link font-weight-bold search-box-toggle" style="background-color: #222e35"><i class="ri-home-4-line"></i></a>
                     </li>
-                    <li><a href="chat.html" class="nav-link"><i class="ri-message-line"></i></a></li>
+                    <li><a href="chat.html" class="nav-link" style="background-color: #222e35"><i class="ri-message-line"></i></a></li>
 
-                    <li><a href="profile.html" class="nav-link"><i class="ri-question-answer-line"></i></a></li>
-                    <li><a href="todo.html" class="nav-link router-link-exact-active router-link-active"><i class="ri-chat-check-line"></i></a></li>
-                    <li><a href="app/index.html" class="nav-link"><i class="ri-inbox-line"></i></a></li>
+                    <li><a href="profile.html" class="nav-link" style="background-color: #222e35"><i class="ri-question-answer-line"></i></a></li>
+                    <li><a href="todo.html" class="nav-link router-link-exact-active router-link-active" style="background-color: #222e35"><i class="ri-chat-check-line"></i></a></li>
+                    <li><a href="app/index.html" class="nav-link" style="background-color: #222e35"><i class="ri-inbox-line"></i></a></li>
                 </ul>
-                <div class="iq-search-bar d-none d-md-block">
+                <div class="iq-search-bar d-none d-md-block mt-1">
                     <form action="#" class="searchbox">
-                        <input type="text" class="text search-input" placeholder="Type here to search...">
+                        <input type="text" class="text search-input" style="background-color: #222e35" placeholder="Type here to search...">
                         <a class="search-link" href="#"><i class="ri-search-line"></i></a>
                         <div class="searchbox-datalink">
-                            <h6 class="pl-3 pt-3 pb-3">Pages</h6>
+                            @* <h6 class="pl-3 pt-3 pb-3">Pages</h6>
                             <ul class="m-0 pl-3 pr-3 pb-3">
-                                <li class="iq-bg-primary-hover rounded"><a href="index.html" class="nav-link router-link-exact-active router-link-active pr-2"><i class="ri-home-4-line pr-2"></i>Dashboard</a></li>
-                                <li class="iq-bg-primary-hover rounded"><a href="dashboard-1.html" class="nav-link router-link-exact-active router-link-active pr-2"><i class="ri-home-3-line pr-2"></i>Dashboard-1</a></li>
-                                <li class="iq-bg-primary-hover rounded"><a href="chat.html" class="nav-link"><i class="ri-message-line pr-2"></i>Chat</a></li>
-                                <li class="iq-bg-primary-hover rounded"><a href="calendar.html" class="nav-link"><i class="ri-calendar-2-line pr-2"></i>Calendar</a></li>
-                                <li class="iq-bg-primary-hover rounded"><a href="profile.html" class="nav-link"><i class="ri-profile-line pr-2"></i>Profile</a></li>
-                                <li class="iq-bg-primary-hover rounded"><a href="todo.html" class="nav-link"><i class="ri-chat-check-line pr-2"></i>Todo</a></li>
-                                <li class="iq-bg-primary-hover rounded"><a href="app/index.html" class="nav-link"><i class="ri-mail-line pr-2"></i>Email</a></li>
-                                <li class="iq-bg-primary-hover rounded"><a href="e-commerce-product-list.html" class="nav-link"><i class="ri-message-line pr-2"></i>Product Listing</a></li>
-                                <li class="iq-bg-primary-hover rounded"><a href="e-commerce-product-detail.html" class="nav-link"><i class="ri-file-list-line pr-2"></i>Product Details</a></li>
-                                <li class="iq-bg-primary-hover rounded"><a href="pages-faq.html" class="nav-link"><i class="ri-compasses-line pr-2"></i>Faq</a></li>
-                                <li class="iq-bg-primary-hover rounded"><a href="form-wizard.html" class="nav-link"><i class="ri-clockwise-line pr-2"></i>Form-wizard</a></li>
-                            </ul>
+                            <li class="iq-bg-primary-hover rounded"><a href="index.html" class="nav-link router-link-exact-active router-link-active pr-2"><i class="ri-home-4-line pr-2"></i>Dashboard</a></li>
+                            <li class="iq-bg-primary-hover rounded"><a href="dashboard-1.html" class="nav-link router-link-exact-active router-link-active pr-2"><i class="ri-home-3-line pr-2"></i>Dashboard-1</a></li>
+                            <li class="iq-bg-primary-hover rounded"><a href="chat.html" class="nav-link"><i class="ri-message-line pr-2"></i>Chat</a></li>
+                            <li class="iq-bg-primary-hover rounded"><a href="calendar.html" class="nav-link"><i class="ri-calendar-2-line pr-2"></i>Calendar</a></li>
+                            <li class="iq-bg-primary-hover rounded"><a href="profile.html" class="nav-link"><i class="ri-profile-line pr-2"></i>Profile</a></li>
+                            <li class="iq-bg-primary-hover rounded"><a href="todo.html" class="nav-link"><i class="ri-chat-check-line pr-2"></i>Todo</a></li>
+                            <li class="iq-bg-primary-hover rounded"><a href="app/index.html" class="nav-link"><i class="ri-mail-line pr-2"></i>Email</a></li>
+                            <li class="iq-bg-primary-hover rounded"><a href="e-commerce-product-list.html" class="nav-link"><i class="ri-message-line pr-2"></i>Product Listing</a></li>
+                            <li class="iq-bg-primary-hover rounded"><a href="e-commerce-product-detail.html" class="nav-link"><i class="ri-file-list-line pr-2"></i>Product Details</a></li>
+                            <li class="iq-bg-primary-hover rounded"><a href="pages-faq.html" class="nav-link"><i class="ri-compasses-line pr-2"></i>Faq</a></li>
+                            <li class="iq-bg-primary-hover rounded"><a href="form-wizard.html" class="nav-link"><i class="ri-clockwise-line pr-2"></i>Form-wizard</a></li>
+                            </ul> *@
                         </div>
                     </form>
                 </div>
             </div>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" style="background-color: #222e35" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-label="Toggle navigation">
                 <i class="ri-menu-3-line"></i>
             </button>
-            <div class="iq-menu-bt align-self-center">
+            <div class="iq-menu-bt align-self-center" style="background-color: #222e35">
                 <div class="wrapper-menu">
                     <div class="main-circle"><i class="ri-arrow-left-s-line"></i></div>
                     <div class="hover-circle"><i class="ri-arrow-right-s-line"></i></div>
