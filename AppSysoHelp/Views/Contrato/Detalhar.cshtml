@@ -47,7 +47,8 @@
                         <h6 class="card-title">Licenças</h6>
                     </div>
                     <div class="iq-card-header-toolbar d-flex align-items-center">
-                        <button type="button" data-toggle="modal" data-target="#cadastroDeLicenca" class="btn dark-icon btn-primary mb-3">Adicionar <i class="ri-add-box-line"></i></button>
+                        <a href="~/Contrato/Index" class="btn dark-icon btn-light m-1">Voltar <i class="ri-reply-line"></i></a>
+                        <button type="button" data-toggle="modal" data-target="#cadastroDeLicenca" class="btn dark-icon btn-primary m-1">Adicionar <i class="ri-add-box-line"></i></button>
                     </div>
                 </div>
                 <div class="iq-card-body">
@@ -59,6 +60,7 @@
                                     <th scope="col">Descricao</th>
                                     <th scope="col">Urlacesso</th>
                                     <th scope="col" class="text-right">Data Ativacao</th>
+                                    <th scope="col" class="text-center">Conexões</th>
                                     <th scope="col" class="text-center">Status</th>
                                     <th scope="col">Ações</th>
 
@@ -72,13 +74,21 @@
                                         <td>@item.Descricao</td>
                                         <td>@item.Urlacesso</td>
                                         <td class="text-right">@item.DataAtivacao.ToString("dd/MM/yyyy")</td>
-                                        <td class="text-center"><div class="badge badge-pill iq-bg-success"> ATIVO </div></td>
-                                        @*   <td class="text-center"><div class="badge badge-pill iq-bg-danger">Past Due</div></td> *@
+                                        <td class="text-center">@item.LicencasDispositivos.Count()</td>
+                                        @if(item.Ativo == true)
+                                        {
+                                            <td class="text-center"><div class="badge badge-pill iq-bg-success" style="width: 80px"> ATIVO </div></td>
+                                        }
+                                        else
+                                        {
+                                            <td class="text-center"><div class="badge badge-pill iq-bg-danger" style="width: 80px">REVOGADA</div></td>
+                                        }
+                                                                              
                                         <td>
                                             <a href="#" class="btn-editar_licenca" data-id="@item.LicencaId" data-desc="@item.Descricao" data-url="@item.Urlacesso" data-ativacao="@item.DataAtivacao" data-modelo="@item.Modelo" data-mac="@item.NumeroSerie"  >
                                                 <i class="ri-ball-pen-fill text-success pr-1"></i>
-                                                </a> 
-                                            <i class="ri-delete-bin-5-line text-danger"></i>
+                                                </a>
+                                            <a href="#" class="btn-inativar-licenca" data-id="@item.LicencaId" data-ativo="@item.Ativo"> <i class="ri-delete-bin-5-line text-danger"></i></a>
                                         </td>
                                     </tr>
                                 }

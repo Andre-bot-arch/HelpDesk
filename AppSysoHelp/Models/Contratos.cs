@@ -17,8 +17,6 @@ public partial class Contratos
 
     public decimal Valor { get; set; }
 
-    public string IdContrato { get; set; } = null!;
-
     public string? DescricaoContrato { get; set; }
 
     public int PontosContratados { get; set; }

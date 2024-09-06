@@ -11,12 +11,14 @@ namespace AppSysoHelp.Controllers
         private readonly IConfiguration _configuration;
         private readonly HelpdesksysoContext _context;
         private readonly ServiceContrato _contrato;
+        private readonly ServiceGenerico _generico;
 
         public ContratoController(IConfiguration configuration, HelpdesksysoContext context)
         {
             _configuration = configuration;
             _context = context;
             _contrato = new ServiceContrato(context);
+            _generico = new ServiceGenerico(context);
         }
 
         public IActionResult Index()
@@ -27,9 +29,16 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Gravar(Contratos c, string valor)
         {
+            if (c.ContratoId > 0)
+            {
+                c.Valor = Convert.ToDecimal(valor.Replace(".", ","));
+                c.SituacaoContrato = "Ativo";
+                _context.Update(c);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
             c.Valor = Convert.ToDecimal(valor.Replace(".", ","));
             c.SituacaoContrato = "Ativo";
-            c.IdContrato = " ";
             _context.Contratos.Add(c);
             _context.SaveChanges();
 
@@ -40,6 +49,20 @@ namespace AppSysoHelp.Controllers
         {
             var contrato = _contrato.BuscarContratosPorId(id);
             return View(contrato);
+        }
+
+        public IActionResult UpdateEstatusContrato(string ativo, long id = 0)
+        {
+            if (id > 0)
+            {
+                var contrato = _contrato.BuscarContratosPorId(id);
+                contrato.SituacaoContrato = (ativo == "Ativo") ?"Inativo" : "Ativo";
+                if (_generico.UpdateGenerico(contrato))
+                    return Json(new { success = true, message = "Finalizado com sucesso! " });
+
+            }
+
+            return Json(new { success = false, message = "Erro ao atualizar os dados: " });
         }
 
         public async Task<IActionResult> GetSugestaoCliente(string query)

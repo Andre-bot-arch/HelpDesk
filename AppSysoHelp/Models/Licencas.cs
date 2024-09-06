@@ -23,6 +23,8 @@ public partial class Licencas
 
     public long? FkContratoId { get; set; }
 
+    public bool? Ativo { get; set; }
+
     public virtual Contratos? FkContrato { get; set; }
 
     public virtual ICollection<LicencasDispositivos> LicencasDispositivos { get; set; } = new List<LicencasDispositivos>();

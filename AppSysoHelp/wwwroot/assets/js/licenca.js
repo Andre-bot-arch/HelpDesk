@@ -1,5 +1,55 @@
 $(document).ready(function () {
 
+    $(".btn-inativar-licenca").click(function () {
+        var id = $(this).data("id");
+        var situacao = $(this).data("ativo")
+      
+        Swal.fire({
+            icon: 'error',
+            title: 'Aten&ccedil;&atilde;o!!',
+            text: "Deseja inutilizar?",
+            confirmButtonText: 'SIM'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Licenca/UpdateEstatusLicenca',
+                    type: 'POST',
+                    data: { id: id, ativo: situacao },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sucesso!',
+                                text: response.message,
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed) { 
+                                    location.reload();
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro!',
+                                text: response.message,
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro!',
+                            text: 'Ocorreu um erro inesperado.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                    
+                });
+            }
+        });
+    });
+
     $(".btn-editar_licenca").click(function () {
         var data = $(this).data("ativacao");
         var partes = data.split('/');

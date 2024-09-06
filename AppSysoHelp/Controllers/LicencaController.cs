@@ -32,5 +32,20 @@ namespace AppSysoHelp.Controllers
 
             return Json(new { success = false, message = "Erro ao buscar os Gravar: " });
         }
+
+        [HttpPost]         
+        public IActionResult UpdateEstatusLicenca(string ativo, long id = 0)
+        {
+            if (id > 0)
+            {
+                var licenca = _licenca.BuscarLicencaPorId(id);
+                licenca.Ativo = (ativo == "True") ? false : true;
+                if (_generico.UpdateGenerico(licenca))
+                    return Json(new { success = true, data = licenca, message = "Finalizado com sucesso! " });
+
+            }
+          
+                return Json(new { success = false, message = "Erro ao atualizar os dados: " });
+        }
     }
 }

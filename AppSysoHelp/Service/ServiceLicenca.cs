@@ -9,5 +9,10 @@ namespace AppSysoHelp.Service
         {
             _context = context;
         }
+
+        internal Licencas BuscarLicencaPorId(long id)
+        {
+            return _context.Licencas.FirstOrDefault(a => a.LicencaId == id);
+        }
     }
 }
