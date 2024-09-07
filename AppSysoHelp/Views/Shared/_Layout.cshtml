@@ -48,6 +48,46 @@
             }
 
     </style>
+
+    <style>
+
+        /* Cor de fundo das linhas ímpares */
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #111b21;
+        }
+
+        /* Cor de fundo das linhas pares */
+        .table-striped tbody tr:nth-of-type(even) {
+            background-color: #222e35;
+        }
+
+        /* Cor do texto para garantir legibilidade */
+        .table-striped tbody tr {
+            color: #ffffff; /* Muda a cor do texto para branco */
+        }
+
+        /* Bordas arredondadas */
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+            .table thead th:first-child {
+                border-top-left-radius: 10px;
+            }
+
+            .table thead th:last-child {
+                border-top-right-radius: 10px;
+            }
+
+            .table tbody tr:last-child td:first-child {
+                border-bottom-left-radius: 10px;
+            }
+
+            .table tbody tr:last-child td:last-child {
+                border-bottom-right-radius: 10px;
+            }
+    </style>
     
 </head>
 <body style="background-color: #222e35">

@@ -18,6 +18,14 @@ namespace AppSysoHelp.Service
                                      .ToList();
         }
 
+        internal IList<Contratos> BuscarContratosCancelados()
+        {
+            return _context.Contratos.Include(a => a.FkPlataforma)
+                                     .Include(a => a.FkCliente)
+                                     .Where(a=> a.SituacaoContrato == "Inativo")
+                                     .ToList();
+        }
+
         internal Contratos BuscarContratosPorId(long contratoId)
         {
             return _context.Contratos.Include(a => a.FkPlataforma)

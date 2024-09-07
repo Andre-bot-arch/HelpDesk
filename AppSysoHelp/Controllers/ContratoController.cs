@@ -27,6 +27,12 @@ namespace AppSysoHelp.Controllers
             return View(lista);
         }
 
+        public IActionResult Cancelados()
+        {
+            var lista = _contrato.BuscarContratosCancelados();
+            return View(lista);
+        }
+
         public IActionResult Gravar(Contratos c, string valor)
         {
             if (c.ContratoId > 0)

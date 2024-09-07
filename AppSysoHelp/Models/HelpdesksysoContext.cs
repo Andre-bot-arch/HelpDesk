@@ -162,6 +162,7 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.Ativo).HasDefaultValue(true);
             entity.Property(e => e.Descricao).HasMaxLength(255);
             entity.Property(e => e.FkContratoId).HasColumnName("Fk_ContratoId");
+            entity.Property(e => e.Hash).HasMaxLength(20);
             entity.Property(e => e.Modelo).HasMaxLength(100);
             entity.Property(e => e.NumeroSerie).HasMaxLength(100);
             entity.Property(e => e.Urlacesso)

@@ -25,6 +25,8 @@ public partial class Licencas
 
     public bool? Ativo { get; set; }
 
+    public string? Hash { get; set; }
+
     public virtual Contratos? FkContrato { get; set; }
 
     public virtual ICollection<LicencasDispositivos> LicencasDispositivos { get; set; } = new List<LicencasDispositivos>();

@@ -1,0 +1,65 @@
+﻿@model IEnumerable<AppSysoHelp.Models.Contratos>
+@{
+}
+<div class="iq-card" style="background-color: #0B141A">
+    <div class="iq-card-header d-flex justify-content-between">
+        <div class="iq-header-title">
+            <h4 class="text-primary"> Lista de Contratos Ativos</h4>
+        </div>
+        <div class="text-end">
+            <button type="button" data-toggle="modal" data-target="#exampleModalCenteredScrollable" class="btn dark-icon btn-primary mb-3">Adicionar <i class="ri-add-box-line"></i></button>
+        </div>
+    </div>
+    <div class="iq-card-body">
+        <div class="row">
+            @foreach (var item in Model.GroupBy(a => a.FkClienteId))
+            {
+                <div class="container mb-3">
+                    <div class="card" style="background-color: #222e35">
+                        <div class="card-header text-primary" style="background-color: #111b21">
+                            <i class="fa fa-address-book"></i> @item.FirstOrDefault()?.FkCliente?.NomeCliente.ToUpper()
+                        </div>
+                        <div class="card-body">
+                            @foreach (var contrato in item)
+                            {
+                                var situacao = "text-primary";
+                                if (contrato.SituacaoContrato == "Inativo")
+                                {
+                                    situacao = "text-danger";
+                                }
+                                <div class="row align-items-center">
+                                    <div class="col-7">
+                                        <label class="card-title @situacao">
+                                            <span class="@situacao">@contrato.FkPlataforma.NomePlataforma:</span> @contrato.FkPlataforma.Descricao
+                                            <br /> <span class="@situacao">
+                                                Pontos: @contrato.PontosContratados
+                                            </span>
+                                            <br /> <span class="@situacao">Valor:</span> @contrato.Valor.ToString("C2")
+                                        </label>
+                                    </div>
+                                    <div class="col-5 text-right d-flex justify-content-between">
+                                        <button style="width: 120px" type="button" class="btn dark-icon btn-info btn-editar-cadastro" data-id="@contrato.ContratoId" , data-desc="@contrato.DescricaoContrato" data-valor="@contrato.Valor" data-pontos="@contrato.PontosContratados" data-inicio="@contrato.DataInicio" data-fim="@contrato.DataFim" data-plataforma="@contrato.FkPlataforma.NomePlataforma" data-plataformaId="@contrato.FkPlataformaId" data-cliente="@contrato.FkCliente.NomeCliente" data-clienteId="@contrato.FkClienteId">Editar <i class="ri-edit-box-fill"></i></button>
+                                        <a style="width:  120px" asp-action="Detalhar" asp-route-id="@contrato.ContratoId" class="btn dark-icon btn-primary" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></a>
+                                        @if (contrato.SituacaoContrato == "Inativo")
+                                        {
+                                            <a href="#" style="width:  120px" data-men="Ativar o contrato" class="btn-inativar-contrato btn dark-icon btn-success" data-id="@contrato.ContratoId" data-ativo="@contrato.SituacaoContrato">Ativar <i class="ri-delete-bin-5-line"></i></a>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" style="width:  120px" data-men="Inativar o contrato" class="btn-inativar-contrato btn dark-icon btn-danger" data-id="@contrato.ContratoId" data-ativo="@contrato.SituacaoContrato">Inativar <i class="ri-delete-bin-5-line"></i></a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <hr />
+            }
+        </div>
+
+    </div>
+</div>
+
+<partial name="_ModalCadastrarContrato.cshtml" />
+<script src="~/assets/js/contrato.js"></script>

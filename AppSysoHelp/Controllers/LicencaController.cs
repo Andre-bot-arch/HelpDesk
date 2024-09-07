@@ -27,8 +27,12 @@ namespace AppSysoHelp.Controllers
                 if (_generico.UpdateGenerico(l))
                     return Json(new { success = true, data = l });
             }
-            else if (_generico.GravarGenerico(l))
-                return Json(new { success = true, data = l });
+            else
+            {
+                l.Hash = _licenca.GerarHash();
+                if (_generico.GravarGenerico(l))
+                    return Json(new { success = true, data = l });
+            }
 
             return Json(new { success = false, message = "Erro ao buscar os Gravar: " });
         }

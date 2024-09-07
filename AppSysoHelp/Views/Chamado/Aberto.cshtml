@@ -1,0 +1,40 @@
+﻿<div class="iq-card" style="background-color: #111b21">
+    <div class="iq-card-header d-flex justify-content-between">
+        <div class="iq-header-title">
+            <h4 class="text-primary">Chamados Abertos - @DateTime.Now.ToString("dd/MM/yyyy")</h4>
+        </div>
+        <div class="text-end">
+            <button type="button" data-toggle="modal" data-target="#exampleModalCenteredScrollable" class="btn dark-icon btn-primary mb-3">Adicionar <i class="ri-add-box-line"></i></button>
+        </div>
+    </div>
+    <div class="iq-card-body">       
+        <ul class="nav nav-tabs justify-content-end" id="myTab-4" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link text-primary active" id="interno-tab-end" data-toggle="tab" href="#interno-end" role="tab" aria-controls="interno" aria-selected="false">Internos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-primary" id="externo-tab-end" data-toggle="tab" href="#externo-end" role="tab" aria-controls="externo" aria-selected="false">Externo</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-primary" id="vector-tab-end" data-toggle="tab" href="#vector-end" role="tab" aria-controls="vector" aria-selected="true">Vector</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-primary" id="desenvolvimento-tab-end" data-toggle="tab" href="#desenvolvimento-end" role="tab" aria-controls="desenvolvimento" aria-selected="false">Desenvolvimento</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-primary" id="financeiro-tab-end" data-toggle="tab" href="#financeiro-end" role="tab" aria-controls="financeiro" aria-selected="false">Financeiro</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-primary" id="treinamento-tab-end" data-toggle="tab" href="#treinamento-end" role="tab" aria-controls="treinamento" aria-selected="true">Treinamento</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent-5">
+            <partial name="_PartialInterno.cshtml" />
+            <partial name="_PartialExterno.cshtml" />
+            <partial name="_PartialVector.cshtml" />
+            <partial name="_PartialDevelop.cshtml" />
+            <partial name="_PartialFinanceiro.cshtml" />
+            <partial name="_PartialTreinamento.cshtml" />
+        </div>
+    </div>
+</div>
