@@ -53,6 +53,7 @@ public partial class HelpdesksysoContext : DbContext
 
             entity.ToTable("Atendimentos", "dbo");
 
+            entity.Property(e => e.DataAtendimento).HasColumnType("datetime");
             entity.Property(e => e.FkChamadoId).HasColumnName("Fk_ChamadoId");
             entity.Property(e => e.FkTecnicoId).HasColumnName("Fk_TecnicoId");
             entity.Property(e => e.NovaDataAtendimento).HasColumnType("datetime");
@@ -91,6 +92,10 @@ public partial class HelpdesksysoContext : DbContext
                 .IsFixedLength();
             entity.Property(e => e.TelefoneContato).HasMaxLength(20);
 
+            entity.HasOne(d => d.FkAtendenteNavigation).WithMany(p => p.ChamadosFkAtendenteNavigation)
+                .HasForeignKey(d => d.FkAtendente)
+                .HasConstraintName("FK_Chamados_TecnicosSupervisores");
+
             entity.HasOne(d => d.FkCliente).WithMany(p => p.Chamados)
                 .HasForeignKey(d => d.FkClienteId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -106,7 +111,7 @@ public partial class HelpdesksysoContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Chamados__Situac__6EF57B66");
 
-            entity.HasOne(d => d.FkTecnico).WithMany(p => p.Chamados)
+            entity.HasOne(d => d.FkTecnico).WithMany(p => p.ChamadosFkTecnico)
                 .HasForeignKey(d => d.FkTecnicoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Chamados__Tecnic__6E01572D");

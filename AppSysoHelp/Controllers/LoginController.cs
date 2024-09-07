@@ -18,6 +18,8 @@ namespace AppSysoHelp.Controllers
             {
                 new Claim(ClaimTypes.Name, "Almir"),
                 new Claim(ClaimTypes.Email, "almir.matos.dev@gmail.com"),
+               new Claim("Id", "6"),
+
                 new Claim("Role", "Admin")
             };
 

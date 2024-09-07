@@ -1,9 +1,11 @@
 ﻿using AppSysoHelp.Models;
 using AppSysoHelp.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppSysoHelp.Controllers
 {
+    [Authorize(Policy = "AdminOrManager")]
     public class PlataformaController : Controller
     {
         private readonly IConfiguration _configuration;

@@ -35,6 +35,8 @@ public partial class Chamados
 
     public virtual ICollection<Atendimentos> Atendimentos { get; set; } = new List<Atendimentos>();
 
+    public virtual TecnicosSupervisores? FkAtendenteNavigation { get; set; }
+
     public virtual Clientes FkCliente { get; set; } = null!;
 
     public virtual SetoresChamados FkSetoresNavigation { get; set; } = null!;

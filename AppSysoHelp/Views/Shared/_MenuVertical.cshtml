@@ -3,14 +3,13 @@
 }
 <div class="iq-sidebar" style="background-color: #0B141A">
     <div class="iq-sidebar-logo d-flex justify-content-between">
-        <a href="index.html">
+        <a href="~/Home/Index" class="logo">
             <div class="iq-light-logo">
-                <img src="~/images/logo.gif" class="img-fluid" alt="">
+                <img src="~/images/helpdesk/_logo1.png" class="img-fluid" alt="">
             </div>
             <div class="iq-dark-logo">
-                <img src="~/images/logo-dark.gif" class="img-fluid" alt="">
-            </div>
-            <span>Syso</span>
+                <img src="~/images/helpdesk/_logo.png" class="img-fluid" alt="">
+            </div>          
         </a>
         <div class="iq-menu-bt-sidebar">
             <div class="iq-menu-bt align-self-center" style="background-color: #0B141A">
@@ -31,8 +30,8 @@
 
                 <li class="iq-menu-title"><i class="ri-subtract-line"></i><span>Chamados</span></li>               
                 <li><a asp-controller="Chamado" asp-action="Aberto" class="iq-waves-effect"><i class="ri-message-line"></i><span>Abertos</span></a></li>
-                <li><a href="#" class="iq-waves-effect"><i class="ri-message-line"></i><span>Remarcados</span></a></li>
-                <li><a href="#" class="iq-waves-effect"><i class="ri-message-line"></i><span>Finalizados</span></a></li>
+              @*   <li><a href="#" class="iq-waves-effect"><i class="ri-message-line"></i><span>Remarcados</span></a></li>
+                <li><a href="#" class="iq-waves-effect"><i class="ri-message-line"></i><span>Finalizados</span></a></li> *@
 
                 <li class="iq-menu-title"><i class="ri-subtract-line"></i><span>Administrador</span></li>
                 <li>

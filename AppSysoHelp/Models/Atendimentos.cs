@@ -19,6 +19,8 @@ public partial class Atendimentos
 
     public string? SatisfacaoCliente { get; set; }
 
+    public DateTime? DataAtendimento { get; set; }
+
     public virtual Chamados FkChamado { get; set; } = null!;
 
     public virtual TecnicosSupervisores? FkTecnico { get; set; }

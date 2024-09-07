@@ -1,4 +1,5 @@
-﻿<div class="iq-card" style="background-color: #111b21">
+﻿@model IEnumerable<AppSysoHelp.Models.Chamados> 
+<div class="iq-card" style="background-color: #111b21">
     <div class="iq-card-header d-flex justify-content-between">
         <div class="iq-header-title">
             <h4 class="text-primary">Chamados Abertos - @DateTime.Now.ToString("dd/MM/yyyy")</h4>
@@ -29,7 +30,7 @@
             </li>
         </ul>
         <div class="tab-content" id="myTabContent-5">
-            <partial name="_PartialInterno.cshtml" />
+            <partial name="_PartialInterno.cshtml" model="@Model.Where(a=> a.FkSetores == 1)" />
             <partial name="_PartialExterno.cshtml" />
             <partial name="_PartialVector.cshtml" />
             <partial name="_PartialDevelop.cshtml" />

@@ -19,5 +19,7 @@ public partial class TecnicosSupervisores
 
     public virtual ICollection<Atendimentos> Atendimentos { get; set; } = new List<Atendimentos>();
 
-    public virtual ICollection<Chamados> Chamados { get; set; } = new List<Chamados>();
+    public virtual ICollection<Chamados> ChamadosFkAtendenteNavigation { get; set; } = new List<Chamados>();
+
+    public virtual ICollection<Chamados> ChamadosFkTecnico { get; set; } = new List<Chamados>();
 }

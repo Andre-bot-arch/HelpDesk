@@ -1,10 +1,12 @@
 ﻿using AppSysoHelp.Models;
 using AppSysoHelp.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppSysoHelp.Controllers
 {
+    [Authorize(Policy = "AdminOrManager")]
     public class LicencaController : Controller
     {
         private readonly IConfiguration _configuration;

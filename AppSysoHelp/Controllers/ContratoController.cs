@@ -1,11 +1,13 @@
 ﻿using AppSysoHelp.Models;
 using AppSysoHelp.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace AppSysoHelp.Controllers
 {
+    [Authorize(Policy = "AdminOrManager")]
     public class ContratoController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -93,6 +95,20 @@ namespace AppSysoHelp.Controllers
             {
                 value = e.PlataformaId,
                 label = e.NomePlataforma.ToUpper()
+            })
+            .ToListAsync();
+
+            return Ok(results);
+        }
+
+        public async Task<IActionResult> GetSugestaoTecnico(string query)
+        {
+            var results = await _context.TecnicosSupervisores
+            .Where(e => e.NomeCompleto.Contains(query))
+            .Select(e => new
+            {
+                value = e.PkId,
+                label = e.NomeCompleto.ToUpper()
             })
             .ToListAsync();
 
