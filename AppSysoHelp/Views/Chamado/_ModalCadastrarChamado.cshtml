@@ -1,0 +1,200 @@
+﻿
+<style>
+    .modal-body {
+        max-height: 520px;
+        overflow-y: auto;
+    }
+</style>
+
+<div id="modalCadastroChamado" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenteredScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenteredScrollableTitle">Cadastrar Chamado - @DateTime.Now.ToString("dd/MM/yyyy")</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form class="was-validated" asp-action="GravarChamado" method="post">
+                <input type="hidden" name="ChamadoId" id="ChamadoId" />
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <select id="clienteSelect" name="FkClienteId" class="FkClienteId" required style="width: 100%">
+                                    <option value="">Selecione um Cliente</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <select id="sistemaSelect" name="FkPlataformaId" class="FkPlataformaId" required style="width: 100%; height: 44px">
+                                    <option value="">'Buscar Sistema</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <select name="FkSetores" class="custom-select" required style="width: 100%; height: 44px">
+                                    <option value="1" selected>Suporte Interno</option>
+                                    <option value="2">Suporte Externo</option>
+                                    <option value="3">Suporte Vector</option>
+                                    <option value="4">Suporte Desenvolvimento</option>
+                                    <option value="5">Suporte Financeiro</option>
+                                    <option value="6">Suporte Treinamento</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1 p-2">
+                        <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                            <input type="radio" id="customRadio-1" name="Prioridade" value="Normal" class="custom-control-input bg-success" checked>
+                            <label class="custom-control-label text-black" for="customRadio-1" style="color: black">Normal</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                            <input type="radio" id="customRadio-2" name="Prioridade" class="custom-control-input bg-warning">
+                            <label class="custom-control-label text-black" for="customRadio-2" value="Media" style="color: black">Média</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                            <input type="radio" id="customRadio-3" name="Prioridade" class="custom-control-input bg-danger">
+                            <label class="custom-control-label text-black" for="customRadio-3" value="Alta" style="color: black">Alta</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                            <input type="radio" id="customRadio-4" name="Prioridade" class="custom-control-input bg-dark">
+                            <label class="custom-control-label text-black" for="customRadio-4" value="Urgente" style="color: black">Urgente</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="mb-3">
+                                <input type="text" name="TelefoneContato" id="" maxlength="100" class="form-control is-invalid" placeholder="Fone do Cliente" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="mb-3">
+                                <input type="text" name="Contato" id="" class="form-control is-invalid" placeholder="Nome Requisistante" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="custom-control custom-switch custom-switch-color custom-control-inline mb-2">
+                                <input data-id="#tecnico" type="checkbox" class="custom-control-input bg-success mostrarcaixa" id="customSwitch20">
+                                <label class="custom-control-label text-black" for="customSwitch20" style="color:black">Direcionar o Chamado</label>
+                            </div>
+
+                            <div id="tecnico" style="display: none">
+                                <div class="form-group">
+                                    <select name="FkTecnicoId" class="custom-select" style="width: 100%; height: 44px">
+                                        <option value="">Selecione um Tecnico</option>
+                                        <option value="1">PERIGOSO 1</option>
+                                        <option value="2">PERIGOSO 2</option>
+                                        <option value="3">PERIGOSO 3</option>
+                                        <option value="4">PERIGOSO 4</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="custom-control custom-switch custom-switch-color custom-control-inline mb-2">
+                                <input data-id="#agenda" type="checkbox" class="custom-control-input bg-success mostrarcaixa" id="customSwitch21">
+                                <label class="custom-control-label text-black" for="customSwitch21" style="color:black">Agendamento</label>
+                            </div>
+                            <div class="row" id="agenda" style="display: none">
+                                <div class="col-sm-12">
+                                    <div class="mb-3">
+                                        <input type="datetime-local" name="DataAgendamento" class="form-control is-invalid" placeholder="Data Agendamento">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <textarea class="form-control is-invalid" id="validationTextarea" name="DescricaoCompleta" placeholder="Descrição do Chamado...." required="" style="min-height: 132px; max-height:132px "></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">sair</button>
+                    <button type="submit" style="width: 80px" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $(".mostrarcaixa").click(function () {
+            var definido = $(this).data("id");
+            if ($(this).is(":checked")) {
+                $(definido).show();
+            } else {
+                $(definido).hide();
+            }
+        });
+
+
+        $('#clienteSelect').select2({
+            placeholder: 'Buscar Cliente',
+            minimumInputLength: 4,
+            ajax: {
+                url: '/Contrato/GetSugestaoCliente',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                delay: 250,
+                data: function (params) {
+                    return {
+                        query: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.map(function (item) {
+                            return {
+                                id: item.value,
+                                text: item.label
+                            };
+                        })
+                    };
+                },
+
+                cache: true
+            }
+        });
+
+        $('#sistemaSelect').select2({
+            placeholder: 'Buscar Sistema',
+            minimumInputLength: 4,
+            ajax: {
+                url: '/Contrato/GetSugestaoSistema',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                delay: 250,
+                data: function (params) {
+                    return {
+                        query: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.map(function (item) {
+                            return {
+                                id: item.value,
+                                text: item.label
+                            };
+                        })
+                    };
+                },
+
+                cache: true
+            }
+        });
+    });
+
+</script>

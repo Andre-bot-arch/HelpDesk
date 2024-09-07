@@ -33,8 +33,6 @@ public partial class HelpdesksysoContext : DbContext
 
     public virtual DbSet<SituacoesChamados> SituacoesChamados { get; set; }
 
-    public virtual DbSet<SubcategoriasSetores> SubcategoriasSetores { get; set; }
-
     public virtual DbSet<TecnicosSupervisores> TecnicosSupervisores { get; set; }
 
     public virtual DbSet<TiposChamados> TiposChamados { get; set; }
@@ -77,16 +75,31 @@ public partial class HelpdesksysoContext : DbContext
             entity.ToTable("Chamados", "dbo");
 
             entity.Property(e => e.Contato).HasMaxLength(150);
+            entity.Property(e => e.DataAgendamento).HasColumnType("datetime");
+            entity.Property(e => e.DataCriacao)
+                .HasColumnType("datetime")
+                .HasColumnName("Data_Criacao");
+            entity.Property(e => e.FkAtendente).HasColumnName("Fk_Atendente");
             entity.Property(e => e.FkClienteId).HasColumnName("Fk_ClienteId");
+            entity.Property(e => e.FkPlataforma).HasColumnName("Fk_Plataforma");
+            entity.Property(e => e.FkSetores).HasColumnName("Fk_Setores");
             entity.Property(e => e.FkSituacaoChamadoId).HasColumnName("Fk_SituacaoChamadoId");
             entity.Property(e => e.FkTecnicoId).HasColumnName("Fk_TecnicoId");
             entity.Property(e => e.FkTipoChamadoId).HasColumnName("Fk_TipoChamadoId");
+            entity.Property(e => e.Prioridade)
+                .HasMaxLength(10)
+                .IsFixedLength();
             entity.Property(e => e.TelefoneContato).HasMaxLength(20);
 
             entity.HasOne(d => d.FkCliente).WithMany(p => p.Chamados)
                 .HasForeignKey(d => d.FkClienteId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Chamados__Client__6C190EBB");
+
+            entity.HasOne(d => d.FkSetoresNavigation).WithMany(p => p.Chamados)
+                .HasForeignKey(d => d.FkSetores)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Chamados_SetoresChamados");
 
             entity.HasOne(d => d.FkSituacaoChamado).WithMany(p => p.Chamados)
                 .HasForeignKey(d => d.FkSituacaoChamadoId)
@@ -214,20 +227,6 @@ public partial class HelpdesksysoContext : DbContext
             entity.ToTable("SituacoesChamados", "dbo");
 
             entity.Property(e => e.DescricaoSituacao).HasMaxLength(100);
-        });
-
-        modelBuilder.Entity<SubcategoriasSetores>(entity =>
-        {
-            entity.HasKey(e => e.SubcategoriaId).HasName("PK__Subcateg__2FEBBB620E97111D");
-
-            entity.ToTable("SubcategoriasSetores", "dbo");
-
-            entity.Property(e => e.FkSetorId).HasColumnName("Fk_SetorId");
-            entity.Property(e => e.NomeSubcategoria).HasMaxLength(100);
-
-            entity.HasOne(d => d.FkSetor).WithMany(p => p.SubcategoriasSetores)
-                .HasForeignKey(d => d.FkSetorId)
-                .HasConstraintName("FK__Subcatego__Setor__59FA5E80");
         });
 
         modelBuilder.Entity<TecnicosSupervisores>(entity =>

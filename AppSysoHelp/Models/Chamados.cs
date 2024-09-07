@@ -19,13 +19,25 @@ public partial class Chamados
 
     public long FkTecnicoId { get; set; }
 
-    public DateOnly? DataAgendamento { get; set; }
+    public DateTime? DataAgendamento { get; set; }
 
     public long FkSituacaoChamadoId { get; set; }
+
+    public long? FkPlataforma { get; set; }
+
+    public DateTime? DataCriacao { get; set; }
+
+    public long? FkAtendente { get; set; }
+
+    public string? Prioridade { get; set; }
+
+    public long FkSetores { get; set; }
 
     public virtual ICollection<Atendimentos> Atendimentos { get; set; } = new List<Atendimentos>();
 
     public virtual Clientes FkCliente { get; set; } = null!;
+
+    public virtual SetoresChamados FkSetoresNavigation { get; set; } = null!;
 
     public virtual SituacoesChamados FkSituacaoChamado { get; set; } = null!;
 

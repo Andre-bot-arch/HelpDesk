@@ -4,7 +4,7 @@
             <h4 class="text-primary">Chamados Abertos - @DateTime.Now.ToString("dd/MM/yyyy")</h4>
         </div>
         <div class="text-end">
-            <button type="button" data-toggle="modal" data-target="#exampleModalCenteredScrollable" class="btn dark-icon btn-primary mb-3">Adicionar <i class="ri-add-box-line"></i></button>
+            <button type="button" data-toggle="modal" data-target="#modalCadastroChamado" class="btn dark-icon btn-primary mb-3">Adicionar <i class="ri-add-box-line"></i></button>
         </div>
     </div>
     <div class="iq-card-body">       
@@ -38,3 +38,5 @@
         </div>
     </div>
 </div>
+
+<partial name="_ModalCadastrarChamado.cshtml" />

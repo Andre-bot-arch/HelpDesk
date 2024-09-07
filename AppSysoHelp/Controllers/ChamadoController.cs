@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AppSysoHelp.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AppSysoHelp.Controllers
 {
@@ -7,6 +8,11 @@ namespace AppSysoHelp.Controllers
         public IActionResult Aberto()
         {
             return View();
+        }
+
+        public IActionResult GravarChamado(Chamados m)
+        {
+            return RedirectToAction("Aberto");
         }
     }
 }
