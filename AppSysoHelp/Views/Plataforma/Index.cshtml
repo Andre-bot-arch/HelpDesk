@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<AppSysoHelp.Models.PlataformasContratos>
 @{
 }
-<div class="iq-card">
+<div class="iq-card" style="background-color: #111b21">
     <div class="iq-card-header d-flex justify-content-between">
         <div class="iq-header-title">
-            <h4 class="card-title"> Lista de Plataformas</h4>
+            <h4 class="card-title text-primary"> Lista de Plataformas</h4>
         </div>
         <div class="text-end">
             <button type="button" data-toggle="modal" data-target="#modalCadastrarPlataforma" class="btn dark-icon btn-primary mb-3">Adicionar <i class="ri-add-box-line"></i></button>
@@ -15,13 +15,13 @@
             @foreach (var item in Model)
             {
                 <div class="container mt-4">
-                    <div class="card">
+                    <div class="card" style="background-color: #222e35">
                         <div class="card-body">
-                            <h5 class="card-title"><b>@item.NomePlataforma</b></h5>
+                            <h5 class="card-title text-primary"><b>@item.NomePlataforma</b></h5>
                             <div class="row align-items-center">
                                 <div class="col-10">
-                                    <label class="card-title">Descrição:</label>
-                                    <p class="card-text mb-0">@item.Descricao</p>
+                                    <label class="card-title text-primary">Descrição:</label>
+                                    <p class="card-text mb-0 text-secondary">@item.Descricao</p>
                                 </div>
                                 <div class="col-2 text-right">
                                     <button type="button" class="btn dark-icon btn-info btn-edit" data-id="@item.PlataformaId">Editar <i class="ri-edit-box-fill"></i></button>

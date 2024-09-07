@@ -3,9 +3,49 @@
     var contrato = Model;
     int usados = Model.Licencas.Sum(licenca => licenca.LicencasDispositivos.Count);
 }
+<style>
+
+    /* Cor de fundo das linhas ímpares */
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #111b21;
+    }
+
+    /* Cor de fundo das linhas pares */
+    .table-striped tbody tr:nth-of-type(even) {
+        background-color: #222e35;
+    }
+
+    /* Cor do texto para garantir legibilidade */
+    .table-striped tbody tr {
+        color: #ffffff; /* Muda a cor do texto para branco */
+    }
+
+    /* Bordas arredondadas */
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .table thead th:first-child {
+            border-top-left-radius: 10px;
+        }
+
+        .table thead th:last-child {
+            border-top-right-radius: 10px;
+        }
+
+        .table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 10px;
+        }
+
+        .table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 10px;
+        }
+</style>
+
 <div class="row">
     <div class="col-sm-12 mt-5">
-        <div class="iq-card">
+        <div class="iq-card" style="background-color: #111b21">
             <div class="iq-card-body profile-page p-0">
                 <div class="profile-header">
                     <div class="profile-info p-4">
@@ -17,14 +57,14 @@
                                             <img src="~/images/helpdesk/_logo.png" alt="profile-img" class="avatar-130 img-fluid">
                                         </div>
                                         <div class="profile-detail">
-                                            <h5>@Model.DescricaoContrato</h5>
-                                            <h6>Cliente: @Model.FkCliente?.NomeCliente</h6>
+                                            <h5 class="text-primary">@Model.DescricaoContrato</h5>
+                                            <h6 class="text-primary">Cliente: @Model.FkCliente?.NomeCliente</h6>
                                             <input type="hidden" asp-for="@Model.ContratoId" />
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-12 col-md-6">
+                            <div class="col-sm-12 col-md-6" >
                                 <ul class="nav nav-pills d-flex align-items-end float-right profile-feed-items p-0 m-0">
                                     <li>
                                         <a class="nav-link active" data-toggle="pill" href="#profile-feed"> @usados <span> / </span> @Model.PontosContratados</a>
@@ -41,7 +81,7 @@
                     </div>
                 </div>
             </div>
-            <div class="iq-card iq-card-block iq-card-stretch iq-card-height">
+            <div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #222e35">
                 <div class="iq-card-header d-flex justify-content-between">
                     <div class="iq-header-title">
                         <h6 class="card-title">Licenças</h6>
@@ -53,9 +93,9 @@
                 </div>
                 <div class="iq-card-body">
                     <div class="table-responsive">
-                        <table class="table mb-0 table-borderless">
+                        <table class="table table-striped mb-0 table-borderless" style="border-color: #222e35; ">
                             <thead>
-                                <tr>
+                                <tr sstyle="border-bottom: 1px solid #222e35;">
                                     <th scope="col">#</th>
                                     <th scope="col">Descricao</th>
                                     <th scope="col">Urlacesso</th>
