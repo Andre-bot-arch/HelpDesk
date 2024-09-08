@@ -11,5 +11,7 @@ public partial class PlataformasContratos
 
     public string? Descricao { get; set; }
 
+    public string? CaminhoImagem { get; set; }
+
     public virtual ICollection<Contratos> Contratos { get; set; } = new List<Contratos>();
 }

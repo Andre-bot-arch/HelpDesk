@@ -1,6 +1,50 @@
 ﻿@model IEnumerable<AppSysoHelp.Models.PlataformasContratos>
 @{
 }
+<style>
+    .profile-img-edit {
+        position: relative;
+        width: 280px;
+        height: 150px;
+        border: 2px dashed #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        margin-left: 45px;
+    }
+
+        .profile-img-edit img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .profile-img-edit.dragover {
+            border-color: #333;
+        }
+
+    .p-image {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .img-extension {
+        margin-top: 10px;
+    }
+
+    .error-message {
+        color: red;
+        margin-top: 10px;
+    }
+
+    .img-card {
+        max-width: 100%;
+        height: auto;
+        max-height: 180px; /* Ajuste o valor conforme necessário */
+        object-fit: cover; /* Garante que a imagem se ajuste corretamente */
+    }
+</style>
 <div class="iq-card" style="background-color: #111b21">
     <div class="iq-card-header d-flex justify-content-between">
         <div class="iq-header-title">
@@ -17,17 +61,32 @@
                 <div class="container mt-4">
                     <div class="card" style="background-color: #222e35">
                         <div class="card-body">
-                            <h5 class="card-title text-primary"><b>@item.NomePlataforma</b></h5>
-                            <div class="row align-items-center">
-                                <div class="col-10">
-                                    <label class="card-title text-primary">Descrição:</label>
-                                    <p class="card-text mb-0 text-secondary">@item.Descricao</p>
+                            <div class="row">
+                                <div class="col-12 col-md-3 text-center">
+                                    @if (item.CaminhoImagem == null)
+                                    {
+                                        <img src="https://www2.camara.leg.br/atividade-legislativa/comissoes/comissoes-permanentes/cindra/imagens/sem.jpg.gif" alt="Logo da Empresa" class="img-fluid img-card" style="border-radius: 15px">
+                                    }
+                                    else
+                                    {
+                                        <img src="@item.CaminhoImagem" alt="Logo da Empresa" class="img-fluid img-card" style="border-radius: 15px">
+                                    }
                                 </div>
-                                <div class="col-2 text-right">
-                                    <button type="button" class="btn dark-icon btn-info btn-edit" data-id="@item.PlataformaId">Editar <i class="ri-edit-box-fill"></i></button>
+                                <div class="col-12 col-md-9">
+                                    <h5 class="card-title text-primary"><b>@item.NomePlataforma</b></h5>
+                                    <div class="row align-items-center">
+                                        <div class="col-10">
+                                            <label class="card-title text-primary">Descrição:</label>
+                                            <p class="card-text mb-0 text-secondary">@item.Descricao</p>
+                                        </div>
+                                        <div class="col-2 text-right">
+                                            <button type="button" class="btn dark-icon btn-info btn-edit" data-id="@item.PlataformaId">Editar <i class="ri-edit-box-fill"></i></button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
                 <hr />
@@ -39,4 +98,5 @@
  <partial name="_ModalCadastrarPlataforma.cshtml" />
  <partial name="_ModalEditarPlataforma.cshtml" />
  <script src="~/assets/js/plataforma.js"></script>
+ <script src="~/assets/js/adicionarImagem.js"></script>
  

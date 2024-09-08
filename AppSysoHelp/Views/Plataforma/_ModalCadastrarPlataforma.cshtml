@@ -1,26 +1,41 @@
 ﻿<div id="modalCadastrarPlataforma" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalCadastrarPlataforma" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header position-sticky top-0 bg-white">
                 <h5 class="modal-title" id="modalCadastrarPlataforma">Cadastrar Plataforma</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
             <form id="formCadastrarPlataforma" class="was-validated">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <div class="mb-3">
-                            <input name="NomePlataforma" type="text" maxlength="100" class="form-control is-invalid" id="NomePlataforma" placeholder="Nome da Plataforma" required>
+                <input type="hidden" id="fileExtension">
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <div class="d-flex justify-content-center align-items-center" id="drop-zone" style="gap: 20px;">
+                                <div class="add-img-user profile-img-edit">
+                                    <img src="https://www2.camara.leg.br/atividade-legislativa/comissoes/comissoes-permanentes/cindra/imagens/sem.jpg.gif" alt="Logo da Empresa" class="img-fluid" id="preview" style="max-width: 150px; border-radius: 10px;">
+                                </div>
+                                <a href="javascript:void();" class="upload-button btn iq-bg-primary">Upload</a>
+                            </div>
+                            <div class="error-message text-danger mt-2" id="error-message"></div>
+                            <input class="file-upload d-none" type="file" accept="image/*" id="file-input">
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="mb-3">
+                        <div class="col-12 form-group mb-3">
+                            <input name="NomePlataforma" type="text" maxlength="100" class="form-control is-invalid" id="NomePlataforma" placeholder="Nome da Plataforma" required>
+                            <div class="invalid-feedback">
+                                Por favor, insira o nome da plataforma.
+                            </div>
+                        </div>
+                        <div class="col-12 form-group mb-3">
                             <textarea name="Descricao" maxlength="500" rows="3" class="form-control is-invalid" id="Descricao" placeholder="Detalhes da Plataforma" required></textarea>
+                            <div class="invalid-feedback">
+                                Por favor, insira a descrição da plataforma.
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer position-sticky bottom-0 bg-white">
                     <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">Sair</button>
                     <button type="button" id="btnSalvar" style="width: 80px" class="btn btn-primary">Salvar</button>
                 </div>

@@ -1,4 +1,5 @@
 ﻿using AppSysoHelp.Models;
+using AppSysoHelp.Models.ViewModels;
 using AppSysoHelp.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,14 +23,27 @@ namespace AppSysoHelp.Controllers
         }
 
         [HttpPost]
-        public JsonResult Create(PlataformasContratos plataformas)
+        public JsonResult Create(ViewModelPlataforma form)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    _context.PlataformasContratos.Add(plataformas);
+                    var plataformaAdd = new PlataformasContratos();
+                    plataformaAdd.NomePlataforma = form.NomePlataforma;
+                    plataformaAdd.Descricao = form.Descricao;
+                    _context.Add(plataformaAdd);
                     _context.SaveChanges();
+
+                    if (form.ImagemBase64 != null)
+                    {
+                        byte[] barr = Convert.FromBase64String(form.ImagemBase64);
+                        string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "landing-page", "images", "plataforma-"+plataformaAdd.PlataformaId + "." + form.ExtensaoArquivo);
+                        System.IO.File.WriteAllBytes(savePath, barr);
+                        plataformaAdd.CaminhoImagem = $"/landing-page/images/plataforma-{plataformaAdd.PlataformaId}.{form.ExtensaoArquivo}";
+                        _context.Update(plataformaAdd);
+                        _context.SaveChanges();
+                    }
                     return Json(new { success = true, message = "Plataforma cadastrada com sucesso!" });
                 }
                 else
@@ -66,23 +80,29 @@ namespace AppSysoHelp.Controllers
         }
 
         [HttpPost]
-        public JsonResult Edit(PlataformasContratos plataformas)
+        public JsonResult Edit(ViewModelPlataforma form)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
                     // Verifica se a plataforma existe no banco de dados
-                    var existingPlataforma = _context.PlataformasContratos.FirstOrDefault(a => a.PlataformaId == plataformas.PlataformaId);
+                    var existingPlataforma = _context.PlataformasContratos.FirstOrDefault(a => a.PlataformaId == form.PlataformaId);
                     if (existingPlataforma == null)
                     {
                         return Json(new { success = false, message = "Plataforma não encontrada." });
                     }
 
                     // Atualiza os dados da plataforma
-                    existingPlataforma.NomePlataforma = plataformas.NomePlataforma;
-                    existingPlataforma.Descricao = plataformas.Descricao;
-
+                    existingPlataforma.NomePlataforma = form.NomePlataforma;
+                    existingPlataforma.Descricao = form.Descricao;
+                    if (form.ImagemBase64 != null)
+                    {
+                        byte[] barr = Convert.FromBase64String(form.ImagemBase64);
+                        string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "landing-page", "images", "plataforma-" + existingPlataforma.PlataformaId + "." + form.ExtensaoArquivo);
+                        System.IO.File.WriteAllBytes(savePath, barr);
+                        existingPlataforma.CaminhoImagem = $"/landing-page/images/plataforma-{existingPlataforma.PlataformaId}.{form.ExtensaoArquivo}";
+                    }
                     _context.PlataformasContratos.Update(existingPlataforma);
                     _context.SaveChanges();
 
