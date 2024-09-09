@@ -17,7 +17,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento >= DateTime.Now))
+                @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento <= DateTime.Now))
                 {
                     <tr>
                         <td>
@@ -46,7 +46,15 @@
                             @item.FkAtendenteNavigation.NomeCompleto.Substring(0, 8)
                         </td>
                         <td>
-                            @item.FkTecnico.NomeCompleto.Substring(0, 8)
+                            @if (item.FkTecnicoId > 0)
+                            {
+                                @item.FkTecnico.NomeCompleto.Substring(0, 8)
+                            }
+                            else
+                            {
+                                <label>-----------</label>
+                            }
+
                         </td>
                         <td>
                             <div class="iq-card-header-toolbar d-flex align-items-center">
@@ -82,7 +90,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento <= DateTime.Now))
+                @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento > DateTime.Now))
                 {
                     <tr>
                         <td>
@@ -111,7 +119,15 @@
                             @item.FkAtendenteNavigation.NomeCompleto.Substring(0, 8)
                         </td>
                         <td>
-                            @item.FkTecnico.NomeCompleto.Substring(0, 8)
+                            @if (item.FkTecnicoId > 0)
+                            {
+                                @item.FkTecnico.NomeCompleto.Substring(0, 8)
+                            }
+                            else
+                            {
+                                <label>-----------</label>
+                            }
+                           
                         </td>
                         <td>
                             <div class="iq-card-header-toolbar d-flex align-items-center">

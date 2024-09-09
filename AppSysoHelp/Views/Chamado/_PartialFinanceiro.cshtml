@@ -1,6 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<AppSysoHelp.Models.Chamados>
 @{
 }
 <div class="tab-pane fade" id="financeiro-end" role="tabpanel" aria-labelledby="financeiro-tab-end">
@@ -19,6 +17,54 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento <= DateTime.Now))
+                {
+                    <tr>
+                        <td>
+                            #@item.ChamadoId.ToString().PadLeft(8, '0')<br />
+                            @item.FkCliente.NomeCliente
+                        </td>
+                        <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
+                        <td>-------/-------/-------</td>
+                        @if (item.Prioridade.Trim() == "Urgente")
+                        {
+                            <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px"> URGENTE </div></td>
+                        }
+                        else if (item.Prioridade.Trim() == "Alta")
+                        {
+                            <td class="text-center"><div class="badge badge-pill iq-bg-danger" style="width: 80px">ALTA</div></td>
+                        }
+                        else if (item.Prioridade.Trim() == "Media")
+                        {
+                            <td class="text-center"><div class="badge badge-pill iq-bg-warning" style="width: 80px">MÉDIA</div></td>
+                        }
+                        else
+                        {
+                            <td class="text-center"><div class="badge badge-pill iq-bg-dark" style="width: 80px">Normal</div></td>
+                        }
+                        <td>
+                            @item.FkAtendenteNavigation.NomeCompleto.Substring(0, 8)
+                        </td>
+                        <td>
+                            @item.FkTecnico.NomeCompleto.Substring(0, 8)
+                        </td>
+                        <td>
+                            <div class="iq-card-header-toolbar d-flex align-items-center">
+                                <div class="dropdown">
+                                    <span class="dropdown-toggle text-primary" id="dropdownMenuButton5" data-toggle="dropdown" aria-expanded="true">
+                                        <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
+                                    </span>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                        <a class="dropdown-item" href="#"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                        <a class="dropdown-item" href="#"><i class="ri-pencil-fill mr-2"></i>Remarcar</a>
+                                        <a class="dropdown-item" href="#"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
+                                        <a class="dropdown-item" href="#"><i class="ri-delete-bin-6-fill mr-2"></i>Excluir</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
         <hr />
@@ -36,6 +82,62 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento > DateTime.Now))
+                {
+                    <tr>
+                        <td>
+                            #@item.ChamadoId.ToString().PadLeft(8, '0')<br />
+                            @item.FkCliente.NomeCliente
+                        </td>
+                        <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
+                        <td>-------/-------/-------</td>
+                        @if (item.Prioridade.Trim() == "Urgente")
+                        {
+                            <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px"> URGENTE </div></td>
+                        }
+                        else if (item.Prioridade.Trim() == "Alta")
+                        {
+                            <td class="text-center"><div class="badge badge-pill iq-bg-danger" style="width: 80px">ALTA</div></td>
+                        }
+                        else if (item.Prioridade.Trim() == "Media")
+                        {
+                            <td class="text-center"><div class="badge badge-pill iq-bg-warning" style="width: 80px">MÉDIA</div></td>
+                        }
+                        else
+                        {
+                            <td class="text-center"><div class="badge badge-pill iq-bg-dark" style="width: 80px">Normal</div></td>
+                        }
+                        <td>
+                            @item.FkAtendenteNavigation.NomeCompleto.Substring(0, 8)
+                        </td>
+                        <td>
+                            @if (item.FkTecnicoId > 0)
+                            {
+                                @item.FkTecnico.NomeCompleto.Substring(0, 8)
+                            }
+                            else
+                            {
+                                <label>-----------</label>
+                            }
+
+                        </td>
+                        <td>
+                            <div class="iq-card-header-toolbar d-flex align-items-center">
+                                <div class="dropdown">
+                                    <span class="dropdown-toggle text-primary" id="dropdownMenuButton5" data-toggle="dropdown" aria-expanded="true">
+                                        <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
+                                    </span>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                        <a class="dropdown-item" href="#"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                        <a class="dropdown-item" href="#"><i class="ri-pencil-fill mr-2"></i>Remarcar</a>
+                                        <a class="dropdown-item" href="#"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
+                                        <a class="dropdown-item" href="#"><i class="ri-delete-bin-6-fill mr-2"></i>Excluir</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
         <hr />

@@ -39,7 +39,7 @@ namespace AppSysoHelp.Controllers
             if(m.DataAgendamento == null)
             {
                 m.DataAgendamento = DateTime.Now;
-            }
+            }           
 
             _generico.GravarGenerico(m);
             

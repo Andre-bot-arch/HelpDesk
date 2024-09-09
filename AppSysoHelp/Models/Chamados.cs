@@ -7,7 +7,7 @@ public partial class Chamados
 {
     public long ChamadoId { get; set; }
 
-    public long FkClienteId { get; set; }
+    public long? FkClienteId { get; set; }
 
     public string Contato { get; set; } = null!;
 
@@ -37,7 +37,7 @@ public partial class Chamados
 
     public virtual TecnicosSupervisores? FkAtendenteNavigation { get; set; }
 
-    public virtual Clientes FkCliente { get; set; } = null!;
+    public virtual Clientes? FkCliente { get; set; }
 
     public virtual SetoresChamados FkSetoresNavigation { get; set; } = null!;
 

@@ -1,0 +1,42 @@
+﻿<div id="modalCadastrarUsuario" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalCadastrarUsuario" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header position-sticky top-0 bg-white">
+                <h5 class="modal-title" id="modalCadastrarUsuario">Cadastrar Usuário</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form id="formCadastrarUsuario" class="was-validated">
+                <input type="hidden" name="PkId" id="PkId" />
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <div class="row">                       
+                        <div class="col-12 form-group mb-3">
+                            <input autocomplete="off" name="NomeCompleto" type="text" maxlength="100" class="form-control is-invalid" id="NomeCompleto" placeholder="Nome do Usuário" required>                           
+                        </div>
+                        <div class="col-12 form-group mb-3">
+                            <input autocomplete="off" name="TelefoneContato" type="text" maxlength="15" class="form-control is-invalid" id="TelefoneContato" placeholder="Fone do Usuário" required>
+                        </div>
+                        <div class="col-12 form-group mb-3">
+                            <select name="CargoResponsabilidade" class="custom-select" required="">
+                                <option selected value="Suporte">Suporte</option>
+                                <option value="Admin">Administrador</option>
+                            </select>
+                            <div class="invalid-feedback">Selecione um perfil</div>
+                        </div>
+                        <div class="col-12 form-group mb-3">
+                            <input autocomplete="off" name="EmailContato" maxlength="50" type="email" class="form-control is-invalid" id="EmailContato" placeholder="Email" required />
+                        </div>
+                        <div class="col-12 form-group mb-3">
+                            <input autocomplete="off" name="Cpf" maxlength="50" type="password" class="form-control is-invalid" id="Cpf" placeholder="Senha" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer position-sticky bottom-0 bg-white">
+                    <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">Sair</button>
+                    <button type="button" id="btnSalvar" style="width: 80px" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

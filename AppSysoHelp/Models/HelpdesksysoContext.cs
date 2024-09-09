@@ -98,7 +98,6 @@ public partial class HelpdesksysoContext : DbContext
 
             entity.HasOne(d => d.FkCliente).WithMany(p => p.Chamados)
                 .HasForeignKey(d => d.FkClienteId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Chamados__Client__6C190EBB");
 
             entity.HasOne(d => d.FkSetoresNavigation).WithMany(p => p.Chamados)

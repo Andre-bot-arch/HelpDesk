@@ -31,11 +31,11 @@
         </ul>
         <div class="tab-content" id="myTabContent-5">
             <partial name="_PartialInterno.cshtml" model="@Model.Where(a=> a.FkSetores == 1)" />
-            <partial name="_PartialExterno.cshtml" />
-            <partial name="_PartialVector.cshtml" />
-            <partial name="_PartialDevelop.cshtml" />
-            <partial name="_PartialFinanceiro.cshtml" />
-            <partial name="_PartialTreinamento.cshtml" />
+            <partial name="_PartialExterno.cshtml" model="@Model.Where(a=> a.FkSetores == 2)" />
+            <partial name="_PartialVector.cshtml" model="@Model.Where(a=> a.FkSetores == 3)"/>
+            <partial name="_PartialDevelop.cshtml" model="@Model.Where(a=> a.FkSetores == 4)" />
+            <partial name="_PartialFinanceiro.cshtml" model="@Model.Where(a=> a.FkSetores == 5)" />
+            <partial name="_PartialTreinamento.cshtml" model="@Model.Where(a=> a.FkSetores == 6)" />
         </div>
     </div>
 </div>

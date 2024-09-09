@@ -1,0 +1,117 @@
+﻿@model IEnumerable<AppSysoHelp.Models.TecnicosSupervisores>
+@{
+    ViewData["Title"] = "Usuários";
+}
+<style>
+    .profile-img-edit {
+        position: relative;
+        width: 280px;
+        height: 150px;
+        border: 2px dashed #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        margin-left: 45px;
+    }
+
+        .profile-img-edit img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .profile-img-edit.dragover {
+            border-color: #333;
+        }
+
+    .p-image {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .img-extension {
+        margin-top: 10px;
+    }
+
+    .error-message {
+        color: red;
+        margin-top: 10px;
+    }
+
+    .img-card {
+        max-width: 100%;
+        height: auto;
+        max-height: 180px; /* Ajuste o valor conforme necessário */
+        object-fit: cover; /* Garante que a imagem se ajuste corretamente */
+    }
+</style>
+<div class="iq-card" style="background-color: #111b21">
+    <div class="iq-card-header d-flex justify-content-between">
+        <div class="iq-header-title">
+            <h4 class="card-title text-primary"> Lista de Usuários</h4>
+        </div>
+        <div class="text-end">
+            <button type="button" data-toggle="modal" data-target="#modalCadastrarUsuario" class="btn dark-icon btn-primary mb-3">Adicionar <i class="ri-add-box-line"></i></button>
+        </div>
+    </div>
+    <div class="iq-card-body">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="container mt-1">
+                    <div class="card" style="background-color: #222e35">
+                        <div class="card-body">
+                            <div class="row">
+                                @*  <div class="col-12 col-md-3 text-center">
+                            @if (item.PkId > 0)
+                            {
+                            <img src="https://www2.camara.leg.br/atividade-legislativa/comissoes/comissoes-permanentes/cindra/imagens/sem.jpg.gif" alt="Logo da Empresa" class="img-fluid img-card" style="border-radius: 15px">
+                            }
+                            else
+                            {
+                            <img  alt="Logo da Empresa" class="img-fluid img-card" style="border-radius: 15px">
+                            }
+                            </div> *@
+                                <div class="col-12 col-md-12">
+                                    <h5 class="card-title text-primary"><b>#@item.NomeCompleto</b></h5>
+                                    <div class="row align-items-center">
+                                        <div class="col-10">
+                                            <label class="card-title text-primary">
+                                                <span style="color: #A9A9A9;">
+                                                    Perfil: @item.CargoResponsabilidade <br />
+                                                    Email: @item.EmailContato <br />
+                                                    Fone: @item.TelefoneContato <br />
+                                                </span>
+                                            </label>
+
+                                        </div>
+                                        <div class="col-2 text-right">
+                                            <button type="button" class="btn dark-icon btn-info carregarModal"
+                                                    data-nome="@item.NomeCompleto"
+                                                    data-perfil="@item.CargoResponsabilidade"
+                                                    data-fone="@item.TelefoneContato"
+                                                    data-email="@item.EmailContato"
+                                                    data-cpf="@item.Cpf"
+                                                    data-id="@item.PkId">
+                                                Editar
+                                                <i class="ri-edit-box-fill"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <hr />
+            }
+        </div>
+    </div>
+</div>
+
+<partial name="_ModalCadastrarUsuario.cshtml" />
+<partial name="_ModalEditarUsuario.cshtml" />
+<script src="~/assets/js/usuario.js"></script>
+@* <script src="~/assets/js/adicionarImagem.js"></script> *@
