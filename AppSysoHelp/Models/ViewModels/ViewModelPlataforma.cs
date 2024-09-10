@@ -6,7 +6,7 @@
         public string NomePlataforma { get; set; } = null!;
         public string? Descricao { get; set; }
         public string? CaminhoImagem { get; set; }
-        public string? ImagemBase64 { get; set; }
-        public string? ExtensaoArquivo { get; set; }
+        public string? imagemBase64 { get; set; }
+        public string? extensaoArquivo { get; set; }
     }
 }

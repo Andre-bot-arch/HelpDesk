@@ -35,12 +35,12 @@ namespace AppSysoHelp.Controllers
                     _context.Add(plataformaAdd);
                     _context.SaveChanges();
 
-                    if (form.ImagemBase64 != null)
+                    if (form.imagemBase64 != null)
                     {
-                        byte[] barr = Convert.FromBase64String(form.ImagemBase64);
-                        string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "landing-page", "images", "plataforma-"+plataformaAdd.PlataformaId + "." + form.ExtensaoArquivo);
+                        byte[] barr = Convert.FromBase64String(form.imagemBase64);
+                        string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "landing-page", "images", "plataforma-"+plataformaAdd.PlataformaId + "." + form.extensaoArquivo);
                         System.IO.File.WriteAllBytes(savePath, barr);
-                        plataformaAdd.CaminhoImagem = $"/landing-page/images/plataforma-{plataformaAdd.PlataformaId}.{form.ExtensaoArquivo}";
+                        plataformaAdd.CaminhoImagem = $"/landing-page/images/plataforma-{plataformaAdd.PlataformaId}.{form.extensaoArquivo}";
                         _context.Update(plataformaAdd);
                         _context.SaveChanges();
                     }
@@ -96,12 +96,12 @@ namespace AppSysoHelp.Controllers
                     // Atualiza os dados da plataforma
                     existingPlataforma.NomePlataforma = form.NomePlataforma;
                     existingPlataforma.Descricao = form.Descricao;
-                    if (form.ImagemBase64 != null)
+                    if (form.imagemBase64 != null)
                     {
-                        byte[] barr = Convert.FromBase64String(form.ImagemBase64);
-                        string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "landing-page", "images", "plataforma-" + existingPlataforma.PlataformaId + "." + form.ExtensaoArquivo);
+                        byte[] barr = Convert.FromBase64String(form.imagemBase64);
+                        string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "landing-page", "images", "plataforma-" + existingPlataforma.PlataformaId + "." + form.extensaoArquivo);
                         System.IO.File.WriteAllBytes(savePath, barr);
-                        existingPlataforma.CaminhoImagem = $"/landing-page/images/plataforma-{existingPlataforma.PlataformaId}.{form.ExtensaoArquivo}";
+                        existingPlataforma.CaminhoImagem = $"/landing-page/images/plataforma-{existingPlataforma.PlataformaId}.{form.extensaoArquivo}";
                     }
                     _context.PlataformasContratos.Update(existingPlataforma);
                     _context.SaveChanges();
