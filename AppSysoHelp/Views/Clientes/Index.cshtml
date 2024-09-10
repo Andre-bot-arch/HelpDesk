@@ -1,4 +1,25 @@
-﻿@{
+﻿@using X.Web.PagedList
+@model X.PagedList.IPagedList<AppSysoHelp.Models.Clientes>
+@{
+    var query = ViewBag.Query;
+    int currentPage = Model.PageNumber;
+    int totalPages = Model.PageCount;
+    int maxPagesToShow = 7; // Total de páginas a mostrar (3 para frente + 3 para trás + a página atual)
+    int startPage = Math.Max(1, currentPage - 3);
+    int endPage = Math.Min(totalPages, currentPage + 3);
+
+    // Ajuste para mostrar o número correto de páginas quando há menos páginas no início ou no final
+    if (endPage - startPage + 1 < maxPagesToShow)
+    {
+        if (startPage == 1)
+        {
+            endPage = Math.Min(totalPages, endPage + (maxPagesToShow - (endPage - startPage + 1)));
+        }
+        else if (endPage == totalPages)
+        {
+            startPage = Math.Max(1, startPage - (maxPagesToShow - (endPage - startPage + 1)));
+        }
+    }
 }
 <style>
     body {
@@ -97,67 +118,109 @@
     }
 </style>
 
-<div class="iq-card">
-    <div class="iq-card-header d-flex justify-content-between">
+<div class="iq-card" style="background-color: #0B141A">
+    <div class="iq-card-header d-flex justify-content-between align-items-center">
         <div class="iq-header-title">
-            <h4 class="card-title"> Lista de Clientes</h4>
+            <h4 class="card-title text-primary"> Lista de Clientes</h4>
         </div>
+        <form asp-action="Index" asp-controller="Clientes" class="d-flex align-items-center ml-auto">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Buscar cliente..." name="query" aria-label="Buscar cliente..." aria-describedby="button-addon2" style="border-color: #6546D2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary" type="submit" id="button-addon2" style="font-weight: bold; font-size: 1.3rem">
+                        <i class="las la-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
     <div class="iq-card-body">
         <div class="row">
-            <div class="container-fluid">
-                <table id="datatable">
-                    <thead>
-                        <tr>
-                            <th>ID Cliente</th>
-                            <th>Nome</th>
-                            <th>Documento</th>
-                            <th>Whatsapp</th>
-                            <th>Telefone</th>
-                            <th>Email</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td data-label="ID Cliente">1</td>
-                            <td data-label="Nome">João da Silva</td>
-                            <td data-label="Documento">123.456.789-00</td>
-                            <td data-label="Whatsapp">(31) 91234-5678</td>
-                            <td data-label="Telefone">(31) 3234-5678</td>
-                            <td data-label="Email">joao.silva@email.com</td>
-                            <td><button class="collapse-btn" onclick="toggleCollapse(this)">Mostrar Endereço</button></td>
-                        </tr>
-                        <tr class="collapse-content">
-                            <td colspan="9">
-                                <div>
-                                    <b>CEP:</b> 30130-010 | <b>Logradouro:</b> Av. Afonso Pena, Apto 101, <b>Nº:</b> 1500, <b>Bairro:</b> Centro,
-                                    <b>Cidade:</b> Belo Horizonte, <b>UF:</b> MG
+            @foreach (var item in Model)
+            {
+                <div class="container mb-3">
+                    <div class="card" style="background-color: #222e35">
+                        <div class="card-header text-primary" style="background-color: #111b21">
+                            <i class="las la-user-circle fa-lg"></i> @item.ClienteId - <b>@item.NomeCliente</b>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-9 col-md-8 mb-3 mb-md-0" style="color: lightgray">
+                                    <p><strong>CNPJ:</strong> @item.Documento</p>
+                                    <p><strong>Telefone:</strong> @item.TelefoneCliente</p>
+                                    <p><strong>CEP:</strong> @item.Cep</p>
+                                    <p><strong>Endereço:</strong> @item.Logradouro, @item.Numero, @item.Bairro, @item.Cidade - @item.Uf</p>
                                 </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td data-label="ID Cliente">2</td>
-                            <td data-label="Nome">Maria Oliveira</td>
-                            <td data-label="Documento">987.654.321-00</td>
-                            <td data-label="Whatsapp">(11) 98765-4321</td>
-                            <td data-label="Telefone">(11) 4567-8901</td>
-                            <td data-label="Email">maria.oliveira@email.com</td>
-                            <td><button class="collapse-btn" onclick="toggleCollapse(this)">Mostrar Endereço</button></td>
-                        </tr>
-                        <tr class="collapse-content">
-                            <td colspan="9">
-                                <div>
-                                    <b>CEP:</b> 01234-567 | <b>Logradouro:</b> Rua das Flores, Sala 202, <b>Nº:</b> 789, <b>Bairro:</b> Jardim Paulista,
-                                    <b>Cidade:</b> São Paulo, <b>UF:</b> SP
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <hr />
         </div>
     </div>
+</div>
+<div class="d-flex justify-content-center">
+    <ul class="pagination">
+        @if (Model.HasPreviousPage)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1, query = query })">Anterior</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled">
+                <span class="page-link">Anterior</span>
+            </li>
+        }
+
+        @if (startPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("Index", new { page = 1, query = query })">1</a>
+            </li>
+            @if (startPage > 2)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            }
+        }
+
+        @for (int i = startPage; i <= endPage; i++)
+        {
+            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i, query = query })">@i</a>
+            </li>
+        }
+
+        @if (endPage < totalPages)
+        {
+            @if (endPage < totalPages - 1)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            }
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("Index", new { page = totalPages, query = query })">@totalPages</a>
+            </li>
+        }
+
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1, query = query })">Próxima</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled">
+                <span class="page-link">Próxima</span>
+            </li>
+        }
+    </ul>
 </div>
 <script>
     function toggleCollapse(button) {
@@ -168,5 +231,5 @@
     }
 </script>
 @* <partial name="_ModalCadastrarPlataforma.cshtml" />
-<partial name="_ModalEditarPlataforma.cshtml" />
-<script src="~/assets/js/plataforma.js"></script> *@
+    <partial name="_ModalEditarPlataforma.cshtml" />
+    <script src="~/assets/js/plataforma.js"></script> *@
