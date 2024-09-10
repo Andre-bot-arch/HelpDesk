@@ -1,5 +1,6 @@
 ﻿using AppSysoHelp.Models;
 using Microsoft.AspNetCore.Mvc;
+using X.PagedList.Extensions;
 
 namespace AppSysoHelp.Controllers
 {
@@ -13,9 +14,21 @@ namespace AppSysoHelp.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int? page, string? query)
         {
-            return View();
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            if (query != null)
+            {
+                var clientePesquisa = _context.Clientes.Where(a => a.NomeCliente.Contains(query) || a.Documento.Contains(query)).OrderBy(u => u.NomeCliente).ToPagedList(pageNumber, pageSize);
+                ViewBag.Query = query;
+                return View(clientePesquisa);
+            }
+            var clientes = _context.Clientes
+                                    .OrderBy(u => u.NomeCliente)
+                                    .ToPagedList(pageNumber, pageSize);
+            return View(clientes);
         }
     }
 }
