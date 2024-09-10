@@ -41,3 +41,37 @@
 </div>
 
 <partial name="_ModalCadastrarChamado.cshtml" />
+<partial name="_ModalRemarcarChamado.cshtml" />
+<partial name="_ModalCancelarChamado.cshtml" />
+@* <partial name="_ModalPrintChamado.cshtml" model="new Chamados()" />
+ *@
+<div id="modalContentContainer">
+   
+</div>
+<script>
+    $(document).ready(function () {
+        $(".btn-adicionarIdPrint").click(function () {
+            var id = $(this).data("id");
+            $.ajax({
+                url: '/Chamado/BuscarDetalhes',
+                type: 'POST',
+                data: { id: id},
+                success: function (response) {
+                    console.log(response);
+                    $("#modalContentContainer").html(response);                   
+                    $("#modalPrintChamado").modal("show");
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: 'Ocorreu um erro inesperado.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+
+            });
+        });
+    });
+
+</script>

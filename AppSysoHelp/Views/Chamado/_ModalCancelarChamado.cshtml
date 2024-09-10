@@ -1,0 +1,41 @@
+﻿<style>
+    .modal-body {
+        max-height: 550px;
+        overflow-y: auto;
+    }
+</style>
+
+<div id="modalCancelarChamado" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenteredScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenteredScrollableTitle">Cancelar Chamado - @DateTime.Now.ToString("dd/MM/yyyy")</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form class="was-validated" asp-action="CancelarChamado" method="post">
+                <input type="hidden" name="FkTipoChamadoId" value="1" />
+                <input type="hidden" name="ChamadoId" id="ChamadoIdCancelado" />
+                <div class="modal-body"> 
+                    <div>
+                        <textarea class="form-control is-invalid" id="validationTextarea" name="DescricaoCompleta" placeholder="Motivo...." required="" style="min-height: 132px; max-height:132px "></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">sair</button>
+                    <button type="submit" style="width: 80px" class="btn btn-primary btn-remarcar">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $(".btn-adicionarIdCancelamento").click(function () {
+            $("#ChamadoIdCancelado").val($(this).data("id"));                    
+        });      
+    });
+
+</script>

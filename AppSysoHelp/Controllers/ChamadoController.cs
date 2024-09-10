@@ -22,11 +22,14 @@ namespace AppSysoHelp.Controllers
         }
         public IActionResult Aberto()
         {
-            return View(_context.Chamados.Include(a=> a.FkAtendenteNavigation)
-                                         .Include(a=> a.FkCliente)
-                                         .Include(a=> a.FkTecnico)
+            return View(_context.Chamados.Include(a => a.FkAtendenteNavigation)
+                                         .Include(a => a.FkCliente)
+                                         .Include(a => a.FkTecnico)
+                                         .Include(a => a.Atendimentos)
+                                         .ThenInclude(a=> a.FkTecnico)
                                          .ToList());
         }
+
         [HttpPost]
         public IActionResult GravarChamado(Chamados m)
         {
@@ -36,14 +39,77 @@ namespace AppSysoHelp.Controllers
             m.FkSituacaoChamadoId = 1;
             m.DataCriacao = DateTime.Now;
             m.FkAtendente = Convert.ToInt32(userId);
-            if(m.DataAgendamento == null)
+            if (m.DataAgendamento == null)
             {
                 m.DataAgendamento = DateTime.Now;
-            }           
+            }
 
             _generico.GravarGenerico(m);
-            
+
             return RedirectToAction("Aberto");
+        }
+
+        [HttpPost]
+        public IActionResult RemarcarChamado(Chamados dados)
+        {
+            var chamado = _context.Chamados.FirstOrDefault(a => a.ChamadoId == dados.ChamadoId);
+            var userIdClaim = User.FindFirst("Id");
+            var userId = userIdClaim?.Value;
+            var atendimento = new Atendimentos
+            {
+                DataAtendimento = DateTime.Now,
+                FkChamadoId = dados.ChamadoId,
+                ProcedimentosAplicados = dados.DescricaoCompleta,
+                FkTecnicoId = Convert.ToInt32(userId),
+                NovaDataAtendimento = dados.DataAgendamento,
+                AtendimentoEncerrado = false,                
+            };
+            _generico.GravarGenerico(atendimento);
+
+            chamado.FkSituacaoChamadoId = 2;
+            chamado.DataAgendamento = dados.DataAgendamento;            
+            chamado.FkTecnicoId = dados.FkTecnicoId;
+            chamado.Prioridade = dados.Prioridade;            
+
+            _generico.UpdateGenerico(chamado);
+
+            return RedirectToAction("Aberto");
+        }
+
+        [HttpPost]
+        public IActionResult CancelarChamado(Chamados dados)
+        {
+            var chamado = _context.Chamados.FirstOrDefault(a => a.ChamadoId == dados.ChamadoId);
+            var userIdClaim = User.FindFirst("Id");
+            var userId = userIdClaim?.Value;
+            var atendimento = new Atendimentos
+            {
+                DataAtendimento = DateTime.Now,
+                FkChamadoId = dados.ChamadoId,
+                ProcedimentosAplicados = dados.DescricaoCompleta,
+                FkTecnicoId = Convert.ToInt32(userId),
+                NovaDataAtendimento = DateTime.Now,
+                AtendimentoEncerrado = true,
+            };
+            _generico.GravarGenerico(atendimento);
+
+            chamado.FkSituacaoChamadoId = 4;           
+
+            _generico.UpdateGenerico(chamado);
+
+            return RedirectToAction("Aberto");
+        }
+
+        [HttpPost]
+        public IActionResult BuscarDetalhes(long id)
+        {
+            var chamado = _context.Chamados.Include(a => a.FkAtendenteNavigation)
+                                         .Include(a => a.FkCliente)
+                                         .Include(a => a.FkTecnico)
+                                         .Include(a => a.Atendimentos)
+                                         .ThenInclude(a => a.FkTecnico)
+                                         .FirstOrDefault(a => a.ChamadoId == id);
+            return PartialView("_ModalPrintChamado", chamado);
         }
     }
 }
