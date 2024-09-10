@@ -1,0 +1,175 @@
+﻿@model AppSysoHelp.Models.Chamados
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="row">
+    <div class="col-sm-12 mt-5">
+        <div class="iq-card" style="background-color: #111b21">
+            <div class="iq-card-body profile-page p-0">
+                <div class="profile-header">
+                    <div class="profile-info p-4">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-6">
+                                <div class="user-detail pl-5">
+                                    <div class="d-flex flex-wrap align-items-center">
+                                        <div class="profile-img pr-4">
+                                            <img src="~/images/helpdesk/_logo.png" alt="profile-img" class="avatar-130 img-fluid">
+                                        </div>
+                                        <div class="profile-detail">
+                                            <h5 class="text-primary">@Model.ChamadoId.ToString().PadLeft(6, '0')</h5>
+                                            <h6 class="text-primary">Cliente: @Model.FkCliente?.NomeCliente</h6>
+                                            <h6 class="text-primary" style="text-align:justify;">Descrição: @Model.DescricaoCompleta</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+                                <ul class="nav nav-pills d-flex align-items-end float-right profile-feed-items p-0 m-0">
+                                    <li>
+                                        <a class="nav-link active" data-toggle="pill" href="#profile-feed"> @Convert.ToDateTime(Model.DataCriacao).ToString("dd/MM/yyyy hh:mm")</a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link" data-toggle="pill" href="#profile-activity">@Convert.ToDateTime(Model.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link" data-toggle="pill" href="#profile-friends">10 hrs</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #111b21">
+                <div class="iq-card-header d-flex justify-content-between">
+                    <div class="iq-header-title">
+                        <h6 class="card-title"></h6>
+                    </div>
+                    <div class="iq-card-header-toolbar d-flex align-items-center">
+                        <a href="~/Contrato/Index" class="btn dark-icon btn-light m-1">Voltar <i class="ri-reply-line"></i></a>
+                        <button type="button" data-toggle="modal" data-target="#cadastroDeLicenca" class="btn dark-icon btn-primary m-1">Adicionar <i class="ri-add-box-line"></i></button>
+                    </div>
+                </div>
+                <div class="iq-card-body">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="iq-card">
+                                <div class="iq-card-header d-flex justify-content-between">
+                                    <div class="iq-header-title">
+                                        <h4 class="card-title">Histórico</h4>
+                                    </div>
+                                </div>
+                                <div class="iq-card-body">
+                                    <ul class="iq-timeline">
+                                        @foreach (var item in Model.Atendimentos)
+                                        {
+                                            <li>
+                                                <div class="timeline-dots"></div>
+                                                <h6 class="float-left mb-1">@item.FkTecnico.NomeCompleto</h6>
+                                                <small class="float-right mt-1 text-primary">@Convert.ToDateTime(item.DataAtendimento).ToString("dd/MM/yyyy hh:mm")</small>
+                                                <div class="d-inline-block w-100">
+                                                    <p>@item.ProcedimentosAplicados</p>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="iq-card">
+                                <div class="iq-card-header d-flex justify-content-between">
+                                    <div class="iq-header-title">
+                                        <h4 class="card-title">Atendimento</h4>
+                                    </div>
+                                </div>
+                                <div class="iq-card-body">
+                                    <div class="new-user-info">
+                                        <form class="was-validated" asp-action="" method="get">
+                                            <input type="hidden" name="FkTipoChamadoId" value="1" />
+                                            <input type="hidden" name="ChamadoId" id="ChamadoIdRemarcado" />
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="form-group">
+                                                            <select name="FkSetores" class="custom-select" required style="width: 100%; height: 44px">
+                                                                <option value="0" selected>Trocar de setor</option>
+                                                                <option value="1">Suporte Interno</option>
+                                                                <option value="2">Suporte Externo</option>
+                                                                <option value="3">Suporte Vector</option>
+                                                                <option value="4">Suporte Desenvolvimento</option>
+                                                                <option value="5">Suporte Financeiro</option>
+                                                                <option value="6">Suporte Treinamento</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-1 p-2">
+                                                    <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                                                        <input type="radio" id="customRadio-11" name="Prioridade" value="Normal" class="custom-control-input bg-success" checked>
+                                                        <label class="custom-control-label text-black" for="customRadio-11" style="color: black">Normal</label>
+                                                    </div>
+                                                    <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                                                        <input type="radio" id="customRadio-21" name="Prioridade" value="Media" class="custom-control-input bg-warning">
+                                                        <label class="custom-control-label text-black" for="customRadio-21" style="color: black">Média</label>
+                                                    </div>
+                                                    <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                                                        <input type="radio" id="customRadio-31" name="Prioridade" value="Alta" class="custom-control-input bg-danger">
+                                                        <label class="custom-control-label text-black" for="customRadio-31" style="color: black">Alta</label>
+                                                    </div>
+                                                    <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                                                        <input type="radio" id="customRadio-41" name="Prioridade" value="Urgente" class="custom-control-input bg-dark">
+                                                        <label class="custom-control-label text-black" for="customRadio-41" style="color: black">Urgente</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="custom-control custom-switch custom-switch-color custom-control-inline mb-2">
+                                                            <input data-id="#tecnico1" type="checkbox" class="custom-control-input bg-success mostrarcaixa1" id="customSwitch30">
+                                                            <label class="custom-control-label text-black" for="customSwitch30" style="color:black">Direcionar o Chamado</label>
+                                                        </div>
+
+                                                        <div id="tecnico1" style="display: none">
+                                                            <div class="form-group">
+                                                                <select id="tecnicoSelect" name="FkTecnicoId" class="FkPlataformaId tecnicoSelect" style="width: 100%; height: 44px">
+                                                                    <option value="">Buscar Sistema</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-12">
+                                                        <div class="row" id="agenda" style="display: block">
+                                                            <div class="col-sm-12">
+                                                                <div class="mb-3">
+                                                                    <input type="datetime-local" name="DataAgendamento" required class="form-control is-invalid" placeholder="Data Agendamento">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <textarea class="form-control is-invalid" id="validationTextarea" name="DescricaoCompleta" placeholder="Descrição...." required="" style="min-height: 132px; max-height:132px "></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">sair</button>
+                                                <button type="button" style="width: 80px" class="btn btn-primary btn-remarcar">Salvar</button>
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+

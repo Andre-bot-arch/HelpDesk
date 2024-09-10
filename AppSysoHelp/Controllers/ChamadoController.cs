@@ -20,6 +20,18 @@ namespace AppSysoHelp.Controllers
             _context = context;
             _generico = new ServiceGenerico(context);
         }
+
+        public IActionResult Atendimento(int id)
+        {
+            var chamado = _context.Chamados.Include(a => a.FkAtendenteNavigation)
+                                         .Include(a => a.FkCliente)
+                                         .Include(a => a.FkTecnico)
+                                         .Include(a => a.Atendimentos)
+                                         .ThenInclude(a => a.FkTecnico)
+                                         .FirstOrDefault(a => a.ChamadoId == id);
+            return View(chamado);
+        }
+
         public IActionResult Aberto()
         {
             return View(_context.Chamados.Include(a => a.FkAtendenteNavigation)
