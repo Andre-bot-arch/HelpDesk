@@ -43,15 +43,13 @@
 <partial name="_ModalCadastrarChamado.cshtml" />
 <partial name="_ModalRemarcarChamado.cshtml" />
 <partial name="_ModalCancelarChamado.cshtml" />
-@* <partial name="_ModalPrintChamado.cshtml" model="new Chamados()" />
- *@
-<div id="modalContentContainer">
-   
-</div>
+ <partial name="_ModalPrintChamado.cshtml" model="new Chamados()" />  
+
 <script>
     $(document).ready(function () {
         $(".btn-adicionarIdPrint").click(function () {
             var id = $(this).data("id");
+            $("#modalContentContainer").html("");
             $.ajax({
                 url: '/Chamado/BuscarDetalhes',
                 type: 'POST',

@@ -109,7 +109,7 @@ namespace AppSysoHelp.Controllers
                                          .Include(a => a.Atendimentos)
                                          .ThenInclude(a => a.FkTecnico)
                                          .FirstOrDefault(a => a.ChamadoId == id);
-            return PartialView("_ModalPrintChamado", chamado);
+            return PartialView("_DetalhesDoAtendimento", chamado);
         }
     }
 }
