@@ -4,8 +4,17 @@
 *@
 @{
     ViewData["Title"] = "Atendimento";
+    bool validador = (bool)ViewBag.atendimento;
 }
-
+@if (validador == true)
+{
+    <div class="alert alert-danger col-sm-12 col-md-12" role="alert" style="background-color: #111b21">
+        <div class="iq-alert-icon" style="background-color: #111b21">
+            <i class="ri-information-line"></i>
+        </div>
+        <div class="iq-alert-text" style="background-color: #111b21"> <b>Atenção!!</b> Chamado já em atendimento!</div>
+    </div>
+}
 <div class="row">
     <div class="col-sm-12 mt-5">
         <div class="iq-card" style="background-color: #111b21">
@@ -23,7 +32,7 @@
                                             <h5 class="text-primary">@Model.ChamadoId.ToString().PadLeft(6, '0')</h5>
                                             <h6 class="text-primary">Cliente: @Model.FkCliente?.NomeCliente</h6>
                                             <h6 class="text-primary" style="text-align:justify;">Descrição: @Model.DescricaoCompleta</h6>
-                                        </div>
+                                        </div>                                       
                                     </div>
                                 </div>
                             </div>
@@ -39,21 +48,12 @@
                                         <a class="nav-link" data-toggle="pill" href="#profile-friends">@Model.Prioridade</a>
                                     </li>
                                 </ul>
-                            </div>
+                            </div>                           
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #111b21">
-                <div class="iq-card-header d-flex justify-content-between">
-                    <div class="iq-header-title">
-                        <h6 class="card-title"></h6>
-                    </div>
-                    <div class="iq-card-header-toolbar d-flex align-items-center">
-                        <a href="~/Contrato/Index" class="btn dark-icon btn-light m-1">Voltar <i class="ri-reply-line"></i></a>
-                        <button type="button" data-toggle="modal" data-target="#cadastroDeLicenca" class="btn dark-icon btn-primary m-1">Adicionar <i class="ri-add-box-line"></i></button>
-                    </div>
-                </div>
+            <div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #111b21">                
                 <div class="iq-card-body">
                     <div class="row">
                         <div class="col-lg-3">
@@ -86,14 +86,17 @@
                                     <div class="iq-header-title">
                                         <h4 class="card-title text-primary">Atendimento</h4>
                                     </div>
+                                    <div class="iq-card-header-toolbar d-flex align-items-center">
+                                        <a href="~/Chamado/Aberto" class="btn dark-icon btn-light m-1">Voltar <i class="ri-reply-line"></i></a>                                        
+                                    </div>
                                 </div>
-                                <div class="iq-card-body">
+                                <div class="iq-card-body">                                   
                                     <div class="new-user-info">
                                         <form class="was-validated" asp-action="" method="get">
                                             <input type="hidden" name="FkTipoChamadoId" value="1" />
                                             <input type="hidden" name="ChamadoId" id="ChamadoIdRemarcado" />
                                             <div class="modal-body">
-                                                <div class="row">
+                                               @*  <div class="row">
                                                     <div class="col-sm-12">
                                                         <div class="form-group">
                                                             <select name="FkSetores" class="custom-select" required style="width: 100%; height: 44px; background-color: #222e35; color: seashell">
@@ -107,9 +110,9 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> *@
                                                 <div class="row">
-                                                    <div class="col-sm-12">
+                                                   @*  <div class="col-sm-12">
                                                         <div class="custom-control custom-switch custom-switch-color custom-control-inline mb-2">
                                                             <input data-id="#tecnico12" type="checkbox" class="custom-control-input bg-success mostrarcaixa12" id="customSwitch32" style="background-color: #222e35;">
                                                             <label class="custom-control-label text-primary" for="customSwitch32">Direcionar o Chamado</label>
@@ -122,7 +125,7 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div> *@
                                                     <div class="col-sm-12">
                                                         <div class="form-group">
                                                             <div class="custom-file" style="background-color: #222e35; color: seashell">
@@ -131,15 +134,6 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    @*  <div class="col-sm-12">
-                                                    <div class="row" id="agenda" style="display: block">
-                                                    <div class="col-sm-12">
-                                                    <div class="mb-3">
-                                                    <input type="datetime-local" name="DataAgendamento" required class="form-control is-invalid" placeholder="Data Agendamento" style="background-color: #222e35; color: seashell">
-                                                    </div>
-                                                    </div>
-                                                    </div>
-                                                    </div> *@
                                                 </div>
 
                                                 <div>
@@ -147,8 +141,8 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">sair</button>
-                                                <button type="button" style="width: 80px" class="btn btn-primary btn-remarcar">Salvar</button>
+                                                <button type="button" style="width: 180px" class="btn btn-danger" data-dismiss="modal">sair</button>
+                                                <button type="button" style="width: 180px" class="btn btn-primary btn-remarcar">Finalizar Chamado</button>
                                             </div>
                                         </form>
 

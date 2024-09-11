@@ -21,6 +21,10 @@ public partial class Atendimentos
 
     public DateTime? DataAtendimento { get; set; }
 
+    public string? CaminhoDaImagem { get; set; }
+
+    public DateTime? DataFechamento { get; set; }
+
     public virtual Chamados FkChamado { get; set; } = null!;
 
     public virtual TecnicosSupervisores? FkTecnico { get; set; }

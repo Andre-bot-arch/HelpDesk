@@ -23,13 +23,43 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Atendimento(int id)
         {
+            var userIdClaim = User.FindFirst("Id");
+            var userId = userIdClaim?.Value;
+
             var chamado = _context.Chamados.Include(a => a.FkAtendenteNavigation)
                                          .Include(a => a.FkCliente)
                                          .Include(a => a.FkTecnico)
                                          .Include(a => a.Atendimentos)
                                          .ThenInclude(a => a.FkTecnico)
                                          .FirstOrDefault(a => a.ChamadoId == id);
-            return View(chamado);
+
+            var atendimento = _context.Atendimentos.FirstOrDefault(a => a.FkChamadoId == id && a.AtendimentoEncerrado == false);
+            if (atendimento != null && atendimento.FkTecnicoId == Convert.ToInt32(userId))
+            {
+                ViewBag.atendimento = false;
+                return View(chamado);
+            }
+            else if (atendimento != null && atendimento.FkTecnicoId != Convert.ToInt32(userId))
+            {
+                ViewBag.atendimento = true;
+                return View(chamado);
+            }
+            else
+            {
+                ViewBag.atendimento = false;
+                atendimento = new Atendimentos
+                {
+                    DataAtendimento = DateTime.Now,
+                    FkChamadoId = id,
+                    ProcedimentosAplicados = "EM ATENDIMENTO",
+                    FkTecnicoId = Convert.ToInt32(userId),
+                    AtendimentoEncerrado = false,
+                };
+                _generico.GravarGenerico(atendimento);
+
+                return View(chamado);
+            }
+           
         }
 
         public IActionResult Aberto()
@@ -38,7 +68,7 @@ namespace AppSysoHelp.Controllers
                                          .Include(a => a.FkCliente)
                                          .Include(a => a.FkTecnico)
                                          .Include(a => a.Atendimentos)
-                                         .ThenInclude(a=> a.FkTecnico)
+                                         .ThenInclude(a => a.FkTecnico)
                                          .ToList());
         }
 
@@ -74,14 +104,15 @@ namespace AppSysoHelp.Controllers
                 ProcedimentosAplicados = dados.DescricaoCompleta,
                 FkTecnicoId = Convert.ToInt32(userId),
                 NovaDataAtendimento = dados.DataAgendamento,
-                AtendimentoEncerrado = false,                
+                DataFechamento = DateTime.Now,
+                AtendimentoEncerrado = true,
             };
             _generico.GravarGenerico(atendimento);
 
             chamado.FkSituacaoChamadoId = 2;
-            chamado.DataAgendamento = dados.DataAgendamento;            
+            chamado.DataAgendamento = dados.DataAgendamento;
             chamado.FkTecnicoId = dados.FkTecnicoId;
-            chamado.Prioridade = dados.Prioridade;            
+            chamado.Prioridade = dados.Prioridade;
 
             _generico.UpdateGenerico(chamado);
 
@@ -105,7 +136,7 @@ namespace AppSysoHelp.Controllers
             };
             _generico.GravarGenerico(atendimento);
 
-            chamado.FkSituacaoChamadoId = 4;           
+            chamado.FkSituacaoChamadoId = 4;
 
             _generico.UpdateGenerico(chamado);
 

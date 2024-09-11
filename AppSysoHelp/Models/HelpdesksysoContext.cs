@@ -53,7 +53,9 @@ public partial class HelpdesksysoContext : DbContext
 
             entity.ToTable("Atendimentos", "dbo");
 
+            entity.Property(e => e.CaminhoDaImagem).IsUnicode(false);
             entity.Property(e => e.DataAtendimento).HasColumnType("datetime");
+            entity.Property(e => e.DataFechamento).HasColumnType("datetime");
             entity.Property(e => e.FkChamadoId).HasColumnName("Fk_ChamadoId");
             entity.Property(e => e.FkTecnicoId).HasColumnName("Fk_TecnicoId");
             entity.Property(e => e.NovaDataAtendimento).HasColumnType("datetime");
