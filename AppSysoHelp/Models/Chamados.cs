@@ -33,6 +33,8 @@ public partial class Chamados
 
     public long FkSetores { get; set; }
 
+    public DateTime? DataFechamento { get; set; }
+
     public virtual ICollection<Atendimentos> Atendimentos { get; set; } = new List<Atendimentos>();
 
     public virtual TecnicosSupervisores? FkAtendenteNavigation { get; set; }

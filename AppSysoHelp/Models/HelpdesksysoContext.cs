@@ -82,6 +82,7 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.DataCriacao)
                 .HasColumnType("datetime")
                 .HasColumnName("Data_Criacao");
+            entity.Property(e => e.DataFechamento).HasColumnType("datetime");
             entity.Property(e => e.FkAtendente).HasColumnName("Fk_Atendente");
             entity.Property(e => e.FkClienteId).HasColumnName("Fk_ClienteId");
             entity.Property(e => e.FkPlataforma).HasColumnName("Fk_Plataforma");

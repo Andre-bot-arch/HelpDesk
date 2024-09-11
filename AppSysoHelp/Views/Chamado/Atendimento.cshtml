@@ -32,7 +32,7 @@
                                             <h5 class="text-primary">@Model.ChamadoId.ToString().PadLeft(6, '0')</h5>
                                             <h6 class="text-primary">Cliente: @Model.FkCliente?.NomeCliente</h6>
                                             <h6 class="text-primary" style="text-align:justify;">Descrição: @Model.DescricaoCompleta</h6>
-                                        </div>                                       
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -48,12 +48,12 @@
                                         <a class="nav-link" data-toggle="pill" href="#profile-friends">@Model.Prioridade</a>
                                     </li>
                                 </ul>
-                            </div>                           
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #111b21">                
+            <div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #111b21">
                 <div class="iq-card-body">
                     <div class="row">
                         <div class="col-lg-3">
@@ -65,7 +65,7 @@
                                 </div>
                                 <div class="iq-card-body">
                                     <ul class="iq-timeline">
-                                        @foreach (var item in Model.Atendimentos)
+                                        @foreach (var item in Model.Atendimentos.OrderByDescending(a => a.DataAtendimento))
                                         {
                                             <li style="border-bottom: 1px solid seashell">
                                                 <div class="timeline-dots"></div>
@@ -87,65 +87,39 @@
                                         <h4 class="card-title text-primary">Atendimento</h4>
                                     </div>
                                     <div class="iq-card-header-toolbar d-flex align-items-center">
-                                        <a href="~/Chamado/Aberto" class="btn dark-icon btn-light m-1">Voltar <i class="ri-reply-line"></i></a>                                        
+                                        <a href="~/Chamado/Aberto" class="btn dark-icon btn-light m-1">Voltar <i class="ri-reply-line"></i></a>
                                     </div>
                                 </div>
-                                <div class="iq-card-body">                                   
+                                <div class="iq-card-body">
                                     <div class="new-user-info">
-                                        <form class="was-validated" asp-action="" method="get">
+                                        <form class="was-validated" asp-action="FinalizarChamado" asp-controller="Chamado" method="post" enctype="multipart/form-data">
                                             <input type="hidden" name="FkTipoChamadoId" value="1" />
-                                            <input type="hidden" name="ChamadoId" id="ChamadoIdRemarcado" />
+                                            <input type="hidden" id="ChamadoIdRemarcado" asp-for="ChamadoId" value="@Model.ChamadoId" />
                                             <div class="modal-body">
-                                               @*  <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <div class="form-group">
-                                                            <select name="FkSetores" class="custom-select" required style="width: 100%; height: 44px; background-color: #222e35; color: seashell">
-                                                                <option value="0" selected>Trocar de setor</option>
-                                                                <option value="1">Suporte Interno</option>
-                                                                <option value="2">Suporte Externo</option>
-                                                                <option value="3">Suporte Vector</option>
-                                                                <option value="4">Suporte Desenvolvimento</option>
-                                                                <option value="5">Suporte Financeiro</option>
-                                                                <option value="6">Suporte Treinamento</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div> *@
                                                 <div class="row">
-                                                   @*  <div class="col-sm-12">
-                                                        <div class="custom-control custom-switch custom-switch-color custom-control-inline mb-2">
-                                                            <input data-id="#tecnico12" type="checkbox" class="custom-control-input bg-success mostrarcaixa12" id="customSwitch32" style="background-color: #222e35;">
-                                                            <label class="custom-control-label text-primary" for="customSwitch32">Direcionar o Chamado</label>
-                                                        </div>
-
-                                                        <div id="tecnico12" style="display: none">
-                                                            <div class="form-group">
-                                                                <select id="tecnicoSelect" name="FkTecnicoId" class="FkPlataformaId tecnicoSelect" style="width: 100%; height: 44px; background-color: #222e35; color: seashell">
-                                                                    <option value="">Buscar Tecnico</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div> *@
                                                     <div class="col-sm-12">
                                                         <div class="form-group">
+                                                            <!-- Pré-visualização da Imagem -->
+                                                            <div class="form-group">
+                                                                <label class="text-primary">Pré-visualização:</label>
+                                                                <img id="previewImagemCadastrar" src="#" alt="Pré-visualização" style="display: none; max-width: 30%; height: auto;" />
+                                                            </div>
                                                             <div class="custom-file" style="background-color: #222e35; color: seashell">
-                                                                <input type="file" class="custom-file-input" id="customFile" style="background-color: #222e35; color: seashell">
+                                                            <input name="imagem" type="file" class="custom-file-input" id="imagemBase64Cadastrar" style="background-color: #222e35; color: seashell">
                                                                 <label class="custom-file-label" for="customFile" style="background-color: #222e35; color: seashell">Selecione imagens</label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-
                                                 <div>
                                                     <textarea class="form-control is-invalid" id="validationTextarea" name="DescricaoCompleta" placeholder="Descrição...." required="" style="min-height: 132px; max-height:132px; background-color: #222e35; color: seashell"></textarea>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" style="width: 180px" class="btn btn-danger" data-dismiss="modal">sair</button>
-                                                <button type="button" style="width: 180px" class="btn btn-primary btn-remarcar">Finalizar Chamado</button>
+                                                <button type="submit" style="width: 180px" class="btn btn-primary btn-remarcar">Finalizar Chamado</button>
                                             </div>
                                         </form>
-
                                     </div>
                                 </div>
                             </div>
@@ -198,4 +172,5 @@
         });
     });
 </script>
+<script src="~/assets/js/imageBase64.js"></script>
 

@@ -23,4 +23,8 @@
     <PackageReference Include="X.Web.PagedList" Version="10.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\imagens_chamado\" />
+  </ItemGroup>
+
 </Project>

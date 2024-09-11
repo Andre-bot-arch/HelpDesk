@@ -23,5 +23,12 @@ namespace AppSysoHelp.Service
             _context.SaveChanges();
             return true;
         }
+
+        internal async Task<bool> GravarGenericoAsync(dynamic obj)
+        {
+            await _context.AddAsync(obj);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

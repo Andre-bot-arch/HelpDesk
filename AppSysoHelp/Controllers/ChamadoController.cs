@@ -21,30 +21,13 @@ namespace AppSysoHelp.Controllers
             _generico = new ServiceGenerico(context);
         }
 
-        public IActionResult Atendimento(int id)
+        public async Task<IActionResult> Atendimento(int id)
         {
             var userIdClaim = User.FindFirst("Id");
             var userId = userIdClaim?.Value;
-
-            var chamado = _context.Chamados.Include(a => a.FkAtendenteNavigation)
-                                         .Include(a => a.FkCliente)
-                                         .Include(a => a.FkTecnico)
-                                         .Include(a => a.Atendimentos)
-                                         .ThenInclude(a => a.FkTecnico)
-                                         .FirstOrDefault(a => a.ChamadoId == id);
-
             var atendimento = _context.Atendimentos.FirstOrDefault(a => a.FkChamadoId == id && a.AtendimentoEncerrado == false);
-            if (atendimento != null && atendimento.FkTecnicoId == Convert.ToInt32(userId))
-            {
-                ViewBag.atendimento = false;
-                return View(chamado);
-            }
-            else if (atendimento != null && atendimento.FkTecnicoId != Convert.ToInt32(userId))
-            {
-                ViewBag.atendimento = true;
-                return View(chamado);
-            }
-            else
+
+            if (atendimento == null)
             {
                 ViewBag.atendimento = false;
                 atendimento = new Atendimentos
@@ -55,11 +38,23 @@ namespace AppSysoHelp.Controllers
                     FkTecnicoId = Convert.ToInt32(userId),
                     AtendimentoEncerrado = false,
                 };
-                _generico.GravarGenerico(atendimento);
-
-                return View(chamado);
+                await _generico.GravarGenericoAsync(atendimento);
             }
-           
+            else if (atendimento != null && atendimento.FkTecnicoId == Convert.ToInt32(userId))
+            {
+                ViewBag.atendimento = false;
+            }
+            else
+            {
+                ViewBag.atendimento = true;
+            }
+            var chamado = _context.Chamados.Include(a => a.FkAtendenteNavigation)
+                                         .Include(a => a.FkCliente)
+                                         .Include(a => a.FkTecnico)
+                                         .Include(a => a.Atendimentos)
+                                         .ThenInclude(a => a.FkTecnico)
+                                         .FirstOrDefault(a => a.ChamadoId == id);
+            return View(chamado);
         }
 
         public IActionResult Aberto()
@@ -153,6 +148,41 @@ namespace AppSysoHelp.Controllers
                                          .ThenInclude(a => a.FkTecnico)
                                          .FirstOrDefault(a => a.ChamadoId == id);
             return PartialView("_DetalhesDoAtendimento", chamado);
+        }
+
+        [HttpPost]
+        public IActionResult FinalizarChamado(Chamados d, IFormFile imagem)
+        {
+            var chamado = _context.Chamados.FirstOrDefault(a => a.ChamadoId == d.ChamadoId);
+            var userIdClaim = User.FindFirst("Id").Value;
+            var caminhoImagem = "";
+            if (imagem != null && imagem.Length > 0)
+            {
+                string fileExtension = Path.GetExtension(imagem.FileName);
+                string fileName = $"chamado-{d.ChamadoId}{fileExtension.ToLower()}";
+                string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imagens_chamado", fileName);
+                Directory.CreateDirectory(Path.GetDirectoryName(savePath));
+                using (var fileStream = new FileStream(savePath, FileMode.Create))
+                {
+                    imagem.CopyTo(fileStream);
+                }
+                caminhoImagem = $"/imagens_chamado/{fileName}";
+            }
+
+            var atendimentoExistente = _context.Atendimentos.FirstOrDefault(a => a.FkChamadoId == d.ChamadoId && a.AtendimentoEncerrado != true);
+            atendimentoExistente.ProcedimentosAplicados = d.DescricaoCompleta;
+            atendimentoExistente.FkTecnicoId = Convert.ToInt32(userIdClaim);
+            atendimentoExistente.DataFechamento = DateTime.Now;
+            atendimentoExistente.AtendimentoEncerrado = true;
+            atendimentoExistente.CaminhoDaImagem = caminhoImagem;
+
+            _generico.UpdateGenerico(atendimentoExistente);
+
+            chamado.FkSituacaoChamadoId = 3;
+            chamado.DataFechamento = DateTime.Now;
+
+            _generico.UpdateGenerico(chamado);
+            return RedirectToAction("Aberto");
         }
     }
 }
