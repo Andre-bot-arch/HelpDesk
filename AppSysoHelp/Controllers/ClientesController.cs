@@ -21,12 +21,14 @@ namespace AppSysoHelp.Controllers
 
             if (query != null)
             {
-                var clientePesquisa = _context.Clientes.Where(a => a.NomeCliente.Contains(query) || a.Documento.Contains(query)).OrderBy(u => u.NomeCliente).ToPagedList(pageNumber, pageSize);
+                var clientePesquisa = _context.Clientes.Where(a => a.NomeCliente.Contains(query) || a.Documento.Contains(query))
+                                                       .OrderBy(u => u.ClienteId)
+                                                       .ToPagedList(pageNumber, pageSize);
                 ViewBag.Query = query;
                 return View(clientePesquisa);
             }
             var clientes = _context.Clientes
-                                    .OrderBy(u => u.NomeCliente)
+                                    .OrderBy(u => u.ClienteId)
                                     .ToPagedList(pageNumber, pageSize);
             return View(clientes);
         }
