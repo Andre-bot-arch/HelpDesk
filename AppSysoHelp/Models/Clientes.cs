@@ -9,15 +9,19 @@ public partial class Clientes
 
     public string NomeCliente { get; set; } = null!;
 
-    public string? TelefoneCliente { get; set; }
+    public string? Fantasia { get; set; }
 
     public string? Documento { get; set; }
+
+    public string? TelefoneCliente { get; set; }
+
+    public string? WhatsApp { get; set; }
+
+    public string? Email { get; set; }
 
     public string? Cep { get; set; }
 
     public string? Logradouro { get; set; }
-
-    public string? Numero { get; set; }
 
     public string? Bairro { get; set; }
 

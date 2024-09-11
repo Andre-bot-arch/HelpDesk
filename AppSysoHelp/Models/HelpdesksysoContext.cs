@@ -138,15 +138,15 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.Documento)
                 .HasMaxLength(20)
                 .IsUnicode(false);
+            entity.Property(e => e.Email).HasMaxLength(50);
+            entity.Property(e => e.Fantasia).HasMaxLength(150);
             entity.Property(e => e.Logradouro).IsUnicode(false);
-            entity.Property(e => e.NomeCliente).HasMaxLength(100);
-            entity.Property(e => e.Numero)
-                .HasMaxLength(20)
-                .IsUnicode(false);
+            entity.Property(e => e.NomeCliente).HasMaxLength(150);
             entity.Property(e => e.TelefoneCliente).HasMaxLength(20);
             entity.Property(e => e.Uf)
                 .HasMaxLength(20)
                 .IsUnicode(false);
+            entity.Property(e => e.WhatsApp).HasMaxLength(20);
         });
 
         modelBuilder.Entity<Contratos>(entity =>
