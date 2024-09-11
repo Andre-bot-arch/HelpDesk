@@ -197,7 +197,7 @@ a:hover { text-decoration: none; }
 /*---------------------------------------------------------------------
                                Sign In
 -----------------------------------------------------------------------*/
-.sign-in-detail { color: var(--iq-white); background: rgba(130, 122, 243, 1) !important; }
+.sign-in-detail { color: var(--iq-white); }
 .sign-in-page { height: 100vh; }
 .sign-in-detail { padding: 100px; height: 100vh; }
 .sign-in-logo { display: inline-block; width: 100%; }
