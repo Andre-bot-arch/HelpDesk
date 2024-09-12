@@ -1,0 +1,125 @@
+﻿
+<style>
+    .modal-body {
+        max-height: 550px;
+        overflow-y: auto;
+    }
+</style>
+<div id="cadastroDeEvento" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenteredScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenteredScrollableTitle">Configuração de Backup</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form class="was-validated" id="configurarBackup">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Descrição</label>
+                        <input type="text" class="form-control is-invalid" name="Descricao" id="Descricao" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Horário</label>
+                        <input type="time" class="form-control is-invalid" name="Horario" id="Horario" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Tipo de Backup</label>
+                        <div class="d-flex flex-wrap">
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="radio" name="TipoBkp" id="fbk" value="FBK" checked>
+                                <label class="form-check-label" for="fbk">FBK</label>
+                            </div>
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="radio" name="TipoBkp" id="fdb" value="FDB">
+                                <label class="form-check-label" for="fdb">FDB</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="TipoBkp" id="arquivo" value="ARQUIVO">
+                                <label class="form-check-label" for="arquivo">Arquivo</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Extensões</label>
+                        <input type="text" class="form-control is-invalid" name="Extensoes" id="Extensoes" placeholder=".rar,.zip,.fdb" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Caminho Download</label>
+                        <input type="text" class="form-control is-invalid" name="CaminhoDownload" id="CaminhoDownload" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Caminho Upload</label>
+                        <input type="text" class="form-control is-invalid" name="CaminhoUpload" id="CaminhoUpload" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Caminho Para Buscar os Arquivos</label>
+                        <input type="text" class="form-control is-invalid" name="CaminhoBuscarArquivos" id="CaminhoBuscarArquivos" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Executar Antes do Backup</label>
+                        <input type="text" class="form-control is-invalid" name="ExecutarAntes" id="ExecutarAntes">
+                    </div>
+                    <div class="mb-3">
+                        <label>Dias</label>
+                        <div class="d-flex flex-wrap">
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="checkbox" name="Dias" id="segunda" value="Segunda">
+                                <label class="form-check-label" for="segunda">Segunda</label>
+                            </div>
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="checkbox" name="Dias" id="terca" value="Terça">
+                                <label class="form-check-label" for="terca">Terça</label>
+                            </div>
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="checkbox" name="Dias" id="quarta" value="Quarta">
+                                <label class="form-check-label" for="quarta">Quarta</label>
+                            </div>
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="checkbox" name="Dias" id="quinta" value="Quinta">
+                                <label class="form-check-label" for="quinta">Quinta</label>
+                            </div>
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="checkbox" name="Dias" id="sexta" value="Sexta">
+                                <label class="form-check-label" for="sexta">Sexta</label>
+                            </div>
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="checkbox" name="Dias" id="sabado" value="Sábado">
+                                <label class="form-check-label" for="sabado">Sábado</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="Dias" id="domingo" value="Domingo">
+                                <label class="form-check-label" for="domingo">Domingo</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Executar Após o Backup</label>
+                        <div class="d-flex flex-wrap">
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="radio" name="ExecutarApos" id="naoDesligar" value="NaoDesligar" checked>
+                                <label class="form-check-label" for="naoDesligar">Não Desligar</label>
+                            </div>
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="radio" name="ExecutarApos" id="desligar" value="Desligar">
+                                <label class="form-check-label" for="desligar">Desligar</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="ExecutarApos" id="reiniciar" value="Reiniciar">
+                                <label class="form-check-label" for="reiniciar">Reiniciar</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">Sair</button>
+                    <button type="submit" style="width: 80px" class="btn btn-primary">Gravar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+

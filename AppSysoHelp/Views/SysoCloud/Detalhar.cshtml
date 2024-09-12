@@ -1,0 +1,149 @@
+﻿@model AppSysoHelp.Models.Contratos
+@{
+    var contrato = Model;
+    int usados = Model.Licencas.Sum(licenca => licenca.LicencasDispositivos.Count);
+}
+<style>
+
+    /* Cor de fundo das linhas ímpares */
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #111b21;
+    }
+
+    /* Cor de fundo das linhas pares */
+    .table-striped tbody tr:nth-of-type(even) {
+        background-color: #222e35;
+    }
+
+    /* Cor do texto para garantir legibilidade */
+    .table-striped tbody tr {
+        color: #ffffff; /* Muda a cor do texto para branco */
+    }
+
+    /* Bordas arredondadas */
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .table thead th:first-child {
+            border-top-left-radius: 10px;
+        }
+
+        .table thead th:last-child {
+            border-top-right-radius: 10px;
+        }
+
+        .table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 10px;
+        }
+
+        .table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 10px;
+        }
+</style>
+
+<div class="row">
+    <div class="col-sm-12 mt-5">
+        <div class="iq-card" style="background-color: #111b21">
+            <div class="iq-card-body profile-page p-0">
+                <div class="profile-header">
+                    <div class="profile-info p-4">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-6">
+                                <div class="user-detail pl-5">
+                                    <div class="d-flex flex-wrap align-items-center">
+                                        <div class="profile-img pr-4">
+                                            <img src="~/images/helpdesk/_logo.png" alt="profile-img" class="avatar-130 img-fluid">
+                                        </div>
+                                        <div class="profile-detail">
+                                            <h5 class="text-primary">@Model.DescricaoContrato</h5>
+                                            <h6 class="text-primary">Cliente: @Model.FkCliente?.NomeCliente</h6>
+                                            <input type="hidden" asp-for="@Model.ContratoId" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+                                <ul class="nav nav-pills d-flex align-items-end float-right profile-feed-items p-0 m-0">
+                                    <li>
+                                        <a class="nav-link active" data-toggle="pill" href="#profile-feed"> @usados <span> / </span> @Model.PontosContratados</a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link" data-toggle="pill" href="#profile-activity">@Model.Valor.ToString("C2")</a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link" data-toggle="pill" href="#profile-friends">@Model.FkPlataforma.NomePlataforma</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #222e35">
+                <div class="iq-card-header d-flex justify-content-between">
+                    <div class="iq-header-title">
+                        <h6 class="text-primary card-title">Eventos</h6>
+                    </div>
+                    <div class="iq-card-header-toolbar d-flex align-items-center">
+                        <a href="~/SysoCloud/Index" class="btn dark-icon btn-light m-1">Voltar <i class="ri-reply-line"></i></a>
+                        <button type="button" data-toggle="modal" data-target="#cadastroDeEvento" class="btn dark-icon btn-primary m-1">Adicionar <i class="ri-add-box-line"></i></button>
+                    </div>
+                </div>
+                <div class="iq-card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0 table-borderless" style="border-color: #222e35; ">
+                            <thead>
+                                <tr sstyle="border-bottom: 1px solid #222e35;">
+                                    <th scope="col">#</th>
+                                    <th scope="col">Descricao</th>
+                                    <th scope="col">Urlacesso</th>
+                                    <th scope="col" class="text-right">Data Ativacao</th>
+                                    <th scope="col" class="text-center">Conexões</th>
+                                    <th scope="col" class="text-center">Status</th>
+                                    <th scope="col">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Licencas)
+                                {
+                                    <tr>
+                                        <td>@item.LicencaId.ToString().PadLeft(6, '0')</td>
+                                        <td>@item.Descricao</td>
+                                        <td>
+                                            @item.Urlacesso<br />
+                                            @item.Hash
+                                        </td>
+                                        <td class="text-right">@item.DataAtivacao.ToString("dd/MM/yyyy")</td>
+                                        <td class="text-center">@item.LicencasDispositivos.Count()</td>
+                                        @if (item.Ativo == true)
+                                        {
+                                            <td class="text-center"><div class="badge badge-pill iq-bg-success" style="width: 80px"> ATIVO </div></td>
+                                        }
+                                        else
+                                        {
+                                            <td class="text-center"><div class="badge badge-pill iq-bg-danger" style="width: 80px">REVOGADA</div></td>
+                                        }
+
+                                        <td>
+                                            <a href="#" class="btn-editar_licenca" data-id="@item.LicencaId" data-desc="@item.Descricao" data-url="@item.Urlacesso" data-ativacao="@item.DataAtivacao" data-modelo="@item.Modelo" data-mac="@item.NumeroSerie">
+                                                <i class="ri-ball-pen-fill text-success pr-1"></i>
+                                            </a>
+                                            <a href="#" class="btn-inativar-licenca" data-id="@item.LicencaId" data-ativo="@item.Ativo"> <i class="ri-delete-bin-5-line text-danger"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<partial name="_ModalCadastrarEvento.cshtml" />
+<script src="~/assets/js/licenca.js"></script>
+
