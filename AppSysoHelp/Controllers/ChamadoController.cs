@@ -128,10 +128,12 @@ namespace AppSysoHelp.Controllers
                 FkTecnicoId = Convert.ToInt32(userId),
                 NovaDataAtendimento = DateTime.Now,
                 AtendimentoEncerrado = true,
+                DataFechamento = DateTime.Now
             };
             _generico.GravarGenerico(atendimento);
 
             chamado.FkSituacaoChamadoId = 4;
+            chamado.DataFechamento = DateTime.Now;
 
             _generico.UpdateGenerico(chamado);
 
