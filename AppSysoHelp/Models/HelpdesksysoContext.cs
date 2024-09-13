@@ -237,6 +237,7 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.CaminhoBuscaArquivo).IsUnicode(false);
             entity.Property(e => e.CaminhoDownload).IsUnicode(false);
             entity.Property(e => e.CaminhoUpload).IsUnicode(false);
+            entity.Property(e => e.DataCreate).HasColumnType("datetime");
             entity.Property(e => e.Descricao).IsUnicode(false);
             entity.Property(e => e.ExecutarAntesBackup).IsUnicode(false);
             entity.Property(e => e.ExecutarAposBackup).IsUnicode(false);

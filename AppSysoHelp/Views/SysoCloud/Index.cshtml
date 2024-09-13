@@ -4,7 +4,7 @@
 <div class="iq-card" style="background-color: #0B141A">
     <div class="iq-card-header d-flex justify-content-between">
         <div class="iq-header-title">
-            <h4 class="text-primary"> Lista de Contratos Ativos</h4>
+            <h4 class="text-primary">Contratos SysoCloud Ativos</h4>
         </div>
     </div>
     <div class="iq-card-body" >
@@ -28,10 +28,8 @@
                                     <div class="col-7">
                                         <label class="card-title @situacao">
                                             <span class="@situacao">@contrato.FkPlataforma.NomePlataforma:</span> @contrato.FkPlataforma.Descricao
-                                            <br /> <span class="@situacao">
-                                                Pontos: @contrato.PontosContratados
-                                            </span>
-                                            <br /> <span class="@situacao">Valor:</span> @contrato.Valor.ToString("C2")
+                                            <br /> 
+                                            <span class="@situacao">Pontos: @contrato.PontosContratados</span>
                                         </label>
                                     </div>
                                     <div class="col-5 text-right d-flex justify-content-between">

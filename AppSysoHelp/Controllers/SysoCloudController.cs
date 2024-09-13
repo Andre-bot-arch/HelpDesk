@@ -39,6 +39,7 @@ namespace AppSysoHelp.Controllers
         [HttpPost]
         public IActionResult Create(SysoCloud s)
         {
+            s.DataCreate = DateTime.Now;
             _generico.GravarGenerico(s);
             return RedirectToAction("Index");
         }

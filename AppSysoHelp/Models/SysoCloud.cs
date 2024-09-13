@@ -43,6 +43,8 @@ public partial class SysoCloud
 
     public long FkContratoId { get; set; }
 
+    public DateTime? DataCreate { get; set; }
+
     public virtual Clientes FkCliente { get; set; } = null!;
 
     public virtual Contratos FkContrato { get; set; } = null!;
