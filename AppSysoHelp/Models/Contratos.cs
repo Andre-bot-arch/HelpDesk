@@ -28,4 +28,6 @@ public partial class Contratos
     public virtual PlataformasContratos FkPlataforma { get; set; } = null!;
 
     public virtual ICollection<Licencas> Licencas { get; set; } = new List<Licencas>();
+
+    public virtual ICollection<SysoCloud> SysoCloud { get; set; } = new List<SysoCloud>();
 }

@@ -11,7 +11,7 @@ public partial class LicencasDispositivos
 
     public string Nome { get; set; } = null!;
 
-    public int? FkLicenca { get; set; }
+    public long? FkLicenca { get; set; }
 
     public string Identificador { get; set; } = null!;
 

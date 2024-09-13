@@ -29,7 +29,13 @@ public partial class Clientes
 
     public string? Uf { get; set; }
 
+    public bool Situacao { get; set; }
+
+    public string? IdSolution { get; set; }
+
     public virtual ICollection<Chamados> Chamados { get; set; } = new List<Chamados>();
 
     public virtual ICollection<Contratos> Contratos { get; set; } = new List<Contratos>();
+
+    public virtual ICollection<SysoCloud> SysoCloud { get; set; } = new List<SysoCloud>();
 }

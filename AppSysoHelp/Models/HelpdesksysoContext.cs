@@ -33,6 +33,8 @@ public partial class HelpdesksysoContext : DbContext
 
     public virtual DbSet<SituacoesChamados> SituacoesChamados { get; set; }
 
+    public virtual DbSet<SysoCloud> SysoCloud { get; set; }
+
     public virtual DbSet<TecnicosSupervisores> TecnicosSupervisores { get; set; }
 
     public virtual DbSet<TiposChamados> TiposChamados { get; set; }
@@ -131,22 +133,12 @@ public partial class HelpdesksysoContext : DbContext
             entity.ToTable("Clientes", "dbo");
 
             entity.Property(e => e.Bairro).IsUnicode(false);
-            entity.Property(e => e.Cep)
-                .HasMaxLength(20)
-                .IsUnicode(false);
             entity.Property(e => e.Cidade).IsUnicode(false);
-            entity.Property(e => e.Documento)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.Email).HasMaxLength(50);
-            entity.Property(e => e.Fantasia).HasMaxLength(150);
+            entity.Property(e => e.IdSolution).IsUnicode(false);
             entity.Property(e => e.Logradouro).IsUnicode(false);
-            entity.Property(e => e.NomeCliente).HasMaxLength(150);
-            entity.Property(e => e.TelefoneCliente).HasMaxLength(20);
             entity.Property(e => e.Uf)
                 .HasMaxLength(20)
                 .IsUnicode(false);
-            entity.Property(e => e.WhatsApp).HasMaxLength(20);
         });
 
         modelBuilder.Entity<Contratos>(entity =>
@@ -234,6 +226,33 @@ public partial class HelpdesksysoContext : DbContext
             entity.ToTable("SituacoesChamados", "dbo");
 
             entity.Property(e => e.DescricaoSituacao).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<SysoCloud>(entity =>
+        {
+            entity.HasKey(e => e.PkId);
+
+            entity.ToTable("SysoCloud", "dbo");
+
+            entity.Property(e => e.CaminhoBuscaArquivo).IsUnicode(false);
+            entity.Property(e => e.CaminhoDownload).IsUnicode(false);
+            entity.Property(e => e.CaminhoUpload).IsUnicode(false);
+            entity.Property(e => e.Descricao).IsUnicode(false);
+            entity.Property(e => e.ExecutarAntesBackup).IsUnicode(false);
+            entity.Property(e => e.ExecutarAposBackup).IsUnicode(false);
+            entity.Property(e => e.Extensao).IsUnicode(false);
+            entity.Property(e => e.Horario).IsUnicode(false);
+            entity.Property(e => e.TipoBackup).IsUnicode(false);
+
+            entity.HasOne(d => d.FkCliente).WithMany(p => p.SysoCloud)
+                .HasForeignKey(d => d.FkClienteId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SysoCloud_Clientes");
+
+            entity.HasOne(d => d.FkContrato).WithMany(p => p.SysoCloud)
+                .HasForeignKey(d => d.FkContratoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SysoCloud_Contratos");
         });
 
         modelBuilder.Entity<TecnicosSupervisores>(entity =>

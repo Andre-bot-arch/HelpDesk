@@ -5,7 +5,7 @@ namespace AppSysoHelp.Models;
 
 public partial class Licencas
 {
-    public int LicencaId { get; set; }
+    public long LicencaId { get; set; }
 
     public DateOnly DataAtivacao { get; set; }
 

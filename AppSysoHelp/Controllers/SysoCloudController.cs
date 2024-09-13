@@ -31,7 +31,16 @@ namespace AppSysoHelp.Controllers
                                      .Include(a => a.Licencas)
                                      .ThenInclude(a => a.LicencasDispositivos)
                                      .FirstOrDefault(a => a.ContratoId == id) ?? new Contratos();
+            var eventos = _context.SysoCloud.Where(a => a.FkContratoId == contrato.ContratoId).ToList();
+            ViewBag.Eventos = eventos;
             return View(contrato);
+        }
+
+        [HttpPost]
+        public IActionResult Create(SysoCloud s)
+        {
+            _generico.GravarGenerico(s);
+            return RedirectToAction("Index");
         }
     }
 }
