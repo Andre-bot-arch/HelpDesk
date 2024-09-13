@@ -9,6 +9,9 @@
             <a class="nav-link active text-primary" id="pills-home-tab-fill" data-toggle="pill" href="#pills-home-fill" role="tab" aria-controls="pills-home" aria-selected="true">Abertos</a>
         </li>
         <li class="nav-item">
+            <a class="nav-link text-primary" id="pills-atendimento-tab-fill" data-toggle="pill" href="#pills-atendimento-fill" role="tab" aria-controls="pills-atendimento" aria-selected="false">Em Atendimento</a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link text-primary" id="pills-profile-tab-fill" data-toggle="pill" href="#pills-profile-fill" role="tab" aria-controls="pills-profile" aria-selected="false">Reagendados</a>
         </li>
         <li class="nav-item">
@@ -16,6 +19,7 @@
         </li>
     </ul>
     <div class="tab-content" id="pills-tabContent-1">
+        <!--Abertos-->
         <div class="tab-pane fade active show" id="pills-home-fill" role="tabpanel" aria-labelledby="pills-home-tab-fill">
             <table class="table table-striped mb-0 table-borderless" style="border-color: #222e35; ">
                 <thead>
@@ -30,7 +34,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento <= DateTime.Now))
+                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) == 0 && a.DataAgendamento <= DateTime.Now))
                     {
                         <tr>
                             <td>
@@ -38,7 +42,14 @@
                                 @item.FkCliente.NomeCliente
                             </td>
                             <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
-                            <td>-------/-------/-------</td>
+                            @if (item.Atendimentos.Count > 0)
+                            {
+                                <td>@Convert.ToDateTime(item.Atendimentos.OrderByDescending(a=> a.AtendimentoId).FirstOrDefault().DataAtendimento).ToString("dd/MM/yyyy HH:mm")</td>
+                            }
+                            else
+                            {
+                                <td>-------/-------/-------</td>
+                            }
                             @if (item.Prioridade.Trim() == "Urgente")
                             {
                                 <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px"> URGENTE </div></td>
@@ -90,13 +101,14 @@
             </table>
 
         </div>
-        <div class="tab-pane fade" id="pills-profile-fill" role="tabpanel" aria-labelledby="pills-profile-tab-fill">
+         <!--Em Atendimento-->
+        <div class="tab-pane fade" id="pills-atendimento-fill" role="tabpanel" aria-labelledby="pills-atendimento-tab-fill">
             <table class="table table-striped mb-0 table-borderless" style="border-color: #222e35; ">
                 <thead>
                     <tr sstyle="border-bottom: 1px solid #222e35;">
                         <th scope="col">Protocolo</th>
                         <th scope="col">Abertura</th>
-                        <th scope="col">Atendimento</th>
+                        <th scope="col">Agendamento</th>
                         <th scope="col" class="text-center">Prioridade</th>
                         <th scope="col">Atendente</th>
                         <th scope="col">Técnico</th>
@@ -104,7 +116,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento > DateTime.Now))
+                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) > 0 && a.DataAgendamento <= DateTime.Now))
                     {
                         <tr>
                             <td>
@@ -113,9 +125,9 @@
                             </td>
                             <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
                             <td>
-                                @if (!String.IsNullOrEmpty(item.DataFechamento.ToString()))
+                                @if (!String.IsNullOrEmpty(item.DataAgendamento.ToString()))
                                 {
-                                    var dataUltimoAtendimento = Convert.ToDateTime(item.DataFechamento).ToString("dd/MM/yyyy HH:mm");
+                                    var dataUltimoAtendimento = Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy HH:mm");
                                     @dataUltimoAtendimento
                                     ;
                                 }
@@ -163,7 +175,7 @@
                                             <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
                                         </span>
                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                            <a class="dropdown-item" href="#"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="Atendimento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
                                             <a class="dropdown-item btn-adicionarId" href="#" data-prioridade="@item.Prioridade.Trim()" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalRemarcarChamado"><i class="ri-pencil-fill mr-2"></i>Remarcar</a>
                                             <a class="dropdown-item btn-adicionarIdPrint" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalPrintChamado"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
                                             <a class="dropdown-item btn-adicionarIdCancelamento" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalCancelarChamado"><i class="ri-delete-bin-6-fill mr-2"></i>Excluir</a>
@@ -176,6 +188,94 @@
                 </tbody>
             </table>
         </div>
+ <!--Remarcados-->
+        <div class="tab-pane fade" id="pills-profile-fill" role="tabpanel" aria-labelledby="pills-profile-tab-fill">
+            <table class="table table-striped mb-0 table-borderless" style="border-color: #222e35; ">
+                <thead>
+                    <tr sstyle="border-bottom: 1px solid #222e35;">
+                        <th scope="col">Protocolo</th>
+                        <th scope="col">Abertura</th>
+                        <th scope="col">Agendamento</th>
+                        <th scope="col" class="text-center">Prioridade</th>
+                        <th scope="col">Atendente</th>
+                        <th scope="col">Técnico</th>
+                        <th scope="col">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento > DateTime.Now))
+                    {
+                        <tr>
+                            <td>
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<br />
+                                @item.FkCliente.NomeCliente
+                            </td>
+                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
+                            <td>
+                                @if (!String.IsNullOrEmpty(item.DataAgendamento.ToString()))
+                                {
+                                    var dataUltimoAtendimento = Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy HH:mm");
+                                    @dataUltimoAtendimento
+                                    ;
+                                }
+                                else
+                                {
+                                    var dataUltimoAtendimento = "-------/ -------/ -------";
+                                    @dataUltimoAtendimento
+                                    ;
+                                }
+                            </td>
+                            @if (item.Prioridade.Trim() == "Urgente")
+                            {
+                                <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px"> URGENTE </div></td>
+                            }
+                            else if (item.Prioridade.Trim() == "Alta")
+                            {
+                                <td class="text-center"><div class="badge badge-pill iq-bg-danger" style="width: 80px">ALTA</div></td>
+                            }
+                            else if (item.Prioridade.Trim() == "Media")
+                            {
+                                <td class="text-center"><div class="badge badge-pill iq-bg-warning" style="width: 80px">MÉDIA</div></td>
+                            }
+                            else
+                            {
+                                <td class="text-center"><div class="badge badge-pill iq-bg-dark" style="width: 80px">Normal</div></td>
+                            }
+                            <td>
+                                @item.FkAtendenteNavigation.NomeCompleto.Substring(0, 8)
+                            </td>
+                            <td>
+                                @if (item.FkTecnicoId > 0)
+                                {
+                                    @item.FkTecnico.NomeCompleto.Substring(0, 8)
+                                }
+                                else
+                                {
+                                    <label>-----------</label>
+                                }
+
+                            </td>
+                            <td>
+                                <div class="iq-card-header-toolbar d-flex align-items-center">
+                                    <div class="dropdown">
+                                        <span class="dropdown-toggle text-primary" id="dropdownMenuButton5" data-toggle="dropdown" aria-expanded="true">
+                                            <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
+                                        </span>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="Atendimento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                            <a class="dropdown-item btn-adicionarId" href="#" data-prioridade="@item.Prioridade.Trim()" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalRemarcarChamado"><i class="ri-pencil-fill mr-2"></i>Remarcar</a>
+                                            <a class="dropdown-item btn-adicionarIdPrint" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalPrintChamado"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
+                                            <a class="dropdown-item btn-adicionarIdCancelamento" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalCancelarChamado"><i class="ri-delete-bin-6-fill mr-2"></i>Excluir</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!--Fechados-->
         <div class="tab-pane fade" id="pills-contact-fill" role="tabpanel" aria-labelledby="pills-contact-tab-fill">
             <table class="table table-striped mb-0 table-borderless" style="border-color: #222e35; ">
                 <thead>
@@ -262,5 +362,4 @@
 
         </div>
     </div>
-
 </div>
