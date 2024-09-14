@@ -31,6 +31,7 @@
                                         <div class="profile-detail">
                                             <h5 class="text-primary">@Model.ChamadoId.ToString().PadLeft(6, '0')</h5>
                                             <h6 class="text-primary">Cliente: @Model.FkCliente?.NomeCliente</h6>
+                                            <h6 class="text-warning">Contato: @Model.Contato / @Model.TelefoneContato</h6>
                                             <h6 class="text-primary" style="text-align:justify;">Descrição: @Model.DescricaoCompleta</h6>
                                         </div>
                                     </div>

@@ -13,6 +13,12 @@ namespace AppSysoHelp.Controllers
             _configuration = configuration;
             _context = context;
         }
+        [HttpPost]
+        public IActionResult BuscarClientePorId(long id)
+        {
+            var cli = _context.Clientes.FirstOrDefault(a => a.ClienteId == id);
+            return Json($"{cli.TelefoneCliente}/{cli.WhatsApp}");
+        }
 
         public IActionResult Index(int? page, string? query)
         {

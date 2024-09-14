@@ -76,11 +76,11 @@ namespace AppSysoHelp.Controllers
         public async Task<IActionResult> GetSugestaoCliente(string query)
         {
             var results = await _context.Clientes
-            .Where(e => e.NomeCliente.Contains(query))
+            .Where(e => e.NomeCliente.Contains(query) || e.Fantasia.Contains(query))
             .Select(e => new
             {
                 value = e.ClienteId,
-                label = e.NomeCliente.ToUpper()
+                label = $"{e.Documento} - {e.Fantasia.ToUpper()} / {e.Cidade}-{e.Uf}"
             })
             .ToListAsync();
 

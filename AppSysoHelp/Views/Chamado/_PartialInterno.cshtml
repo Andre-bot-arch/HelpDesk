@@ -1,5 +1,13 @@
 ﻿@model IEnumerable<AppSysoHelp.Models.Chamados>
 @{
+    var prioridades = new List<string> { "Urgente", "Alta", "Media", "Normal" };
+
+    var chamados = Model.OrderBy(a =>      
+       {           
+           var prioridade = a.Prioridade?.Trim(); // Usando operador null conditional e Trim
+           return prioridades.IndexOf(prioridade ?? string.Empty);
+       })
+       .ToList();
 }
 
 
@@ -34,7 +42,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) == 0 && a.DataAgendamento <= DateTime.Now))
+                    @foreach (var item in chamados.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) == 0 && a.DataAgendamento <= DateTime.Now))
                     {
                         <tr>
                             <td>
@@ -116,7 +124,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) > 0 && a.DataAgendamento <= DateTime.Now))
+                    @foreach (var item in chamados.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) > 0 && a.DataAgendamento <= DateTime.Now))
                     {
                         <tr>
                             <td>
@@ -203,7 +211,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento > DateTime.Now))
+                    @foreach (var item in chamados.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento > DateTime.Now))
                     {
                         <tr>
                             <td>
@@ -289,7 +297,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 3 || a.FkSituacaoChamadoId == 4)))
+                    @foreach (var item in chamados.Where(a => (a.FkSituacaoChamadoId == 3 || a.FkSituacaoChamadoId == 4)))
                     {
                         var cancelado = "";
                         if (item.FkSituacaoChamadoId == 4)

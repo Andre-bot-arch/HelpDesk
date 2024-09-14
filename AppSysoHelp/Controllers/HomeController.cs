@@ -1,6 +1,7 @@
 using AppSysoHelp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace AppSysoHelp.Controllers
@@ -21,7 +22,8 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var lista = _context.Chamados.Where(a => a.DataCriacao > DateTime.Now.AddMonths(-6).Date).ToList();
+            return View(lista);
         }
 
         public IActionResult Privacy()
@@ -34,5 +36,43 @@ namespace AppSysoHelp.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        [HttpGet]
+        public IActionResult AtendimentoRanking()
+        {
+            var seisMesesAtras = DateTime.Now.AddMonths(-6);
+
+            // Busca os chamados com a lista de atendimentos
+            var chamados = _context.Chamados
+                .Include(c => c.Atendimentos)
+                .ThenInclude(c=> c.FkTecnico)
+                .Where(c => c.DataFechamento != null && c.Atendimentos.Any(a => a.DataFechamento.HasValue && a.DataFechamento.Value >= seisMesesAtras))
+                .ToList();
+
+            // Obtemos o último atendimento para cada chamado
+            var ultimoAtendimentoPorChamado = chamados
+                .Select(c => c.Atendimentos
+                    .Where(a => a.DataFechamento.HasValue && a.DataFechamento.Value >= seisMesesAtras && a.AtendimentoEncerrado == true)
+                    .OrderByDescending(a => a.DataFechamento)
+                    .FirstOrDefault()
+                )
+                .Where(a => a != null)
+                .ToList();
+
+            // Contamos os atendimentos por técnico e mês
+            var ranking = ultimoAtendimentoPorChamado
+                .GroupBy(a => new { a.FkTecnico.NomeCompleto, MêsAno = a.DataFechamento.Value.ToString("yyyy-MM") })
+                .Select(g => new
+                {
+                    Tecnico = g.Key.NomeCompleto ?? "Desconhecido",
+                    MêsAno = g.Key.MêsAno,
+                    Quantidade = g.Count()
+                })
+                .ToList();
+
+            return Json(ranking);
+        }
+
+
     }
 }

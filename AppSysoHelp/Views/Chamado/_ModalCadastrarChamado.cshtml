@@ -1,5 +1,4 @@
-﻿
-<style>
+﻿<style>
     .modal-body {
         max-height: 550px;
         overflow-y: auto;
@@ -16,15 +15,13 @@
                 </button>
             </div>
             <form class="was-validated" asp-action="GravarChamado" method="post">
-               @*  Falta implentar o tipo de chamado setado para nao da erro  *@
                 <input type="hidden" name="FkTipoChamadoId" value="1" />
-                
                 <input type="hidden" name="ChamadoId" id="ChamadoId" />
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <select id="clienteSelect" name="FkClienteId" class="FkClienteId" required style="width: 100%">
+                                <select id="clienteSelect88" name="FkClienteId" class="FkClienteId" required style="width: 100%">
                                     <option value="">Selecione um Cliente</option>
                                 </select>
                             </div>
@@ -34,7 +31,7 @@
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <select id="sistemaSelect" name="FkPlataformaId" class="FkPlataformaId" required style="width: 100%; height: 44px">
-                                    <option value="">Buscar Sistema</option>
+                                    <option value="1" selected>Solution - Vector</option>
                                 </select>
                             </div>
                         </div>
@@ -60,26 +57,26 @@
                         </div>
                         <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
                             <input type="radio" id="customRadio-2" name="Prioridade" value="Media" class="custom-control-input bg-warning">
-                            <label class="custom-control-label text-black" for="customRadio-2"  style="color: black">Média</label>
+                            <label class="custom-control-label text-black" for="customRadio-2" style="color: black">Média</label>
                         </div>
                         <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
                             <input type="radio" id="customRadio-3" name="Prioridade" value="Alta" class="custom-control-input bg-danger">
-                            <label class="custom-control-label text-black" for="customRadio-3"  style="color: black">Alta</label>
+                            <label class="custom-control-label text-black" for="customRadio-3" style="color: black">Alta</label>
                         </div>
                         <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
                             <input type="radio" id="customRadio-4" name="Prioridade" value="Urgente" class="custom-control-input bg-dark">
-                            <label class="custom-control-label text-black" for="customRadio-4"  style="color: black">Urgente</label>
+                            <label class="custom-control-label text-black" for="customRadio-4" style="color: black">Urgente</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="mb-3">
-                                <input type="text" name="TelefoneContato" id="" maxlength="100" class="form-control is-invalid" placeholder="Fone do Cliente" required>
+                                <input type="text" name="TelefoneContato" id="TelefoneContato1" maxlength="100" class="form-control is-invalid" placeholder="Fone do Cliente" required>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="mb-3">
-                                <input type="text" name="Contato" id="" class="form-control is-invalid" placeholder="Nome Requisistante" required>
+                                <input type="text" name="Contato" id="" class="form-control is-invalid" placeholder="Nome Requisitante" required>
                             </div>
                         </div>
                     </div>
@@ -90,9 +87,9 @@
                                 <label class="custom-control-label text-black" for="customSwitch20" style="color:black">Direcionar o Chamado</label>
                             </div>
 
-                            <div id="tecnico" style="display: none">                                
+                            <div id="tecnico" style="display: none">
                                 <div class="form-group">
-                                    <select id="tecnicoSelect" name="FkTecnicoId" class="FkPlataformaId" style="width: 100%; height: 44px">
+                                    <select id="tecnicoSelect10" name="FkTecnicoId" class="FkPlataformaId tecnicoSelect10" style="width: 100%; height: 44px">
                                         <option value="">Buscar Sistema</option>
                                     </select>
                                 </div>
@@ -112,13 +109,12 @@
                             </div>
                         </div>
                     </div>
-
                     <div>
                         <textarea class="form-control is-invalid" id="validationTextarea" name="DescricaoCompleta" placeholder="Descrição do Chamado...." required="" style="min-height: 132px; max-height:132px "></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">sair</button>
+                    <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">Sair</button>
                     <button type="submit" style="width: 80px" class="btn btn-primary">Salvar</button>
                 </div>
             </form>
@@ -128,7 +124,7 @@
 
 <script>
     $(document).ready(function () {
-
+        // Mostrar/Esconder caixas
         $(".mostrarcaixa").click(function () {
             var definido = $(this).data("id");
             if ($(this).is(":checked")) {
@@ -138,8 +134,8 @@
             }
         });
 
-
-        $('#clienteSelect').select2({
+        // Inicializar Select2 com opções AJAX
+        $('#clienteSelect88').select2({
             placeholder: 'Buscar Cliente',
             minimumInputLength: 4,
             ajax: {
@@ -162,7 +158,6 @@
                         })
                     };
                 },
-
                 cache: true
             }
         });
@@ -190,13 +185,12 @@
                         })
                     };
                 },
-
                 cache: true
             }
         });
 
-        $('#tecnicoSelect').select2({
-            placeholder: 'Buscar Tecnico',
+        $('#tecnicoSelect10').select2({
+            placeholder: 'Buscar Técnico',
             minimumInputLength: 4,
             ajax: {
                 url: '/Contrato/GetSugestaoTecnico',
@@ -218,10 +212,33 @@
                         })
                     };
                 },
-
                 cache: true
             }
         });
+
+        $('#clienteSelect88').change(function () {
+            var selectedValue = $(this).val();
+            $.ajax({
+                url: '/Clientes/BuscarClientePorId',
+                type: 'POST',
+                data: { id: selectedValue },
+                success: function (response) {
+                    console.log('Resposta do servidor:', response); // Mostrando a resposta no console
+                    $("#TelefoneContato1").val(response); // Atualizando o campo "TelefoneContato"
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: 'Ocorreu um erro inesperado.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        });
+
     });
+
+   
 
 </script>
