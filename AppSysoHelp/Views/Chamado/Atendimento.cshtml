@@ -66,7 +66,7 @@
                                 </div>
                                 <div class="iq-card-body">
                                     <ul class="iq-timeline">
-                                        @foreach (var item in Model.Atendimentos.OrderByDescending(a => a.DataAtendimento))
+                                        @foreach (var item in Model.Atendimentos.OrderBy(a => a.DataAtendimento))
                                         {
                                             <li style="border-bottom: 1px solid seashell">
                                                 <div class="timeline-dots"></div>
@@ -117,7 +117,7 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" style="width: 180px" class="btn btn-danger" data-dismiss="modal">sair</button>
+                                                @* <button type="button" style="width: 180px" class="btn btn-danger" data-dismiss="modal">sair</button> *@
                                                 <button type="submit" style="width: 180px" class="btn btn-primary btn-remarcar">Finalizar Chamado</button>
                                             </div>
                                         </form>
