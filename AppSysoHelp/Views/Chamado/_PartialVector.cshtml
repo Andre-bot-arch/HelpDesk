@@ -36,7 +36,7 @@
                     {
                         <tr>
                             <td>
-                                #@item.ChamadoId.ToString().PadLeft(8, '0')<br />
+                                 #@item.ChamadoId.ToString().PadLeft(8, '0')<br />@item.FkCliente.Fantasia<br/>
                                 @item.FkCliente.NomeCliente
                             </td>
                             <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
@@ -118,7 +118,7 @@
                     {
                         <tr>
                             <td>
-                                #@item.ChamadoId.ToString().PadLeft(8, '0')<br />
+                                 #@item.ChamadoId.ToString().PadLeft(8, '0')<br />@item.FkCliente.Fantasia<br/>
                                 @item.FkCliente.NomeCliente
                             </td>
                             <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
@@ -205,7 +205,7 @@
                     {
                         <tr>
                             <td>
-                                #@item.ChamadoId.ToString().PadLeft(8, '0')<br />
+                                 #@item.ChamadoId.ToString().PadLeft(8, '0')<br />@item.FkCliente.Fantasia<br/>
                                 @item.FkCliente.NomeCliente
                             </td>
                             <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
@@ -296,7 +296,7 @@
                         }
                         <tr class="@cancelado">
                             <td>
-                                #@item.ChamadoId.ToString().PadLeft(8, '0')<br />
+                                 #@item.ChamadoId.ToString().PadLeft(8, '0')<br />@item.FkCliente.Fantasia<br/>
                                 @item.FkCliente.NomeCliente
                             </td>
                             <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
