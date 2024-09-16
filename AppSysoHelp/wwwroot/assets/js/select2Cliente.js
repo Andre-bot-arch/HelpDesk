@@ -33,7 +33,6 @@
                             telefone: item.telefone, // Verifique se "telefone" existe na resposta do servidor
                             cnpj: item.cnpj,
                             razaoSocial: item.razaoSocial,
-                            fantasia: item.fantasia
                         };
                     })
                 };
@@ -61,7 +60,7 @@
                     <strong>${cliente.text}</strong><br/>
                     <small>Endereço: ${cliente.endereco}</small><br/>
                     <small>Telefone: ${cliente.telefone}</small><br/>
-                    <small>Fantasia: ${cliente.fantasia}</small>
+                    <small>Razao Social: ${cliente.razaoSocial}</small>
                 </div>`
         );
 

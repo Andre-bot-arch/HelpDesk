@@ -82,7 +82,7 @@ namespace AppSysoHelp.Controllers
                 value = e.ClienteId,
                 label = $"{e.Documento} - {e.Fantasia.ToUpper()}",
                 telefone = $"{e.TelefoneCliente} | {e.WhatsApp}",
-                fantasia = e.Fantasia,
+                razaoSocial = e.NomeCliente,
                 endereco = $"{e.Logradouro} / {e.Cidade}-{e.Uf}"
             })
             .ToListAsync();
