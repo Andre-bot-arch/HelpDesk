@@ -37,10 +37,10 @@
                             <div class="col-sm-12 col-md-6">
                                 <ul class="nav nav-pills d-flex align-items-end float-right profile-feed-items p-0 m-0">
                                     <li>
-                                        <a class="nav-link active" data-toggle="pill" href="#profile-feed"> @Convert.ToDateTime(Model.DataCriacao).ToString("dd/MM/yyyy HH:mm")</a>
+                                        <a class="nav-link active" data-toggle="pill" href="#profile-feed"> @Convert.ToDateTime(Model.DataCriacao).ToString("dd/MM/yyyy hh:mm")</a>
                                     </li>
                                     <li>
-                                        <a class="nav-link" data-toggle="pill" href="#profile-activity">@Convert.ToDateTime(Model.DataAgendamento).ToString("dd/MM/yyyy HH:mm")</a>
+                                        <a class="nav-link" data-toggle="pill" href="#profile-activity">@Convert.ToDateTime(Model.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</a>
                                     </li>
                                     <li>
                                         <a class="nav-link" data-toggle="pill" href="#profile-friends">@Model.Prioridade</a>
@@ -68,7 +68,7 @@
                                             <li style="border-bottom: 1px solid seashell">
                                                 <div class="timeline-dots"></div>
                                                 <h6 class="float-left mb-1" style="color: seashell">@item.FkTecnico.NomeCompleto</h6>
-                                                <small class="float-right mt-1 text-primary">@Convert.ToDateTime(item.DataAtendimento).ToString("dd/MM/yyyy HH:mm")</small>
+                                                <small class="float-right mt-1 text-primary">@Convert.ToDateTime(item.DataAtendimento).ToString("dd/MM/yyyy hh:mm")</small>
                                                 <div class="d-inline-block w-100">
                                                     <p style="color: seashell">@item.ProcedimentosAplicados</p>
                                                 </div>
