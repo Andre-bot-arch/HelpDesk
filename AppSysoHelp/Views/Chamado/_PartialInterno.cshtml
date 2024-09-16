@@ -300,7 +300,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in chamados.Where(a => (a.FkSituacaoChamadoId == 3 || a.FkSituacaoChamadoId == 4)))
+                    @foreach (var item in chamados.Where(a => (a.FkSituacaoChamadoId == 3 || a.FkSituacaoChamadoId == 4)).OrderByDescending(a => a.DataFechamento))
                     {
                         var cancelado = "";
                         if (item.FkSituacaoChamadoId == 4)
