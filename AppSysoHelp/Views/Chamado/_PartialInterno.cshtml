@@ -50,7 +50,7 @@
                                 @item.FkCliente.Fantasia<br />
                                 <span style="font-size: 11px">@item.FkCliente.NomeCliente</span>
                             </td>
-                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
+                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy HH:mm")</td>
                             @if (item.Atendimentos.Count > 0)
                             {
                                 <td>@Convert.ToDateTime(item.Atendimentos.OrderByDescending(a => a.AtendimentoId).FirstOrDefault().DataAtendimento).ToString("dd/MM/yyyy HH:mm")</td>
@@ -133,7 +133,7 @@
                                 @item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
-                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
+                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy HH:mm")</td>
                             <td>
                                 @if (!String.IsNullOrEmpty(item.DataAgendamento.ToString()))
                                 {
@@ -221,7 +221,7 @@
                                 @item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
-                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
+                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy HH:mm")</td>
                             <td>
                                 @if (!String.IsNullOrEmpty(item.DataAgendamento.ToString()))
                                 {
@@ -313,7 +313,7 @@
                                 @item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
-                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
+                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy HH:mm")</td>
                             <td>
                                 @if (!String.IsNullOrEmpty(item.DataFechamento.ToString()))
                                 {

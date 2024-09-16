@@ -64,6 +64,7 @@ namespace AppSysoHelp.Controllers
                                          .Include(a => a.FkTecnico)
                                          .Include(a => a.Atendimentos)
                                          .ThenInclude(a => a.FkTecnico)
+                                         .Where(a => a.DataFechamento == null || a.DataFechamento >= DateTime.Now.Date.AddDays(-1))
                                          .ToList());
         }
 
