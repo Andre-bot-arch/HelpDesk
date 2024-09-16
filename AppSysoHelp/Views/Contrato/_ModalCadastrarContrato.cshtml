@@ -17,7 +17,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <select id="clienteSelect" name="FkClienteId" class="FkClienteId" required style="width: 100%">
+                        <select id="clienteSelect88" name="FkClienteId" class="FkClienteId" required style="width: 100%">
                             <option value="">Selecione um Cliente</option>
                         </select>
                     </div>
@@ -63,63 +63,4 @@
     </div>
 </div>
 
-<script>
-    $(document).ready(function () {
-        $('#clienteSelect').select2({
-            placeholder: 'Buscar Cliente',
-            minimumInputLength: 4,
-            ajax: {
-                url: '/Contrato/GetSugestaoCliente',
-                dataType: 'json',
-                contentType: "application/json; charset=utf-8",
-                delay: 250,
-                data: function (params) {
-                    return {
-                        query: params.term
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: data.map(function (item) {
-                            return {
-                                id: item.value,
-                                text: item.label
-                            };
-                        })
-                    };
-                },
-
-                cache: true
-            }
-        });
-
-        $('#sistemaSelect').select2({
-            placeholder: 'Buscar Sistema',
-            minimumInputLength: 4,
-            ajax: {
-                url: '/Contrato/GetSugestaoSistema',
-                dataType: 'json',
-                contentType: "application/json; charset=utf-8",
-                delay: 250,
-                data: function (params) {
-                    return {
-                        query: params.term
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: data.map(function (item) {
-                            return {
-                                id: item.value,
-                                text: item.label
-                            };
-                        })
-                    };
-                },
-
-                cache: true
-            }
-        });
-    });
-
-</script>
+<script src="~/assets/js/select2Cliente.js"></script>

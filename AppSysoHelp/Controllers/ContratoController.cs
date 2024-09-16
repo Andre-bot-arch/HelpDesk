@@ -80,7 +80,10 @@ namespace AppSysoHelp.Controllers
             .Select(e => new
             {
                 value = e.ClienteId,
-                label = $"{e.Documento} - {e.Fantasia.ToUpper()} / {e.Cidade}-{e.Uf}"
+                label = $"{e.Documento} - {e.Fantasia.ToUpper()}",
+                telefone = $"{e.TelefoneCliente} | {e.WhatsApp}",
+                fantasia = e.Fantasia,
+                endereco = $"{e.Logradouro} / {e.Cidade}-{e.Uf}"
             })
             .ToListAsync();
 
