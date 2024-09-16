@@ -93,34 +93,165 @@
                                 </div>
                                 <div class="iq-card-body">
                                     <div class="new-user-info">
-                                        <form class="was-validated" asp-action="FinalizarChamado" asp-controller="Chamado" method="post" enctype="multipart/form-data">
-                                            <input type="hidden" name="FkTipoChamadoId" value="1" />
-                                            <input type="hidden" id="ChamadoIdRemarcado" asp-for="ChamadoId" value="@Model.ChamadoId" />
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <div class="form-group">
-                                                            <!-- Pré-visualização da Imagem -->
-                                                            <div class="form-group">
-                                                                <label class="text-primary">Pré-visualização:</label>
-                                                                <img id="previewImagemCadastrar" src="#" alt="Pré-visualização" style="display: none; max-width: 30%; height: auto;" />
+                                        <div class="iq-card-body">
+                                            <ul class="nav nav-tabs justify-content-end" id="myTab-4" role="tablist">
+                                                <li class="nav-item">
+                                                    <a class="nav-link active text-primary" id="Finalizar-tab-end" data-toggle="tab" href="#Finalizar-end" role="tab" aria-controls="Finalizar" aria-selected="true">Finalizar</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link text-primary" id="Remarcar-tab-end" data-toggle="tab" href="#Remarcar-end" role="tab" aria-controls="Remarcar" aria-selected="false">Remarcar</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content" id="myTabContent-5">
+                                                <div class="tab-pane fade show active" id="Finalizar-end" role="tabpanel" aria-labelledby="Finalizar-tab-end">
+                                                    <form class="was-validated" asp-action="FinalizarChamado" asp-controller="Chamado" method="post" enctype="multipart/form-data">
+                                                        <input type="hidden" name="FkTipoChamadoId" value="1" />
+                                                        <input type="hidden" id="ChamadoIdRemarcado" asp-for="ChamadoId" value="@Model.ChamadoId" />
+                                                        <div class="modal-body">
+                                                            <div class="row">
+                                                                <div class="col-sm-12">
+                                                                    <div class="form-group">
+                                                                        <!-- Pré-visualização da Imagem -->
+                                                                        <div class="form-group">
+                                                                            <label class="text-primary">Pré-visualização:</label>
+                                                                            <img id="previewImagemCadastrar" src="#" alt="Pré-visualização" style="display: none; max-width: 30%; height: auto;" />
+                                                                        </div>
+                                                                        <div class="custom-file" style="background-color: #222e35; color: seashell">
+                                                                            <input name="imagem" type="file" class="custom-file-input" id="imagemBase64Cadastrar" style="background-color: #222e35; color: seashell">
+                                                                            <label class="custom-file-label" for="customFile" style="background-color: #222e35; color: seashell">Selecione imagens</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div class="custom-file" style="background-color: #222e35; color: seashell">
-                                                            <input name="imagem" type="file" class="custom-file-input" id="imagemBase64Cadastrar" style="background-color: #222e35; color: seashell">
-                                                                <label class="custom-file-label" for="customFile" style="background-color: #222e35; color: seashell">Selecione imagens</label>
+                                                            <div>
+                                                                <textarea class="form-control is-invalid" id="validationTextarea" name="DescricaoCompleta" placeholder="Descrição...." required="" style="min-height: 132px; max-height:132px; background-color: #222e35; color: seashell"></textarea>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                        <div class="modal-footer">
+                                                            @* <button type="button" style="width: 180px" class="btn btn-danger" data-dismiss="modal">sair</button> *@
+                                                            <button type="submit" style="width: 180px" class="btn btn-primary btn-remarcar">Finalizar Chamado</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
-                                                <div>
-                                                    <textarea class="form-control is-invalid" id="validationTextarea" name="DescricaoCompleta" placeholder="Descrição...." required="" style="min-height: 132px; max-height:132px; background-color: #222e35; color: seashell"></textarea>
+                                                <div class="tab-pane fade" id="Remarcar-end" role="tabpanel" aria-labelledby="Remarcar-tab-end">
+                                                    <form class="was-validated" asp-action="RemarcarChamado" method="post">
+                                                        <input type="hidden" name="FkTipoChamadoId" value="1" />
+                                                        <input type="hidden" asp-for="ChamadoId" value="@Model.ChamadoId"/>
+                                                        <div class="modal-body">
+                                                            <div class="row">
+                                                                <div class="col-sm-12">
+                                                                    @{
+                                                                        string _1 = "";
+                                                                        string _2 = "";
+                                                                        string _3 = "";
+                                                                        string _4 = "";
+                                                                        string _5 = "";
+                                                                        string _6 = "";
+                                                                        switch (Model.FkSetores)
+                                                                        {
+                                                                            case 1:
+                                                                                _1 = "selected";
+                                                                                break;
+                                                                            case 2:
+                                                                                _2 = "selected";
+                                                                                break;
+                                                                            case 3:
+                                                                                _3 = "selected";
+                                                                                break;
+                                                                            case 4:
+                                                                                _4 = "selected";
+                                                                                break;
+                                                                            case 5:
+                                                                                _5 = "selected";
+                                                                                break;
+                                                                            default:
+                                                                                _6 = "selected";
+                                                                                break;
+                                                                        }
+                                                                        string urgente = ""; string alta = ""; string media = ""; string normal = "";
+                                                                        @if (Model.Prioridade.Trim() == "Urgente")
+                                                                        {
+                                                                            urgente = "checked";
+                                                                        }
+                                                                        else if (Model.Prioridade.Trim() == "Alta")
+                                                                        {
+                                                                            alta = "checked";
+                                                                        }
+                                                                        else if (Model.Prioridade.Trim() == "Media")
+                                                                        {
+                                                                            media = "checked";
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            normal = "checked";
+                                                                        }
+                                                                    }
+                                                                    <div class="form-group">
+                                                                        <select name="FkSetores" class="custom-select" required style="width: 100%; height: 44px; background-color: #222e35">                                                                          
+                                                                            <option value="1" @_1>Suporte Interno</option>
+                                                                            <option value="2" @_2>Suporte Externo</option>
+                                                                            <option value="3" @_3>Suporte Vector</option>
+                                                                            <option value="4" @_4>Suporte Desenvolvimento</option>
+                                                                            <option value="5" @_5>Suporte Financeiro</option>
+                                                                            <option value="6" @_6>Suporte Treinamento</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-1 p-2">
+                                                                <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                                                                    <input type="radio" id="customRadio-11" name="Prioridade" value="Normal" class="custom-control-input bg-success" @normal>
+                                                                    <label class="custom-control-label text-primary" for="customRadio-11" style="color: black">Normal</label>
+                                                                </div>
+                                                                <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                                                                    <input type="radio" id="customRadio-21" name="Prioridade" value="Media" class="custom-control-input bg-warning" @media>
+                                                                    <label class="custom-control-label text-primary" for="customRadio-21" style="color: black">Média</label>
+                                                                </div>
+                                                                <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                                                                    <input type="radio" id="customRadio-31" name="Prioridade" value="Alta" class="custom-control-input bg-danger" @alta">
+                                                                    <label class="custom-control-label text-primary" for="customRadio-31" style="color: black">Alta</label>
+                                                                </div>
+                                                                <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                                                                    <input type="radio" id="customRadio-41" name="Prioridade" value="Urgente" class="custom-control-input bg-dark" @urgente>
+                                                                    <label class="custom-control-label text-primary" for="customRadio-41" style="color: black">Urgente</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-sm-12">
+                                                                    <div class="custom-control custom-switch custom-switch-color custom-control-inline mb-2">
+                                                                        <input data-id="#tecnico1" type="checkbox" class="custom-control-input bg-success mostrarcaixa1" id="customSwitch30" style="background-color: #222e35">
+                                                                        <label class="custom-control-label text-primary" for="customSwitch30" style="color:black">Direcionar o Chamado</label>
+                                                                    </div>
+
+                                                                    <div id="tecnico1" style="display: none">
+                                                                        <div class="form-group">
+                                                                            <select id="tecnicoSelect" name="FkTecnicoId" class="FkPlataformaId tecnicoSelect" style="width: 100%; height: 44px; background-color: #222e35">
+                                                                                <option value="">Buscar Sistema</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-12">
+                                                                    <div class="row" id="agenda" style="display: block">
+                                                                        <div class="col-sm-12">
+                                                                            <div class="mb-3">
+                                                                                <input type="datetime-local" name="DataAgendamento" required class="form-control is-invalid text-white" placeholder="Data Agendamento" style="background-color: #222e35">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <textarea class="form-control is-invalid text-white" id="validationTextarea" name="DescricaoCompleta" placeholder="Descrição...." required="" style="min-height: 132px; max-height:132px; background-color: #222e35"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">                                                           
+                                                            <button type="submit" class="btn btn-primary btn-remarcar">Remarcar Chamado</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
                                             </div>
-                                            <div class="modal-footer">
-                                                @* <button type="button" style="width: 180px" class="btn btn-danger" data-dismiss="modal">sair</button> *@
-                                                <button type="submit" style="width: 180px" class="btn btn-primary btn-remarcar">Finalizar Chamado</button>
-                                            </div>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -136,6 +267,15 @@
 <script>
     $(document).ready(function () {
         $(".mostrarcaixa12").click(function () {
+            var definido = $(this).data("id");
+            if ($(this).is(":checked")) {
+                $(definido).show();
+            } else {
+                $(definido).hide();
+            }
+        });
+
+        $(".mostrarcaixa1").click(function () {
             var definido = $(this).data("id");
             if ($(this).is(":checked")) {
                 $(definido).show();

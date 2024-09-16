@@ -92,17 +92,14 @@ namespace AppSysoHelp.Controllers
             var chamado = _context.Chamados.FirstOrDefault(a => a.ChamadoId == dados.ChamadoId);
             var userIdClaim = User.FindFirst("Id");
             var userId = userIdClaim?.Value;
-            var atendimento = new Atendimentos
-            {
-                DataAtendimento = DateTime.Now,
-                FkChamadoId = dados.ChamadoId,
-                ProcedimentosAplicados = dados.DescricaoCompleta,
-                FkTecnicoId = Convert.ToInt32(userId),
-                NovaDataAtendimento = dados.DataAgendamento,
-                DataFechamento = DateTime.Now,
-                AtendimentoEncerrado = true,
-            };
-            _generico.GravarGenerico(atendimento);
+            var atendimentoExistente = _context.Atendimentos.FirstOrDefault(a => a.FkChamadoId == dados.ChamadoId && a.AtendimentoEncerrado != true);
+            atendimentoExistente.ProcedimentosAplicados = dados.DescricaoCompleta;
+            atendimentoExistente.FkTecnicoId = Convert.ToInt32(userId);
+            atendimentoExistente.NovaDataAtendimento = dados.DataAgendamento;
+            atendimentoExistente.DataFechamento = DateTime.Now;
+            atendimentoExistente.AtendimentoEncerrado = true;
+
+            _generico.UpdateGenerico(atendimentoExistente);
 
             chamado.FkSituacaoChamadoId = 2;
             chamado.DataAgendamento = dados.DataAgendamento;
