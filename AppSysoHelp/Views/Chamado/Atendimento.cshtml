@@ -1,7 +1,4 @@
 ﻿@model AppSysoHelp.Models.Chamados
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
 @{
     ViewData["Title"] = "Atendimento";
     bool validador = (bool)ViewBag.atendimento;
@@ -135,40 +132,13 @@
                                                 </div>
                                                 <div class="tab-pane fade" id="Remarcar-end" role="tabpanel" aria-labelledby="Remarcar-tab-end">
                                                     <form class="was-validated" asp-action="RemarcarChamado" method="post">
-                                                        <input type="hidden" name="FkTipoChamadoId" value="1" />
-                                                        <input type="hidden" asp-for="ChamadoId" value="@Model.ChamadoId"/>
+                                                        <input type="hidden" name="ChamadoId" value="@Model.ChamadoId" />
+                                                        <input type="hidden" name="FkTipoChamadoId" value="1" />                                                        
                                                         <div class="modal-body">
                                                             <div class="row">
                                                                 <div class="col-sm-12">
-                                                                    @{
-                                                                        string _1 = "";
-                                                                        string _2 = "";
-                                                                        string _3 = "";
-                                                                        string _4 = "";
-                                                                        string _5 = "";
-                                                                        string _6 = "";
-                                                                        switch (Model.FkSetores)
-                                                                        {
-                                                                            case 1:
-                                                                                _1 = "selected";
-                                                                                break;
-                                                                            case 2:
-                                                                                _2 = "selected";
-                                                                                break;
-                                                                            case 3:
-                                                                                _3 = "selected";
-                                                                                break;
-                                                                            case 4:
-                                                                                _4 = "selected";
-                                                                                break;
-                                                                            case 5:
-                                                                                _5 = "selected";
-                                                                                break;
-                                                                            default:
-                                                                                _6 = "selected";
-                                                                                break;
-                                                                        }
-                                                                        string urgente = ""; string alta = ""; string media = ""; string normal = "";
+                                                                    @{                                                                       
+                                                                        var urgente = ""; var alta = ""; var media = ""; var normal = "";
                                                                         @if (Model.Prioridade.Trim() == "Urgente")
                                                                         {
                                                                             urgente = "checked";
@@ -187,13 +157,13 @@
                                                                         }
                                                                     }
                                                                     <div class="form-group">
-                                                                        <select name="FkSetores" class="custom-select" required style="width: 100%; height: 44px; background-color: #222e35">                                                                          
-                                                                            <option value="1" @_1>Suporte Interno</option>
-                                                                            <option value="2" @_2>Suporte Externo</option>
-                                                                            <option value="3" @_3>Suporte Vector</option>
-                                                                            <option value="4" @_4>Suporte Desenvolvimento</option>
-                                                                            <option value="5" @_5>Suporte Financeiro</option>
-                                                                            <option value="6" @_6>Suporte Treinamento</option>
+                                                                        <select asp-for="FkSetores" class="custom-select" required style="width: 100%; height: 44px; background-color: #222e35">
+                                                                            <option value="1">Suporte Interno</option>
+                                                                            <option value="2">Suporte Externo</option>
+                                                                            <option value="3">Suporte Vector</option>
+                                                                            <option value="4">Suporte Desenvolvimento</option>
+                                                                            <option value="5">Suporte Financeiro</option>
+                                                                            <option value="6">Suporte Treinamento</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -208,7 +178,7 @@
                                                                     <label class="custom-control-label text-primary" for="customRadio-21" style="color: black">Média</label>
                                                                 </div>
                                                                 <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
-                                                                    <input type="radio" id="customRadio-31" name="Prioridade" value="Alta" class="custom-control-input bg-danger" @alta">
+                                                                    <input type="radio" id="customRadio-31" name="Prioridade" value="Alta" class="custom-control-input bg-danger" @alta>
                                                                     <label class="custom-control-label text-primary" for="customRadio-31" style="color: black">Alta</label>
                                                                 </div>
                                                                 <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
