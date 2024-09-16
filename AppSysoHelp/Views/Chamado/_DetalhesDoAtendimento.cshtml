@@ -4,27 +4,31 @@
 <form class="was-validated" asp-action="CancelarChamado" method="post">
     <div class="modal-body">
         <div class="row">
-            <div class="col-sm-6">
-
+            <div class="col-sm-3">
                 <label for="exampleInputText1" class="text-primary">
                     Protocolo: <br />
                     <span class="text-dark"> @Model.ChamadoId</span>
                 </label>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-3">
                 <label for="exampleInputText1" class="text-primary">
                     Abertura:<br />
                     <span class="text-dark">@Convert.ToDateTime(Model.DataCriacao).ToString("dd/MM/yyyy hh:mm")</span>
                 </label>
-
+            </div>
+            <div class="col-sm-6">
+                <label for="exampleInputText1" class="text-primary">
+                    Programação do Atendimento:<br />
+                    <span class="text-dark"> @Convert.ToDateTime(Model.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</span>
+                </label>
             </div>
             <div class="col-sm-6">
                 <label for="exampleInputText1" class="text-primary">Cliente: <br /> <span class="text-dark">@Model.FkCliente.NomeCliente</span></label>
             </div>
             <div class="col-sm-6">
                 <label for="exampleInputText1" class="text-primary">
-                    Programação:<br />
-                    <span class="text-dark"> @Convert.ToDateTime(Model.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</span>
+                    Contato:<br />
+                    <span class="text-dark"> @Model.Contato - @Model.TelefoneContato</span>
                 </label>
             </div>
             <div class="col-sm-6">
