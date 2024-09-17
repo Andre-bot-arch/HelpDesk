@@ -27,7 +27,7 @@ public partial class Licencas
 
     public string? Hash { get; set; }
 
-    public virtual Contratos? FkContrato { get; set; }
+    public virtual ICollection<Dispositivos> Dispositivos { get; set; } = new List<Dispositivos>();
 
-    public virtual ICollection<LicencasDispositivos> LicencasDispositivos { get; set; } = new List<LicencasDispositivos>();
+    public virtual Contratos? FkContrato { get; set; }
 }

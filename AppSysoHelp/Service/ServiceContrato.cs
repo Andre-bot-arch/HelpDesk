@@ -31,7 +31,7 @@ namespace AppSysoHelp.Service
             return _context.Contratos.Include(a => a.FkPlataforma)
                                      .Include(a => a.FkCliente)
                                      .Include(a => a.Licencas)
-                                     .ThenInclude(a=> a.LicencasDispositivos)
+                                     .ThenInclude(a=> a.Dispositivos)
                                      .FirstOrDefault(a=> a.ContratoId == contratoId)?? new Contratos();
         }
     }

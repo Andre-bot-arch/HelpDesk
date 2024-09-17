@@ -29,7 +29,7 @@ namespace AppSysoHelp.Controllers
             var contrato = _context.Contratos.Include(a => a.FkPlataforma)
                                      .Include(a => a.FkCliente)
                                      .Include(a => a.Licencas)
-                                     .ThenInclude(a => a.LicencasDispositivos)
+                                     .ThenInclude(a => a.Dispositivos)
                                      .FirstOrDefault(a => a.ContratoId == id) ?? new Contratos();
             var eventos = _context.SysoCloud.Where(a => a.FkContratoId == contrato.ContratoId).ToList();
             ViewBag.Eventos = eventos;

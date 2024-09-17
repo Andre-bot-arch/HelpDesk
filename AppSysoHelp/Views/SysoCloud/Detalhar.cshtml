@@ -1,7 +1,7 @@
 ﻿@model AppSysoHelp.Models.Contratos
 @{
     var contrato = Model;
-    int usados = Model.Licencas.Sum(licenca => licenca.LicencasDispositivos.Count);
+    int usados = Model.Licencas.Sum(licenca => licenca.Dispositivos.Count);
     List<SysoCloud> eventos = ViewBag.Eventos ?? new List<SysoCloud>();
 }
 <style>

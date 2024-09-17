@@ -23,9 +23,9 @@ public partial class HelpdesksysoContext : DbContext
 
     public virtual DbSet<Contratos> Contratos { get; set; }
 
-    public virtual DbSet<Licencas> Licencas { get; set; }
+    public virtual DbSet<Dispositivos> Dispositivos { get; set; }
 
-    public virtual DbSet<LicencasDispositivos> LicencasDispositivos { get; set; }
+    public virtual DbSet<Licencas> Licencas { get; set; }
 
     public virtual DbSet<PlataformasContratos> PlataformasContratos { get; set; }
 
@@ -95,7 +95,6 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.Prioridade)
                 .HasMaxLength(10)
                 .IsFixedLength();
-            entity.Property(e => e.TelefoneContato).HasMaxLength(20);
 
             entity.HasOne(d => d.FkAtendenteNavigation).WithMany(p => p.ChamadosFkAtendenteNavigation)
                 .HasForeignKey(d => d.FkAtendente)
@@ -163,6 +162,23 @@ public partial class HelpdesksysoContext : DbContext
                 .HasConstraintName("FK__Contratos__Plata__7D439ABD");
         });
 
+        modelBuilder.Entity<Dispositivos>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Disposit__3214EC07B93AECCD");
+
+            entity.ToTable("Dispositivos", "dbo");
+
+            entity.Property(e => e.Apelido).IsUnicode(false);
+            entity.Property(e => e.Chave).IsUnicode(false);
+            entity.Property(e => e.DataCriacao).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Equipamento).IsUnicode(false);
+
+            entity.HasOne(d => d.FkLicencaNavigation).WithMany(p => p.Dispositivos)
+                .HasForeignKey(d => d.FkLicenca)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Dispositivos_Licencas");
+        });
+
         modelBuilder.Entity<Licencas>(entity =>
         {
             entity.HasKey(e => e.LicencaId).HasName("PK__Licencas__28C8BC25B851726F");
@@ -184,20 +200,6 @@ public partial class HelpdesksysoContext : DbContext
             entity.HasOne(d => d.FkContrato).WithMany(p => p.Licencas)
                 .HasForeignKey(d => d.FkContratoId)
                 .HasConstraintName("FK_Licencas_Contratos");
-        });
-
-        modelBuilder.Entity<LicencasDispositivos>(entity =>
-        {
-            entity.HasKey(e => e.DispositivoId).HasName("PK__Licencas__724C27A1E6704811");
-
-            entity.ToTable("Licencas_Dispositivos", "dbo");
-
-            entity.Property(e => e.DataAtivacao).HasColumnType("datetime");
-            entity.Property(e => e.FkLicenca).HasColumnName("Fk_Licenca");
-
-            entity.HasOne(d => d.FkLicencaNavigation).WithMany(p => p.LicencasDispositivos)
-                .HasForeignKey(d => d.FkLicenca)
-                .HasConstraintName("FK_Licencas_Dispositivos_Licencas");
         });
 
         modelBuilder.Entity<PlataformasContratos>(entity =>

@@ -1,7 +1,7 @@
 ﻿@model AppSysoHelp.Models.Contratos
 @{
     var contrato = Model;
-    int usados = Model.Licencas.Sum(licenca => licenca.LicencasDispositivos.Count);
+    int usados = Model.Licencas.Sum(licenca => licenca.Dispositivos.Count);
 }
 <style>
 
@@ -117,7 +117,7 @@
                                             @item.Hash
                                         </td>
                                         <td class="text-right">@item.DataAtivacao.ToString("dd/MM/yyyy")</td>
-                                        <td class="text-center">@item.LicencasDispositivos.Count()</td>
+                                        <td class="text-center">@item.Dispositivos.Count()</td>
                                         @if (item.Ativo == true)
                                         {
                                             <td class="text-center"><div class="badge badge-pill iq-bg-success" style="width: 80px"> ATIVO </div></td>
