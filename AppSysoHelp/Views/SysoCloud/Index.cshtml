@@ -33,7 +33,7 @@
                                         </label>
                                     </div>
                                     <div class="col-5 d-flex justify-content-end">
-                                        <a asp-action="ExportarTxt" asp-controller="SysoCloud" asp-route-contratoId="@contrato.ContratoId" style="width: 140px" class="btn dark-icon btn-success mr-3"><i class="ri-delete-bin-5-line"></i>Exportar Txt</a>
+                                        <a id="downloadBtn" data-id="@contrato.ContratoId" style="width: 140px; color: white" class="btn dark-icon btn-success mr-3"><i class="las la-download"></i>Exportar Txt</a>
                                         <a asp-action="Detalhar" asp-controller="SysoCloud" asp-route-id="@contrato.ContratoId" class="btn dark-icon btn-primary" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></a>
                                     </div>
                                 </div>
@@ -48,5 +48,34 @@
     </div>
 </div>
 
+<script>
+    $(document).ready(function() {
+        $('#downloadBtn').on('click', function() {
+        var contratoId = $(this).data('id'); // Obtém o valor do data-id
+
+        // Função para criar e clicar dinamicamente em um link
+        function createAndClickLink(url) {
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = ''; // O atributo download é usado para iniciar o download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // URLs dos arquivos para download
+        var urls = [
+            '@Url.Action("GerarEmailTxt", "SysoCloud")',
+            '@Url.Action("GerarEmpresaTxt", "SysoCloud", new { contratoId = "__contratoId__" })'.replace('__contratoId__', contratoId),
+            '@Url.Action("GerarEventoTxt", "SysoCloud", new { contratoId = "__contratoId__" })'.replace('__contratoId__', contratoId)
+        ];
+
+        // Iniciar download para cada URL
+        urls.forEach(function(url) {
+            createAndClickLink(url);
+        });
+    });
+    });
+</script>
 @* <partial name="_ModalCadastrarEvento.cshtml" /> *@
 <script src="~/assets/js/contrato.js"></script>

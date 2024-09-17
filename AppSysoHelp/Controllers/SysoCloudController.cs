@@ -45,12 +45,9 @@ namespace AppSysoHelp.Controllers
             return RedirectToAction("Index");
         }
 
-        public void ExportarTxt(long contratoId)
+        public FileContentResult GerarEventoTxt(long contratoId)
         {
             var listaEventos = _context.SysoCloud.Where(a => a.FkContratoId == contratoId).ToList();
-
-            // Defina o caminho do arquivo
-            string filePath = "eventos.txt";
 
             // Crie uma StringBuilder para construir o conteúdo do arquivo
             StringBuilder sb = new StringBuilder();
@@ -67,6 +64,8 @@ namespace AppSysoHelp.Controllers
                 {"Sunday", item => (bool)item.Domingo}
             };
 
+            var contador = 1;
+
             // Iterar sobre cada item da lista
             foreach (var item in listaEventos)
             {
@@ -76,11 +75,44 @@ namespace AppSysoHelp.Controllers
                     // Se o dia da semana for verdadeiro, adicionar ao StringBuilder
                     if (dia.Value(item))
                     {
-                        sb.AppendLine($"835|{item.Horario}|{dia.Key}|{item.CaminhoDownload}||{item.CaminhoUpload}|{item.DataCreate}|{item.Descricao}|{item.Extensao}|{item.Horario}|11|{item.ExecutarAposBackup}|{item.TipoBackup}");
+                        sb.AppendLine($"{contador}|{item.Horario}|{dia.Key}|{item.CaminhoBuscaArquivo}|{item.CaminhoDownload}|{item.CaminhoDownload}|{item.CaminhoUpload}|{DateTime.Parse(item.DataCreate.ToString()).ToString("dd/MM/yyyy HH:mm:ss")}|{item.Descricao}|{item.Extensao}|{item.Horario}|{item.PkId}|{item.ExecutarAposBackup}|{item.TipoBackup}");
+                        contador++;
                     }
                 }
             }
+
+            // Converta o conteúdo para um array de bytes
+            var fileContent = Encoding.UTF8.GetBytes(sb.ToString());
+
+            // Retorne o arquivo como resposta
+            return File(fileContent, "text/plain", "Evento.txt");
+        }
+
+
+        public FileContentResult GerarEmpresaTxt(long contratoId)
+        {
+            var empresa = _context.Contratos
+                                  .Include(a => a.FkCliente)
+                                  .FirstOrDefault(a => a.ContratoId == contratoId);
+            
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine($"{empresa.FkCliente.Bairro}|{empresa.FkCliente.Documento}||{empresa.DataInicio}|{empresa.DataFim}|{empresa.FkCliente.Email}||{empresa.FkClienteId}|{empresa.FkCliente.NomeCliente}||{empresa.FkCliente.NomeCliente}|{empresa.FkCliente.Logradouro}|{empresa.FkCliente.TelefoneCliente}");
+
+            // Converta o conteúdo para um array de bytes
+            var fileContent = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(fileContent, "text/plain", "Empresa.txt");
+        }
+
+        public FileContentResult GerarEmailTxt()
+        {
+            // Crie uma StringBuilder para construir o conteúdo do arquivo
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("sysotecnologia@gmail.com|3|SISTEMA DE GERENCIAMENTO DE BACKUP|587|clwjsrzgoiqfjksf|smtp.gmail.com");
+
+            // Converta o conteúdo para um array de bytes
+            var fileContent = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(fileContent, "text/plain", "Email.txt");
         }
     }
-
 }
