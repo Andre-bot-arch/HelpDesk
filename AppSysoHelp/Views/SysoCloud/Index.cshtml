@@ -7,7 +7,7 @@
             <h4 class="text-primary">Contratos SysoCloud Ativos</h4>
         </div>
     </div>
-    <div class="iq-card-body" >
+    <div class="iq-card-body">
         <div class="row">
             @foreach (var item in Model.GroupBy(a => a.FkClienteId))
             {
@@ -28,11 +28,12 @@
                                     <div class="col-7">
                                         <label class="card-title @situacao">
                                             <span class="@situacao">@contrato.FkPlataforma.NomePlataforma:</span> @contrato.FkPlataforma.Descricao
-                                            <br /> 
+                                            <br />
                                             <span class="@situacao">Pontos: @contrato.PontosContratados</span>
                                         </label>
                                     </div>
-                                    <div class="col-5 text-right d-flex justify-content-between">
+                                    <div class="col-5 d-flex justify-content-end">
+                                        <a asp-action="ExportarTxt" asp-controller="SysoCloud" asp-route-contratoId="@contrato.ContratoId" style="width: 140px" class="btn dark-icon btn-success mr-3"><i class="ri-delete-bin-5-line"></i>Exportar Txt</a>
                                         <a asp-action="Detalhar" asp-controller="SysoCloud" asp-route-id="@contrato.ContratoId" class="btn dark-icon btn-primary" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></a>
                                     </div>
                                 </div>

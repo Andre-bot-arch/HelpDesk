@@ -2,6 +2,7 @@
 using AppSysoHelp.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace AppSysoHelp.Controllers
 {
@@ -43,5 +44,43 @@ namespace AppSysoHelp.Controllers
             _generico.GravarGenerico(s);
             return RedirectToAction("Index");
         }
+
+        public void ExportarTxt(long contratoId)
+        {
+            var listaEventos = _context.SysoCloud.Where(a => a.FkContratoId == contratoId).ToList();
+
+            // Defina o caminho do arquivo
+            string filePath = "eventos.txt";
+
+            // Crie uma StringBuilder para construir o conteúdo do arquivo
+            StringBuilder sb = new StringBuilder();
+
+            // Dicionário de dias da semana
+            var diasDaSemana = new Dictionary<string, Func<SysoCloud, bool>>
+            {
+                {"Monday", item => (bool)item.Segunda},
+                {"Tuesday", item => (bool)item.Terca},
+                {"Wednesday", item => (bool)item.Quarta},
+                {"Thursday", item => (bool)item.Quinta},
+                {"Friday", item => (bool)item.Sexta},
+                {"Saturday", item => (bool)item.Sabado},
+                {"Sunday", item => (bool)item.Domingo}
+            };
+
+            // Iterar sobre cada item da lista
+            foreach (var item in listaEventos)
+            {
+                // Verificar cada dia da semana
+                foreach (var dia in diasDaSemana)
+                {
+                    // Se o dia da semana for verdadeiro, adicionar ao StringBuilder
+                    if (dia.Value(item))
+                    {
+                        sb.AppendLine($"835|{item.Horario}|{dia.Key}|{item.CaminhoDownload}||{item.CaminhoUpload}|{item.DataCreate}|{item.Descricao}|{item.Extensao}|{item.Horario}|11|{item.ExecutarAposBackup}|{item.TipoBackup}");
+                    }
+                }
+            }
+        }
     }
+
 }
