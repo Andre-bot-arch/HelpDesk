@@ -30,5 +30,15 @@ namespace AppSysoHelp.Service
             await _context.SaveChangesAsync();
             return true;
         }
+
+        internal async Task<bool> AtualizarCliente()
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://sysolicencamobile.ddns.net:60443/Api/Help");
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+           
+            return true;
+        }
     }
 }

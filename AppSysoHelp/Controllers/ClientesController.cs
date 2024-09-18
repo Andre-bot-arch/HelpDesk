@@ -1,4 +1,5 @@
 ﻿using AppSysoHelp.Models;
+using AppSysoHelp.Service;
 using Microsoft.AspNetCore.Mvc;
 using X.PagedList.Extensions;
 
@@ -8,10 +9,12 @@ namespace AppSysoHelp.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly HelpdesksysoContext _context;
+        private readonly ServiceGenerico _generico;
         public ClientesController(IConfiguration configuration, HelpdesksysoContext context)
         {
             _configuration = configuration;
             _context = context;
+            _generico = new ServiceGenerico(context);
         }
         [HttpPost]
         public IActionResult BuscarClientePorId(long id)
@@ -37,6 +40,12 @@ namespace AppSysoHelp.Controllers
                                     .OrderBy(u => u.ClienteId)
                                     .ToPagedList(pageNumber, pageSize);
             return View(clientes);
+        }
+
+        public IActionResult BuscarAtualizarClienteSolution()
+        {
+            _generico.AtualizarCliente();
+            return Ok("Finalizado com Sucesso");
         }
     }
 }
