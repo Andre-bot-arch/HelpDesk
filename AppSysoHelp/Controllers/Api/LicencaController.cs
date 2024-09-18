@@ -1,13 +1,13 @@
 ﻿using AppSysoHelp.Models;
 using AppSysoHelp.Models.ViewModels;
 using AppSysoHelp.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace AppSysoHelp.Controllers.Api
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class LicencaController : ControllerBase
@@ -36,7 +36,7 @@ namespace AppSysoHelp.Controllers.Api
             return null;
         }
 
-        [HttpGet("{licenca}/{serial}/{token}")]
+        [HttpGet("Gravar/{licenca}/{serial}/{token}")]
         public IActionResult Get(string licenca, string serial, string token)
         {
             if (token == "Syso@3680")
