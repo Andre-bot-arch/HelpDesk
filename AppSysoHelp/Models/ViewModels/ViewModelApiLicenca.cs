@@ -4,10 +4,11 @@ namespace AppSysoHelp.Models.ViewModels
 {
     public class ViewModelApiLicenca
     {
-        public bool Autorizado { get; set; }
-        public string Hash { get; set; } = null!;
+        public bool Status { get; set; }
+        public string Chave { get; set; } = null!;
+        public string Url { get; set; }
         public string Mensagem { get; set; } = null!;
-        public Clientes Cliente { get; set; } = new Clientes();
-
+        public string Cnpj { get; set; } = null!;
+        public string Empresa { get; set; } = null!;
     }
 }

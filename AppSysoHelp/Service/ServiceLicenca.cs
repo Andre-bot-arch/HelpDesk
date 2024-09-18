@@ -59,32 +59,32 @@ namespace AppSysoHelp.Service
                 .ThenInclude(c => c.Dispositivos)
                 .FirstOrDefault(c => c.Licencas.Any(l => l.Hash == licenca));
 
+            if (contrato == null)
+            {
+                var retorno1 = new ViewModelApiLicenca
+                {
+                    Status = false,
+                    Chave = licenca,
+                    Mensagem = "Chave inválida",
+                    Cnpj = "",
+                    Empresa = "",
+                    Url = contrato.Licencas.FirstOrDefault(a=> a.Hash == licenca).Urlacesso,
+                };
+                return retorno1;
+            }
+
             var retorno = new ViewModelApiLicenca
             {
-                Autorizado = false,
-                Cliente = new Clientes
-                {
-                    Bairro = contrato.FkCliente.Bairro,
-                    Cep = contrato.FkCliente.Cep,
-                    Cidade = contrato.FkCliente.Cidade,
-                    Documento = contrato.FkCliente.Documento,
-                    Email = contrato.FkCliente.Email,
-                    Fantasia = contrato.FkCliente.Fantasia,
-                    Logradouro = contrato.FkCliente.Logradouro,
-                    TelefoneCliente = contrato.FkCliente.TelefoneCliente,
-                    Uf = contrato.FkCliente.Uf,
-                    WhatsApp = contrato.FkCliente.WhatsApp
-                },
-                Hash = licenca,
-                Mensagem = ""
+                Status = false,
+                Chave = licenca,
+                Mensagem = "",
+                Cnpj = contrato.FkCliente.Documento,
+                Empresa = contrato.FkCliente.NomeCliente,
+                Url = licenca,
             };
 
             //verificar chave
-            if (contrato == null)
-            {
-                retorno.Mensagem = "Chave inválida";
-                return retorno;
-            }else if(contrato.SituacaoContrato.Trim() == "Inativo")
+            if(contrato.SituacaoContrato.Trim() == "Inativo")
             {
                 retorno.Mensagem = "Contrato Cancelado";
                 return retorno;
@@ -112,19 +112,19 @@ namespace AppSysoHelp.Service
             
             else if (validador != null && UpdateDispositivo(validador, apelido, serial))
             {
-                retorno.Mensagem = "Chave Autorizada e Atualizada";
-                retorno.Autorizado = true;
+                retorno.Mensagem = "1 - Ativa";
+                retorno.Status = true;
                 return retorno;
             }
             else if (GravarDispositivos(contrato.Licencas.FirstOrDefault(a => a.Hash == licenca), apelido, serial))
             {
-                retorno.Mensagem = "Chave Autorizada";
-                retorno.Autorizado = true;
+                retorno.Mensagem = "1 - Ativa";
+                retorno.Status = true;
                 return retorno;
             }
 
             retorno.Mensagem = "Erro na Gravação";
-            retorno.Autorizado = false;
+            retorno.Status = false;
             return retorno;
         }
 

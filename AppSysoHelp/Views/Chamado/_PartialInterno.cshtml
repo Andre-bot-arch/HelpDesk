@@ -168,9 +168,9 @@
                                 @item.FkAtendenteNavigation.NomeCompleto.Substring(0, 8)
                             </td>
                             <td>
-                                @if (item.FkTecnicoId > 0)
+                                @if (item.Atendimentos.Count() > 0)
                                 {
-                                    @item.FkTecnico.NomeCompleto.Substring(0, 8)
+                                    @item.Atendimentos.OrderByDescending(a => a.AtendimentoId).FirstOrDefault().FkTecnico.NomeCompleto.Substring(0, 8)
                                 }
                                 else
                                 {

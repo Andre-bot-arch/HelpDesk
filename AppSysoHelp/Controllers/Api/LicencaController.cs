@@ -1,5 +1,7 @@
 ﻿using AppSysoHelp.Models;
+using AppSysoHelp.Models.ViewModels;
 using AppSysoHelp.Service;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -23,40 +25,30 @@ namespace AppSysoHelp.Controllers.Api
             _licenca = new ServiceLicenca(context);
         }
 
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<LicencaController>/5
         [HttpGet("{licenca}/{apelido}/{serial}/{token}")]
-        public IActionResult Get(string licenca, string apelido, string serial, string token)
+        public ViewModelApiLicenca Get(string licenca, string apelido, string serial, string token)
         {
             if (token == "Syso@3680")
             {
                 var contrato = _licenca.VerificarChave(licenca, apelido, serial);
-                return Ok(contrato);
+                return contrato;
             }
-            return BadRequest("Token inválido.");
+            return null;
         }
 
-        // POST api/<LicencaController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpGet("{licenca}/{serial}/{token}")]
+        public IActionResult Get(string licenca, string serial, string token)
         {
-        }
-
-        // PUT api/<LicencaController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<LicencaController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            if (token == "Syso@3680")
+            {
+                var dados = _context.Licencas.FirstOrDefault(a => a.Hash.Trim() == licenca.Trim());
+                foreach (var dado in dados.Dispositivos.Where(a => a.Equipamento.Trim() == serial.Trim()))
+                {
+                    dado.UltimoAcesso = DateTime.Now;
+                }
+                return Ok();
+            }
+            return BadRequest("erro na Gravação");
         }
     }
 }
