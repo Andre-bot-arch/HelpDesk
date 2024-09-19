@@ -93,6 +93,7 @@
                                     <th scope="col">Data Criação</th>
                                     <th scope="col">TIPO</th>
                                     <th scope="col">AÇÃO</th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -108,6 +109,7 @@
                                         <td>@item.DataCreate</td>
                                         <td>@item.TipoBackup</td>
                                         <td>@item.ExecutarAposBackup</td>
+                                        <td><a class="btn dark-icon btn-danger" asp-action="Delete" asp-controller="SysoCloud" asp-route-id="@item.PkId">Excluir</a></td>
                                     </tr>
                                 }
                             </tbody>

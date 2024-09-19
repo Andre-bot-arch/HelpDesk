@@ -42,7 +42,7 @@ namespace AppSysoHelp.Controllers
         {
             s.DataCreate = DateTime.Now;
             _generico.GravarGenerico(s);
-            return RedirectToAction("Index");
+            return RedirectToAction("Detalhar", "SysoCloud");
         }
 
         public FileContentResult GerarEventoTxt(long contratoId)
@@ -113,6 +113,14 @@ namespace AppSysoHelp.Controllers
             // Converta o conteúdo para um array de bytes
             var fileContent = Encoding.UTF8.GetBytes(sb.ToString());
             return File(fileContent, "text/plain", "Email.txt");
+        }
+
+        public IActionResult Delete(long id)
+        {
+            var evento = _context.SysoCloud.FirstOrDefault(a => a.PkId == id);
+            _context.SysoCloud.Remove(evento);
+            _context.SaveChanges();
+            return RedirectToAction("Detalhar", "SysoCloud");
         }
     }
 }
