@@ -123,7 +123,7 @@
         <div class="iq-header-title">
             <h4 class="card-title text-primary"> Lista de Clientes</h4>
         </div>
-        <form asp-action="Index" asp-controller="Clientes" class="d-flex align-items-center ml-auto">
+        <form asp-action="Index" asp-controller="Clientes" class="d-flex align-items-center mx-auto">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Buscar cliente..." name="query" aria-label="Buscar cliente..." aria-describedby="button-addon2" style="border-color: #6546D2">
                 <div class="input-group-append">
@@ -133,6 +133,9 @@
                 </div>
             </div>
         </form>
+        <div>
+            <a asp-action="BuscarAtualizarClienteSolution" asp-controller="Clientes" class="btn dark-icon btn-primary">Atualizar Clientes</a>
+        </div>
     </div>
     <div class="iq-card-body">
         <div class="row">

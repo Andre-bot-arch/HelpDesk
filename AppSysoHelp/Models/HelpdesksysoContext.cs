@@ -149,6 +149,7 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.DescricaoContrato).HasMaxLength(255);
             entity.Property(e => e.FkClienteId).HasColumnName("Fk_ClienteId");
             entity.Property(e => e.FkPlataformaId).HasColumnName("Fk_PlataformaId");
+            entity.Property(e => e.IdSolution).IsUnicode(false);
             entity.Property(e => e.SituacaoContrato).HasMaxLength(50);
             entity.Property(e => e.Valor).HasColumnType("decimal(18, 2)");
 
@@ -209,6 +210,7 @@ public partial class HelpdesksysoContext : DbContext
             entity.ToTable("PlataformasContratos", "dbo");
 
             entity.Property(e => e.Descricao).HasMaxLength(500);
+            entity.Property(e => e.IdSolution).IsUnicode(false);
             entity.Property(e => e.NomePlataforma).HasMaxLength(100);
         });
 

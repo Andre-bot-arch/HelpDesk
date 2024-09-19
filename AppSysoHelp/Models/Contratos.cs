@@ -23,6 +23,8 @@ public partial class Contratos
 
     public long? FkClienteId { get; set; }
 
+    public string? IdSolution { get; set; }
+
     public virtual Clientes? FkCliente { get; set; }
 
     public virtual PlataformasContratos FkPlataforma { get; set; } = null!;
