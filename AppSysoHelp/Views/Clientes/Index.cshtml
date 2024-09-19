@@ -134,12 +134,12 @@
             </div>
         </form>
         <div>
-            <a asp-action="BuscarAtualizarClienteSolution" asp-controller="Clientes" class="btn dark-icon btn-primary">Atualizar Clientes</a>
+            <a id="btnAtualizarClientes" class="btn dark-icon btn-primary text-white">Atualizar Clientes</a>
         </div>
     </div>
     <div class="iq-card-body">
         <div class="row">
-            @foreach (var item in Model)
+            @foreach (var item in Model.Where(a =>a.ClienteId > 3))
             {
                 <div class="container mb-3">
                     <div class="card" style="background-color: #222e35">
@@ -234,5 +234,5 @@
     }
 </script>
 @* <partial name="_ModalCadastrarPlataforma.cshtml" />
-    <partial name="_ModalEditarPlataforma.cshtml" />
-    <script src="~/assets/js/plataforma.js"></script> *@
+    <partial name="_ModalEditarPlataforma.cshtml" />*@
+    <script src="~/assets/js/clientes.js"></script> 

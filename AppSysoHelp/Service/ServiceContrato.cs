@@ -13,7 +13,7 @@ namespace AppSysoHelp.Service
             _context = context;
         }
 
-        async Task<bool> AtualizarContrato()
+        internal async Task<bool> AtualizarContrato()
         {
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Get, "http://sysolicencamobile.ddns.net:60443/Api/Contratos");
