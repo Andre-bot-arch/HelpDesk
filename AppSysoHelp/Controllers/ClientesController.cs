@@ -42,10 +42,10 @@ namespace AppSysoHelp.Controllers
             return View(clientes);
         }
 
-        public IActionResult BuscarAtualizarClienteSolution()
+        public async Task<IActionResult> BuscarAtualizarClienteSolutionAsync()
         {
-            _generico.AtualizarCliente();
-            return Ok("Finalizado com Sucesso");
+            var totalAtualizado = await _generico.AtualizarCliente();
+            return Json(new { success = true, message = $"{totalAtualizado} Cliente(s) atualizado(s) com sucesso!" });
         }
     }
 }
