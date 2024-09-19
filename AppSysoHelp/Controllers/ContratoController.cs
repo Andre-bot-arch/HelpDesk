@@ -118,6 +118,11 @@ namespace AppSysoHelp.Controllers
             return Ok(results);
         }
 
+        public IActionResult BuscarAtualizarContratoSolution()
+        {
+            _contrato.AtualizarContrato();
+            return Ok("Finalizado com Sucesso");
+        }
 
 
     }
