@@ -4,10 +4,10 @@
     {
         public string? IDSOLUTION { get; set; }
         public string? FKPLATAFORMAID { get; set; }
-        public DateOnly DATAINICIO { get; set; }
-        public DateOnly DATAFIM { get; set; }
+        public DateTime DATAINICIO { get; set; }
+        public DateTime DATAFIM { get; set; }
         public string? SITUACAOCONTRATO { get; set; }
-        public double VALOR { get; set; }
+        public decimal VALOR { get; set; }
         public string? DESCRICAOCONTRATO { get; set; }
         public int PONTOSCONTRATADOS { get; set; }
         public string? FKCLIENTEID { get; set; }

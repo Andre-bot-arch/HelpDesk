@@ -2,15 +2,25 @@
 @{
 }
 <div class="iq-card" style="background-color: #0B141A">
-    <div class="iq-card-header d-flex justify-content-between">
+    <div class="iq-card-header d-flex justify-content-between align-items-center">
         <div class="iq-header-title">
-            <h4 class="text-primary"> Lista de Contratos Ativos</h4>
+            <h4 class="card-title text-primary">Lista de Contratos Ativos</h4>
         </div>
-        <div class="text-end">
-            <button type="button" data-toggle="modal" data-target="#exampleModalCenteredScrollable" class="btn dark-icon btn-primary mb-3">Adicionar <i class="ri-add-box-line"></i></button>
+        @*  <form asp-action="Index" asp-controller="Clientes" class="d-flex align-items-center mx-auto">
+        <div class="input-group">
+        <input type="text" class="form-control" placeholder="Buscar cliente..." name="query" aria-label="Buscar cliente..." aria-describedby="button-addon2" style="border-color: #6546D2">
+        <div class="input-group-append">
+        <button class="btn btn-outline-primary" type="submit" id="button-addon2" style="font-weight: bold; font-size: 1.3rem">
+        <i class="las la-search"></i>
+        </button>
+        </div>
+        </div>
+        </form> *@
+        <div>
+            <a id="btnAtualizarContratos" class="btn dark-icon btn-primary text-white">Atualizar Contratos</a>
         </div>
     </div>
-    <div class="iq-card-body" >
+    <div class="iq-card-body">
         <div class="row">
             @foreach (var item in Model.GroupBy(a => a.FkClienteId))
             {
@@ -22,34 +32,79 @@
                         <div class="card-body">
                             @foreach (var contrato in item)
                             {
-                                var situacao = "text-primary";
-                                if (contrato.SituacaoContrato == "Inativo")
+                                var situacao = "text-white";
+                                if (contrato.SituacaoContrato == "CANCELADO")
                                 {
                                     situacao = "text-danger";
                                 }
-                                <div class="row align-items-center">
-                                    <div class="col-7">
-                                        <label class="card-title @situacao">
-                                            <span class="@situacao">@contrato.FkPlataforma.NomePlataforma:</span> @contrato.FkPlataforma.Descricao
-                                            <br /> <span class="@situacao">
-                                                Pontos: @contrato.PontosContratados
-                                            </span>
-                                            <br /> <span class="@situacao">Valor:</span> @contrato.Valor.ToString("C2")
-                                        </label>
-                                    </div>
-                                    <div class="col-5 text-right d-flex justify-content-between">
-                                        <button style="width: 120px" type="button" class="btn dark-icon btn-info btn-editar-cadastro" data-id="@contrato.ContratoId" , data-desc="@contrato.DescricaoContrato" data-valor="@contrato.Valor" data-pontos="@contrato.PontosContratados" data-inicio="@contrato.DataInicio" data-fim="@contrato.DataFim" data-plataforma="@contrato.FkPlataforma.NomePlataforma" data-plataformaId="@contrato.FkPlataformaId" data-cliente="@contrato.FkCliente.NomeCliente" data-clienteId="@contrato.FkClienteId">Editar <i class="ri-edit-box-fill"></i></button>
-                                        <a style="width:  120px" asp-action="Detalhar" asp-route-id="@contrato.ContratoId" class="btn dark-icon btn-primary" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></a>
-                                        @if (contrato.SituacaoContrato == "Inativo")
+                                <div class="card iq-mb-3" style="background-color: #394247;">
+                                    <div class="card-header @situacao">
+                                        @if (contrato.SituacaoContrato.Trim() == "RENOVADO")
                                         {
-                                            <a href="#" style="width:  120px" data-men="Ativar o contrato" class="btn-inativar-contrato btn dark-icon btn-success" data-id="@contrato.ContratoId" data-ativo="@contrato.SituacaoContrato">Ativar <i class="ri-delete-bin-5-line"></i></a>
+                                            <h6> <span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-info"> @contrato.SituacaoContrato.ToUpper()</span></h6>
+                                        }
+                                        else if (contrato.SituacaoContrato.Trim() == "CANCELADO")
+                                        {
+                                            <h6> <span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-danger"> @contrato.SituacaoContrato.ToUpper()</span></h6>
+                                        }
+                                        else if (contrato.SituacaoContrato.Trim() == "ATIVO")
+                                        {
+                                            <h6> <span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao </span> - <span style="width:120px" class="badge dark-icon badge-dark"> @contrato.SituacaoContrato.ToUpper()</span></h6>
                                         }
                                         else
                                         {
-                                            <a href="#" style="width:  120px" data-men="Inativar o contrato" class="btn-inativar-contrato btn dark-icon btn-danger" data-id="@contrato.ContratoId" data-ativo="@contrato.SituacaoContrato">Inativar <i class="ri-delete-bin-5-line"></i></a>
+                                            <h6> <span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao </span> - <span style="width:120px" class="badge dark-icon badge-warning"> @contrato.SituacaoContrato.ToUpper()</span></h6>
                                         }
                                     </div>
+
+                                    <div class="card-body">
+                                        <h5 class="card-title @situacao">@contrato.PontosContratados pontos contratatados</h5>
+                                        <p class="card-text @situacao"><span class="@situacao">Valor:</span> @contrato.Valor.ToString("C2")</p>
+                                        <p class="card-text @situacao"><span class="@situacao">Virgência:</span> @contrato.DataInicio.ToString("dd/MM/yyyy") a @contrato.DataFim.ToString("dd/MM/yyyy")</p>
+                                        @if(contrato.SituacaoContrato.Trim() == "CANCELADO")
+                                        {
+                                            <button disabled class="btn danger-icon btn-danger btn-block" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></button>
+                                        }
+                                        else{
+                                            <a asp-action="Detalhar" asp-route-id="@contrato.ContratoId" class="btn dark-icon btn-primary btn-block" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></a>
+                                        }
+                                        
+                                    </div>
                                 </div>
+                                @*
+                        <div class="row align-items-center">
+                        <div class="col-7">
+                        <label class="card-title @situacao">
+                        <span class="@situacao">@contrato.FkPlataforma.NomePlataforma:</span> @contrato.FkPlataforma.Descricao
+                        <br /> <span class="@situacao">
+                        Pontos: @contrato.PontosContratados
+                        </span>
+                        <br /> <span class="@situacao">Valor:</span> @contrato.Valor.ToString("C2")
+                        </label>
+                        </div>
+                        <div class="col-3">
+                        <label class="card-title @situacao">
+                        <span class="@situacao">@contrato.FkPlataforma.NomePlataforma:</span> @contrato.FkPlataforma.Descricao
+                        <br /> <span class="@situacao">
+                        Pontos: @contrato.PontosContratados
+                        </span>
+                        <br /> <span class="@situacao">Valor:</span> @contrato.Valor.ToString("C2")
+                        </label>
+                        </div>
+                        <div class="col-2 text-right d-flex justify-content-between">
+                        <button style="width: 120px" type="button" class="btn dark-icon btn-info btn-editar-cadastro" data-id="@contrato.ContratoId" , data-desc="@contrato.DescricaoContrato" data-valor="@contrato.Valor" data-pontos="@contrato.PontosContratados" data-inicio="@contrato.DataInicio" data-fim="@contrato.DataFim" data-plataforma="@contrato.FkPlataforma.NomePlataforma" data-plataformaId="@contrato.FkPlataformaId" data-cliente="@contrato.FkCliente.NomeCliente" data-clienteId="@contrato.FkClienteId">Editar <i class="ri-edit-box-fill"></i></button>
+                        <a style="width:  120px" asp-action="Detalhar" asp-route-id="@contrato.ContratoId" class="btn dark-icon btn-primary" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></a>
+                        @if (contrato.SituacaoContrato == "Inativo")
+                        {
+                        <a href="#" style="width:  120px" data-men="Ativar o contrato" class="btn-inativar-contrato btn dark-icon btn-success" data-id="@contrato.ContratoId" data-ativo="@contrato.SituacaoContrato">Ativar <i class="ri-delete-bin-5-line"></i></a>
+                        }
+                        else
+                        {
+                        <a href="#" style="width:  120px" data-men="Inativar o contrato" class="btn-inativar-contrato btn dark-icon btn-danger" data-id="@contrato.ContratoId" data-ativo="@contrato.SituacaoContrato">Inativar <i class="ri-delete-bin-5-line"></i></a>
+                        }
+                        </div>
+                        </div>
+                        *@
                             }
                         </div>
                     </div>

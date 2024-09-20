@@ -2,6 +2,7 @@
 using AppSysoHelp.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Drawing;
 using System.Text.Json;
 
 namespace AppSysoHelp.Service
@@ -9,12 +10,14 @@ namespace AppSysoHelp.Service
     public class ServiceContrato
     {
         private readonly HelpdesksysoContext _context;
+        private readonly ServiceGenerico _generico;
         public ServiceContrato(HelpdesksysoContext context)
         {
             _context = context;
+            _generico = new ServiceGenerico(context);
         }
 
-        internal async Task<bool> AtualizarContrato()
+        internal async Task<int> AtualizarContrato()
         {
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Get, "http://sysolicencamobile.ddns.net:60443/Api/Contratos");
@@ -40,36 +43,60 @@ namespace AppSysoHelp.Service
                                 var contrato = _context.Contratos.Include(a => a.FkCliente)
                                                                  .FirstOrDefault(a => a.IdSolution.Trim() == contratos.IDSOLUTION.Trim()
                                                                                    && a.FkCliente.IdSolution == contratos.FKCLIENTEID);
-                                if (contratos != null)
+
+                                var idcliente = _context.Clientes.FirstOrDefault(a => a.IdSolution == contratos.FKCLIENTEID).ClienteId;
+
+                                if (contrato != null && idcliente > 0)
                                 {
-                                    
+                                    contrato.DataFim = DateOnly.FromDateTime(contratos.DATAINICIO);
+                                    contrato.DataInicio = DateOnly.FromDateTime(contratos.DATAINICIO);
+                                    contrato.DescricaoContrato = contratos.DESCRICAOCONTRATO;
+                                    contrato.FkClienteId = idcliente;
+                                    contrato.Valor = contratos.VALOR;
+                                    contrato.SituacaoContrato = contratos.SITUACAOCONTRATO;
+                                    contrato.FkPlataformaId = idPlataforma;
+                                    contrato.PontosContratados = contratos.PONTOSCONTRATADOS;
+                                    contrato.IdSolution = contratos.IDSOLUTION;
+
+                                    _generico.UpdateGenerico(contrato);
                                 }
-                                else
+                                else if (idcliente > 0)
                                 {
                                     var obj = new Contratos
                                     {
-                                        DataFim = contratos.DATAFIM,
+                                        DataFim = DateOnly.FromDateTime(contratos.DATAFIM),
+                                        DataInicio = DateOnly.FromDateTime(contratos.DATAINICIO),
+                                        DescricaoContrato = contratos.DESCRICAOCONTRATO,
+                                        FkClienteId = idcliente,
+                                        Valor = contratos.VALOR,
+                                        SituacaoContrato = contratos.SITUACAOCONTRATO,
+                                        FkPlataformaId = idPlataforma,
+                                        PontosContratados = contratos.PONTOSCONTRATADOS,
+                                        IdSolution = contratos.IDSOLUTION
                                     };
+
+                                    _generico.GravarGenerico(obj);
                                 }
-                             }
+                            }
                         }
                     }
-                    return true;
+                    return objectList.Count();
                 }
             }
             catch (Exception)
             {
-                return false;
+                return 0;
             }
 
 
-            return true;
+            return 0;
         }
 
         internal IList<Contratos> BuscarContratos()
         {
             return _context.Contratos.Include(a => a.FkPlataforma)
                                      .Include(a => a.FkCliente)
+                                      .Where(a => a.SituacaoContrato == "RENOVADO" || a.SituacaoContrato == "ATIVO")
                                      .ToList();
         }
 
@@ -77,7 +104,7 @@ namespace AppSysoHelp.Service
         {
             return _context.Contratos.Include(a => a.FkPlataforma)
                                      .Include(a => a.FkCliente)
-                                     .Where(a => a.SituacaoContrato == "Inativo")
+                                     .Where(a => a.SituacaoContrato == "CANCELADO")
                                      .ToList();
         }
 

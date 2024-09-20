@@ -117,11 +117,11 @@ namespace AppSysoHelp.Controllers
 
             return Ok(results);
         }
-
-        public IActionResult BuscarAtualizarContratoSolution()
+        [HttpPost]
+        public async Task<IActionResult> BuscarAtualizarContratoSolutionAsync()
         {
-            _contrato.AtualizarContrato();
-            return Ok("Finalizado com Sucesso");
+            var totalAtualizado = await _contrato.AtualizarContrato();
+            return Json(new { success = true, message = $"{totalAtualizado} Contrato(s) atualizado(s) com sucesso!" });
         }
 
 
