@@ -80,7 +80,7 @@ namespace AppSysoHelp.Service
                 Mensagem = "",
                 Cnpj = contrato.FkCliente.Documento,
                 Empresa = contrato.FkCliente.NomeCliente,
-                Url = contrato.Licencas.FirstOrDefault(a=> a.Hash.Trim() == licenca.Trim()).Urlacesso??"",
+                Url = contrato.Licencas.FirstOrDefault(a=> a.Hash == licenca).Urlacesso,
             };
 
             //verificar chave
