@@ -26,7 +26,13 @@ namespace AppSysoHelp.Controllers
         {
             if (l.LicencaId > 0)
             {
-                if (_generico.UpdateGenerico(l))
+                var obj = _context.Licencas.FirstOrDefault(a => a.LicencaId == l.LicencaId);
+                obj.DataAtivacao = l.DataAtivacao;
+                obj.Descricao = l.Descricao;
+                obj.Modelo = l.Modelo;
+                obj.NumeroSerie = l.NumeroSerie;
+                obj.Urlacesso = l.Urlacesso;
+                if (_generico.UpdateGenerico(obj))
                     return Json(new { success = true, data = l });
             }
             else
