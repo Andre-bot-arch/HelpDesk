@@ -68,7 +68,7 @@ namespace AppSysoHelp.Service
                     Mensagem = "Chave inválida",
                     Cnpj = "",
                     Empresa = "",
-                    Url = contrato.Licencas.FirstOrDefault(a=> a.Hash == licenca).Urlacesso,
+                    Url = "",
                 };
                 return retorno1;
             }
