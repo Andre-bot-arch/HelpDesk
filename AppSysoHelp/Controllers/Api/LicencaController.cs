@@ -4,6 +4,7 @@ using AppSysoHelp.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppSysoHelp.Controllers.Api
 {
@@ -37,18 +38,21 @@ namespace AppSysoHelp.Controllers.Api
         }
 
         [HttpGet("Gravar/{licenca}/{serial}/{token}")]
-        public IActionResult Get(string licenca, string serial, string token)
+        public ViewModelApiLicenca Get(string licenca, string serial, string token)
         {
             if (token == "Syso@3680")
             {
-                var dados = _context.Licencas.FirstOrDefault(a => a.Hash.Trim() == licenca.Trim());
+                var dados = _context.Licencas.Include(a=> a.Dispositivos).FirstOrDefault(a => a.Hash.Trim() == licenca.Trim());
                 foreach (var dado in dados.Dispositivos.Where(a => a.Equipamento.Trim() == serial.Trim()))
                 {
-                    dado.UltimoAcesso = DateTime.Now;
+                    dado.UltimoAcesso = DateTime.Now;  
                 }
-                return Ok();
+                _context.UpdateRange(dados);
+                _context.SaveChanges();
+                var ret = _licenca.VerificarLicencaLog(licenca);
+                return ret;
             }
-            return BadRequest("erro na Gravação");
+            return null;
         }
     }
 }

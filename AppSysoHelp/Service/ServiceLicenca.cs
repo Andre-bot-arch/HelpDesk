@@ -153,5 +153,57 @@ namespace AppSysoHelp.Service
             _context.SaveChanges();
             return true;
         }
+
+        internal ViewModelApiLicenca VerificarLicencaLog(string licenca)
+        {
+            var contrato = _context.Contratos
+                .Include(c => c.FkCliente)
+                .Include(c => c.Licencas)
+                .ThenInclude(c => c.Dispositivos)
+                .FirstOrDefault(c => c.Licencas.Any(l => l.Hash == licenca));
+
+            if (contrato == null)
+            {
+                var retorno1 = new ViewModelApiLicenca
+                {
+                    Status = false,
+                    Chave = licenca,
+                    Mensagem = "Chave inválida",
+                    Cnpj = "",
+                    Empresa = "",
+                    Url = "",
+                };
+                return retorno1;
+            }
+
+            var retorno = new ViewModelApiLicenca
+            {
+                Status = false,
+                Chave = licenca,
+                Mensagem = "",
+                Cnpj = contrato.FkCliente.Documento,
+                Empresa = contrato.FkCliente.NomeCliente,
+                Url = contrato.Licencas.FirstOrDefault(a => a.Hash == licenca).Urlacesso,
+            };
+
+            //verificar chave
+            if (contrato.SituacaoContrato.Trim() == "Inativo")
+            {
+                retorno.Mensagem = "Contrato Cancelado";
+                return retorno;
+            }
+
+            //verificar se a licença esta ativa
+            else if (contrato.Licencas.FirstOrDefault(a => a.Hash == licenca).Ativo == false)
+            {
+                retorno.Mensagem = "Chave Revogada";
+                return retorno;
+            }
+
+            retorno.Mensagem = "1 - Ativa";
+            retorno.Status = true;
+            return retorno;
+
+        }
     }
 }
