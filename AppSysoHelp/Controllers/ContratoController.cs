@@ -23,10 +23,19 @@ namespace AppSysoHelp.Controllers
             _generico = new ServiceGenerico(context);
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string query)
         {
-            var lista = _contrato.BuscarContratos();
-            return View(lista);
+            if (!string.IsNullOrEmpty(query))
+            {
+                var lista = _contrato.BuscarContratos().Where(a=> a.FkCliente.Fantasia.Contains(query.ToUpper()) ||
+                                                                   a.FkCliente.NomeCliente.Contains(query.ToUpper()));
+                return View(lista);
+            }
+            else
+            {
+                var lista = _contrato.BuscarContratos();
+                return View(lista);
+            }            
         }
 
         public IActionResult Cancelados()
