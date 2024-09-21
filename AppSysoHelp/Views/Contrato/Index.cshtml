@@ -22,7 +22,7 @@
     </div>
     <div class="iq-card-body">
        <div class="row">
-    @foreach (var item in Model.OrderBy(a=> a.FkCliente.Fantasia).GroupBy(a => a.FkClienteId))
+    @foreach (var item in Model.GroupBy(a => a.FkClienteId))
     {
         <div class="container mb-3 group-container">
             <div class="card" style="background-color: #222e35">

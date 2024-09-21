@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace AppSysoHelp.Controllers
 {
@@ -28,20 +29,33 @@ namespace AppSysoHelp.Controllers
             if (!string.IsNullOrEmpty(query))
             {
                 var lista = _contrato.BuscarContratos().Where(a=> a.FkCliente.Fantasia.Contains(query.ToUpper()) ||
-                                                                   a.FkCliente.NomeCliente.Contains(query.ToUpper()));
+                                                                   a.FkCliente.NomeCliente.Contains(query.ToUpper()))
+                                                       .OrderBy(a=> a.FkCliente.Fantasia)  
+                                                       .ToList();
                 return View(lista);
             }
             else
             {
                 var lista = _contrato.BuscarContratos();
                 return View(lista);
-            }            
+            }
         }
 
-        public IActionResult Cancelados()
+        public IActionResult Cancelados(string query)
         {
-            var lista = _contrato.BuscarContratosCancelados();
-            return View(lista);
+            if (!string.IsNullOrEmpty(query))
+            {
+                var lista = _contrato.BuscarContratosCancelados().Where(a => a.FkCliente.Fantasia.Contains(query.ToUpper()) ||
+                                                                   a.FkCliente.NomeCliente.Contains(query.ToUpper()))
+                                                       .OrderBy(a => a.FkCliente.Fantasia)
+                                                       .ToList();
+                return View(lista);
+            }
+            else
+            {
+                var lista = _contrato.BuscarContratosCancelados();
+                return View(lista);
+            }
         }
 
         public IActionResult Gravar(Contratos c, string valor)
