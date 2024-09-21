@@ -52,7 +52,7 @@ namespace AppSysoHelp.Controllers.Api
                 var ret = _licenca.VerificarLicencaLog(licenca);
                 return ret;
             }
-            return null;
+            return null; 
         }
     }
 }
