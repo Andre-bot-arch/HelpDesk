@@ -7,10 +7,10 @@
 <div class="row">
     <div class="col-sm-6 col-md-6 col-lg-3">
         <div class="iq-card iq-card-block iq-card-stretch ">
-            <div class="iq-card-body">
+            <div class="iq-card-body" style="background-color: #222e35">
                 <div class="d-flex d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2>352</h2>
+                    <div class="text-white">
+                        <h2 class="text-white">0000</h2>
                         <p class="fontsize-sm m-0">Pendentes</p>
                     </div>
                     <div class="rounded-circle iq-card-icon dark-icon-light iq-bg-primary "> <i class="ri-inbox-fill"></i></div>
@@ -20,10 +20,10 @@
     </div>
     <div class="col-sm-6 col-md-6 col-lg-3">
         <div class="iq-card iq-card-block iq-card-stretch ">
-            <div class="iq-card-body">
+            <div class="iq-card-body" style="background-color: #222e35">
                 <div class="d-flex d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2>$37k</h2>
+                    <div class="text-white">
+                        <h2 class="text-white">0000</h2>
                         <p class="fontsize-sm m-0">Em Atendimento</p>
                     </div>
                     <div class="rounded-circle iq-card-icon iq-bg-danger"><i class="ri-radar-line"></i></div>
@@ -33,10 +33,10 @@
     </div>
     <div class="col-sm-6 col-md-6 col-lg-3">
         <div class="iq-card iq-card-block iq-card-stretch ">
-            <div class="iq-card-body">
+            <div class="iq-card-body" style="background-color: #222e35">
                 <div class="d-flex d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2>32%</h2>
+                     <div class="text-white">
+                        <h2 class="text-white">0000</h2>
                         <p class="fontsize-sm m-0">Fechados</p>
                     </div>
                     <div class="rounded-circle iq-card-icon iq-bg-warning "><i class="ri-price-tag-3-line"></i></div>
@@ -46,10 +46,10 @@
     </div>
     <div class="col-sm-6 col-md-6 col-lg-3">
         <div class="iq-card iq-card-block iq-card-stretch ">
-            <div class="iq-card-body">
+            <div class="iq-card-body" style="background-color: #222e35">
                 <div class="d-flex d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2>27h</h2>
+                     <div class="text-white">
+                        <h2 class="text-white">0000</h2>
                         <p class="fontsize-sm m-0">Todos</p>
                     </div>
                     <div class="rounded-circle iq-card-icon iq-bg-info "><i class="ri-refund-line"></i></div>
@@ -59,14 +59,18 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-6">
-        <div class="m-2">
-            <canvas id="chart"></canvas>
+    <div class="col-sm-6 col-md-6 col-lg-6">
+        <div class="iq-card iq-card-block iq-card-stretch ">
+            <div class="iq-card-body" style="background-color: #222e35">
+                <canvas id="chart"></canvas>
+            </div>
         </div>
     </div>
-    <div class="col-sm-6">
-        <div class="m-2">
-            <canvas id="myChart"></canvas>
+    <div class="col-sm-6 col-md-6 col-lg-6">
+        <div class="iq-card iq-card-block iq-card-stretch ">
+            <div class="iq-card-body" style="background-color: #222e35">
+                <canvas id="myChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -168,48 +172,44 @@
             }
         });
 
-        
 
 
         var ctx2 = document.getElementById('myChart').getContext('2d');
 
         // Serializa os dados dos técnicos a partir do ViewBag
         var techniciansData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.tecnicosAtendimento));
-
-        // Log para verificar a estrutura dos dados
+       
         console.log(techniciansData);
-
-        // Obter nomes únicos dos técnicos
+       
         const techniciansLabels = [...new Set(techniciansData.map(t => t.NomeCompleto))];
-
-        // Inicializa os dados por prioridade
+              
         const technicianPrioritiesData = {
             NORMAL: Array(techniciansLabels.length).fill(0),
             MEDIA: Array(techniciansLabels.length).fill(0),
             ALTA: Array(techniciansLabels.length).fill(0),
             URGENTE: Array(techniciansLabels.length).fill(0),
         };
-
-        // Soma os atendimentos por prioridade
+                
         techniciansData.forEach(t => {
             const index = techniciansLabels.indexOf(t.NomeCompleto);
-            if (index !== -1) { // Verifica se o técnico foi encontrado
-                if (t.Prioridade === 'NORMAL') {
-                    technicianPrioritiesData.NORMAL[index] += t.total;
-                } else if (t.Prioridade === 'MEDIA') {
-                    technicianPrioritiesData.MEDIA[index] += t.total;
-                } else if (t.Prioridade === 'ALTA') {
-                    technicianPrioritiesData.ALTA[index] += t.total;
-                } else if (t.Prioridade === 'URGENTE') {
-                    technicianPrioritiesData.URGENTE[index] += t.total;
+            if (index !== -1) {
+                const priority = t.Prioridade.trim().toUpperCase(); 
+                if (priority === 'NORMAL') {
+                    technicianPrioritiesData.NORMAL[index] += t.Total;
+                } else if (priority === 'MEDIA') {
+                    technicianPrioritiesData.MEDIA[index] += t.Total;
+                } else if (priority === 'ALTA') {
+                    technicianPrioritiesData.ALTA[index] += t.Total;
+                } else if (priority === 'URGENTE') {
+                    technicianPrioritiesData.URGENTE[index] += t.Total;
                 }
             }
         });
 
-        // Log para verificar os dados acumulados
+       
         console.log(technicianPrioritiesData);
 
-        // Cria o gráfico de técnicos
+      
         new Chart(ctx2, {
             type: 'bar',
             data: {
@@ -218,42 +218,73 @@
                     {
                         label: 'NORMAL',
                         data: technicianPrioritiesData.NORMAL,
-                        backgroundColor: 'red',
-                        stack: 'Stack 0'
+                        backgroundColor: 'rgba(211, 211, 211, 0.5)', // Cor para prioridade NORMAL (Cinza claro)
+                        borderColor: 'rgba(169, 169, 169, 1)', 
+                        borderWidth: 1,
+                        stack: 'Prioridade'
                     },
                     {
                         label: 'MEDIA',
                         data: technicianPrioritiesData.MEDIA,
-                        backgroundColor: 'yellow',
-                        stack: 'Stack 0'
+                        backgroundColor: 'rgba(255, 255, 0, 0.5)', // Cor para prioridade MÉDIA (Amarelo)
+                        borderColor: 'rgba(255, 255, 0, 1)', 
+                        borderWidth: 1,
+                        stack: 'Prioridade'
                     },
                     {
                         label: 'ALTA',
                         data: technicianPrioritiesData.ALTA,
-                        backgroundColor: 'orange',
-                        stack: 'Stack 0'
+                        backgroundColor: 'rgba(255, 0, 0, 0.5)', // Cor para prioridade ALTA (Vermelho)
+                        borderColor: 'rgba(255, 0, 0, 1)', 
+                        borderWidth: 1,
+                        stack: 'Prioridade'
                     },
                     {
                         label: 'URGENTE',
                         data: technicianPrioritiesData.URGENTE,
-                        backgroundColor: 'green',
-                        stack: 'Stack 0'
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Cor para prioridade URGENTE (Preto)
+                        borderColor: 'rgba(0, 0, 0, 1)', 
+                        borderWidth: 1,
+                        stack: 'Prioridade'
                     }
                 ]
+
             },
             options: {
+                responsive: true,
                 scales: {
                     x: {
-                        stacked: true
+                        stacked: true, 
+                        title: {
+                            display: true,
+                            text: 'Técnicos (Média 06 meses)',
+                            color: 'white'
+                        }
                     },
                     y: {
-                        stacked: true,
-                        beginAtZero: true
+                        stacked: true, 
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Total de Atendimentos',
+                            color: 'white'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return context.dataset.label + ': ' + context.raw;                         
+                            },
+                        }
                     }
                 }
             }
         });
-
 
     });
 </script>
