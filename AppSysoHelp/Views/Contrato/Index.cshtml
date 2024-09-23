@@ -35,7 +35,7 @@
                         var situacao = "text-white";
                         if (contrato.SituacaoContrato == "CANCELADO")
                         {
-                            situacao = "text-danger";
+                            situacao = "text-danger"; 
                         }
                         <div class="card iq-mb-3" style="background-color: #394247;">
                             <div class="card-header @situacao">
@@ -55,6 +55,7 @@
                                 {
                                     <h6><span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-warning">@contrato.SituacaoContrato.ToUpper()</span></h6>
                                 }
+                                        <label class="text-info">*@contrato.Licencas.Count() Licenças Registradas</label>
                             </div>
 
                             <div class="card-body">

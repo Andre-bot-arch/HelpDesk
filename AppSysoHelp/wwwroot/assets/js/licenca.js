@@ -1,4 +1,90 @@
 $(document).ready(function () {
+    $(".btn-detalhar-licenca").click(function () {
+        var id = $(this).data("id");
+        $.ajax({
+            url: '/Contrato/Dispositivos',
+            type: 'POST',
+            data: { id: id },
+            beforeSend: function () {
+                Swal.fire({
+                    title: 'Aguarde...',
+                    html: 'Carregando os dados do dispositivo...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            },
+            success: function (response) {
+                Swal.close();
+                $("#modalContentLicenca").html(response);
+            },
+            error: function () {
+                Swal.close();               
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Ocorreu um erro inesperado.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+
+
+    });
+
+    $(".btn-exluir-dispostivo").click(function () {
+        var id = $(this).data("id");
+        var valor = "#_linha" + id;
+        var linha = $(valor).val();     
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Aten&ccedil;&atilde;o!!',
+            text: 'Excluir Dispositivo?',
+            confirmButtonText: 'SIM'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Licenca/ExcluirDispoditivo',
+                    type: 'POST',
+                    data: { id: id},
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sucesso!',
+                                text: response.message,
+                                confirmButtonText: 'OK',
+                                timer: 2000,  
+                                timerProgressBar: true, 
+                                willClose: () => { 
+                                    $(valor).remove();  // Remove a linha da tabela
+                                }
+                            });
+
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro!',
+                                text: response.message,
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro!',
+                            text: 'Ocorreu um erro inesperado.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+
+                });
+            }
+        });
+    });
 
     $(".btn-inativar-licenca").click(function () {
         var id = $(this).data("id");
@@ -7,7 +93,7 @@ $(document).ready(function () {
         Swal.fire({
             icon: 'error',
             title: 'Aten&ccedil;&atilde;o!!',
-            text: "Deseja inutilizar?",
+            text: '´Mudar Estatus?',
             confirmButtonText: 'SIM'
         }).then((result) => {
             if (result.isConfirmed) {

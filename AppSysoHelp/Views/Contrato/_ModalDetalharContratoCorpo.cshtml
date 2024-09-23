@@ -1,0 +1,30 @@
+﻿@model IEnumerable<AppSysoHelp.Models.Dispositivos>
+<table width="100%">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Serie</th>
+            <th>Registro</th>
+            <th>Ultimo Acesso</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var linha = "_linha"+item.Id;
+            <tr id="linha">
+                <td>@item.Apelido</td>
+                <td>@item.Equipamento</td>
+                <td>@item.DataCriacao.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@Convert.ToDateTime(item.UltimoAcesso).ToString("dd/MM/yyyy HH:mm")</td>
+                <td>
+                    <a href="#" class="btn-exluir-dispostivo" data-id="@item.Id">
+                        <i class="ri-delete-bin-5-line text-danger pr-1"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script src="~/assets/js/licenca.js"></script>

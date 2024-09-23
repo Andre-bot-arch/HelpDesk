@@ -131,9 +131,15 @@
                                             <a href="#" class="btn-editar_licenca" data-id="@item.LicencaId" data-desc="@item.Descricao" data-url="@item.Urlacesso" data-ativacao="@item.DataAtivacao" data-modelo="@item.Modelo" data-mac="@item.NumeroSerie">
                                                 <i class="ri-ball-pen-fill text-success pr-1"></i>
                                             </a>
-                                            <a href="#" class="btn-inativar-licenca" data-id="@item.LicencaId" data-ativo="@item.Ativo"> <i class="ri-delete-bin-5-line text-danger"></i></a>
+                                            <a href="#" class="btn-inativar-licenca" data-id="@item.LicencaId" data-ativo="@item.Ativo">
+                                                <i class="ri-delete-bin-5-line text-danger pr-1"></i>
+                                            </a>
+                                            <a href="#" class="btn-detalhar-licenca" data-toggle="modal" data-target="#modalDetalharContrato" data-id="@item.LicencaId" data-ativo="@item.Ativo">
+                                                <i class="ri-eye-line text-warning pr-1"></i>
+                                            </a>
                                         </td>
                                     </tr>
+                                   
                                 }
                             </tbody>
                         </table>
@@ -146,5 +152,7 @@
 </div>
 
 <partial name="_ModalCadastrarLicenca.cshtml" />
+<partial name="_ModalDetalharContrato.cshtml" model="new List<Dispositivos>()"/>
+
 <script src="~/assets/js/licenca.js"></script>
 

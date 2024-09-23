@@ -3,6 +3,8 @@ using AppSysoHelp.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
+using System.Reflection.Metadata.Ecma335;
 
 namespace AppSysoHelp.Controllers
 {
@@ -59,5 +61,24 @@ namespace AppSysoHelp.Controllers
           
                 return Json(new { success = false, message = "Erro ao atualizar os dados: " });
         }
+
+        [HttpPost]
+        public IActionResult ExcluirDispoditivo(long id)
+        {
+            try
+            {
+                var disp = _context.Dispositivos.FirstOrDefault(a => a.Id == id);
+                _context.Remove(disp);
+                _context.SaveChanges();
+                return Json(new { success = true, message = "Finalizado com sucesso! " });
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Erro ao atualizar os dados: " });
+            }
+           
+        }
+
+
     }
 }

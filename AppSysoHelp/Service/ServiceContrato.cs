@@ -96,6 +96,7 @@ namespace AppSysoHelp.Service
         {
             return _context.Contratos.Include(a => a.FkPlataforma)
                                      .Include(a => a.FkCliente)
+                                     .Include(a=> a.Licencas)
                                       .Where(a => a.SituacaoContrato == "RENOVADO" || a.SituacaoContrato == "ATIVO")
                                      .ToList();
         }
@@ -104,6 +105,7 @@ namespace AppSysoHelp.Service
         {
             return _context.Contratos.Include(a => a.FkPlataforma)
                                      .Include(a => a.FkCliente)
+                                      .Include(a => a.Licencas)
                                      .Where(a => a.SituacaoContrato == "CANCELADO")
                                      .ToList();
         }

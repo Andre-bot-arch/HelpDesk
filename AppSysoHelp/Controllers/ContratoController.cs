@@ -147,6 +147,12 @@ namespace AppSysoHelp.Controllers
             return Json(new { success = true, message = $"{totalAtualizado} Contrato(s) atualizado(s) com sucesso!" });
         }
 
+        [HttpPost]
+        public IActionResult Dispositivos(long id)
+        {
+            var lista = _context.Dispositivos.Where(a => a.FkLicenca == id).ToList();
+            return PartialView("_ModalDetalharContratoCorpo", lista);
+        }
 
     }
 }
