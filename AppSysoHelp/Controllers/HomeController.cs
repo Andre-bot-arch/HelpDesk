@@ -22,8 +22,19 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Index()
         {
-            var lista = _context.Chamados.Where(a => a.DataCriacao > DateTime.Now.AddMonths(-6).Date).ToList();
+
+            // Obtém a lista de chamados nos últimos 6 meses
+            var lista = _context.Chamados
+                .Where(a => a.DataCriacao > DateTime.Now.AddMonths(-6).Date)
+                .ToList();
+            
+            var chamados = _context.TotalizadorChamadosPorTecnico.ToList();
+
+            // Passa as informações para a View
+            ViewBag.tecnicosAtendimento = chamados;
+
             return View(lista);
+
         }
 
         public IActionResult Privacy()
