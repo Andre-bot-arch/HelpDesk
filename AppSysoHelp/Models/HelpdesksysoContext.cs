@@ -19,6 +19,10 @@ public partial class HelpdesksysoContext : DbContext
 
     public virtual DbSet<Chamados> Chamados { get; set; }
 
+    public virtual DbSet<ChamadosCategoria> ChamadosCategoria { get; set; }
+
+    public virtual DbSet<ChamadosSubCategoria> ChamadosSubCategoria { get; set; }
+
     public virtual DbSet<Clientes> Clientes { get; set; }
 
     public virtual DbSet<Contratos> Contratos { get; set; }
@@ -125,6 +129,25 @@ public partial class HelpdesksysoContext : DbContext
                 .HasForeignKey(d => d.FkTipoChamadoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Chamados__TipoCh__6D0D32F4");
+        });
+
+        modelBuilder.Entity<ChamadosCategoria>(entity =>
+        {
+            entity.HasKey(e => e.CategoriaId).HasName("PK__Chamados__F353C1E5D06C7DAC");
+
+            entity.ToTable("ChamadosCategoria", "dbo");
+
+            entity.Property(e => e.DescricaoTipoChamado).HasMaxLength(150);
+        });
+
+        modelBuilder.Entity<ChamadosSubCategoria>(entity =>
+        {
+            entity.HasKey(e => e.SubCategoriaId).HasName("PK__Chamados__7DE876121A8D13E0");
+
+            entity.ToTable("ChamadosSubCategoria", "dbo");
+
+            entity.Property(e => e.DescricaoTipoChamado).HasMaxLength(150);
+            entity.Property(e => e.Prioridade).HasMaxLength(15);
         });
 
         modelBuilder.Entity<Clientes>(entity =>
