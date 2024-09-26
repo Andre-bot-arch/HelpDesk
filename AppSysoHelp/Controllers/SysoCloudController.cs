@@ -42,7 +42,7 @@ namespace AppSysoHelp.Controllers
         {
             s.DataCreate = DateTime.Now;
             _generico.GravarGenerico(s);
-            return RedirectToAction("Detalhar", "SysoCloud");
+            return RedirectToAction("Detalhar", "SysoCloud", new { id = s.FkContratoId });
         }
 
         public FileContentResult GerarEventoTxt(long contratoId)
@@ -120,7 +120,7 @@ namespace AppSysoHelp.Controllers
             var evento = _context.SysoCloud.FirstOrDefault(a => a.PkId == id);
             _context.SysoCloud.Remove(evento);
             _context.SaveChanges();
-            return RedirectToAction("Detalhar", "SysoCloud");
+            return RedirectToAction("Detalhar", "SysoCloud", new { id = evento.FkContratoId });
         }
     }
 }
