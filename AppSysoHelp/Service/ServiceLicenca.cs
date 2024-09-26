@@ -189,14 +189,21 @@ namespace AppSysoHelp.Service
             //verificar chave
             if (contrato.SituacaoContrato.Trim() == "Inativo")
             {
-                retorno.Mensagem = "Contrato Cancelado";
+                retorno.Mensagem = "Contrato Inativo";
                 return retorno;
             }
 
             //verificar se a licença esta ativa
             else if (contrato.Licencas.FirstOrDefault(a => a.Hash == licenca).Ativo == false)
             {
-                retorno.Mensagem = "Chave Revogada";
+                retorno.Mensagem = "Chave Suspensa";
+                return retorno;
+            }
+            else if (contrato.Licencas.FirstOrDefault(a => a.Hash == licenca).Ativo == true && contrato.SituacaoContrato.Trim() == "Pendende")
+            {
+                retorno.Status = true;
+                retorno.Mensagem = "1 - Ativa";
+                retorno.Mensagem2 = "Olá! Esperamos que você esteja tendo uma ótima experiência com o nosso app. Para garantir que tudo continue funcionando bem, sugerimos dar uma olhada em alguns detalhes da sua conta. Se precisar de assistência, nossos administradores estão aqui para ajudar. Agradecemos sua compreensão!";
                 return retorno;
             }
 

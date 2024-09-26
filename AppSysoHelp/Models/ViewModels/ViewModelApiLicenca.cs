@@ -8,6 +8,7 @@ namespace AppSysoHelp.Models.ViewModels
         public string Chave { get; set; } = null!;
         public string Url { get; set; }
         public string Mensagem { get; set; } = null!;
+        public string Mensagem2 { get; set; } = null!;
         public string Cnpj { get; set; } = null!;
         public string Empresa { get; set; } = null!;
     }
