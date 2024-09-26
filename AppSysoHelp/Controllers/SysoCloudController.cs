@@ -3,6 +3,8 @@ using AppSysoHelp.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using X.PagedList.Extensions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace AppSysoHelp.Controllers
 {
@@ -20,9 +22,26 @@ namespace AppSysoHelp.Controllers
             _contrato = new ServiceContrato(context);
             _generico = new ServiceGenerico(context);
         }
-        public IActionResult Index()
+        public IActionResult Index(int? page, string query)
         {
-            return View(_contrato.BuscarContratos().Where(a => a.FkPlataforma.NomePlataforma.Contains("Syso Cloud")));
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            if (!string.IsNullOrEmpty(query))
+            {
+                var lista = _contrato.BuscarContratos().Where(a => a.FkPlataforma.NomePlataforma.Contains("Syso Cloud") && a.SituacaoContrato.Trim() == "ATIVO"
+                                                                   && (a.FkCliente.Fantasia.Contains(query.ToUpper()) || a.FkCliente.NomeCliente.Contains(query.ToUpper())))
+                                                       .OrderBy(a => a.FkCliente.Fantasia)
+                                                       .ToPagedList(pageNumber, pageSize);
+                ViewBag.Query = query;
+                return View(lista);
+            }
+            var contratos = _contrato.BuscarContratos()
+                                     .Where(a => a.FkPlataforma.NomePlataforma.Contains("Syso Cloud") && a.SituacaoContrato.Trim() == "ATIVO")
+                                     .OrderBy(a => a.FkCliente.Fantasia)
+                                     .ToPagedList(pageNumber, pageSize);
+            return View(contratos);
+            
         }
 
         public IActionResult Detalhar(long id)
