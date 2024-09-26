@@ -6,7 +6,7 @@
         <div class="iq-header-title">
             <h4 class="card-title text-primary">Lista de Contratos Ativos</h4>
         </div>
-       <form asp-action="Index" asp-controller="Contrato" class="d-flex align-items-center mx-auto">
+        <form asp-action="Index" asp-controller="Contrato" class="d-flex align-items-center mx-auto">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Buscar cliente..." name="query" aria-label="Buscar cliente..." aria-describedby="button-addon2" style="border-color: #6546D2">
                 <div class="input-group-append">
@@ -21,74 +21,72 @@
         </div>
     </div>
     <div class="iq-card-body">
-       <div class="row">
-    @foreach (var item in Model.GroupBy(a => a.FkClienteId))
-    {
-        <div class="container mb-3 group-container">
-            <div class="card" style="background-color: #222e35">
-                <div class="card-header text-primary cliente-nome" style="background-color: #111b21">
-                    <i class="fa fa-address-book"></i> @item.FirstOrDefault()?.FkCliente?.Fantasia.ToUpper() - <span style="font-size: 11px; ">@item.FirstOrDefault()?.FkCliente?.NomeCliente.ToUpper()</span>
-                </div>
-                <div class="card-body">
-                    @foreach (var contrato in item)
-                    {
-                        var situacao = "text-white";
-                        if (contrato.SituacaoContrato == "CANCELADO")
-                        {
-                            situacao = "text-danger"; 
-                        }
-                        <div class="card iq-mb-3" style="background-color: #394247;">
-                            <div class="card-header @situacao">
-                                @if (contrato.SituacaoContrato.Trim() == "RENOVADO")
+        <div class="row">
+            @foreach (var item in Model.Where(a => a.SituacaoContrato.Trim() == "ATIVO").GroupBy(a => a.FkClienteId))
+            {
+                <div class="container mb-3 group-container">
+                    <div class="card" style="background-color: #222e35">
+                        <div class="card-header text-primary cliente-nome" style="background-color: #111b21">
+                            <i class="fa fa-address-book"></i> @item.FirstOrDefault()?.FkCliente?.Fantasia.ToUpper() - <span style="font-size: 11px; ">@item.FirstOrDefault()?.FkCliente?.NomeCliente.ToUpper()</span>
+                        </div>
+                        <div class="card-body">
+                            @foreach (var contrato in item)
+                            {
+                                var situacao = "text-white";
+                                if (contrato.SituacaoContrato == "CANCELADO")
                                 {
-                                    <h6><span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-info">@contrato.SituacaoContrato.ToUpper()</span></h6>
+                                    situacao = "text-danger";
                                 }
-                                else if (contrato.SituacaoContrato.Trim() == "CANCELADO")
-                                {
-                                    <h6><span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-danger">@contrato.SituacaoContrato.ToUpper()</span></h6>
-                                }
-                                else if (contrato.SituacaoContrato.Trim() == "ATIVO")
-                                {
-                                    <h6><span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-dark">@contrato.SituacaoContrato.ToUpper()</span></h6>
-                                }
-                                else
-                                {
-                                    <h6><span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-warning">@contrato.SituacaoContrato.ToUpper()</span></h6>
-                                }
+                                <div class="card iq-mb-3" style="background-color: #394247;">
+                                    <div class="card-header @situacao">
+                                        @if (contrato.SituacaoContrato.Trim() == "RENOVADO")
+                                        {
+                                            <h6><span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-info">@contrato.SituacaoContrato.ToUpper()</span></h6>
+                                        }
+                                        else if (contrato.SituacaoContrato.Trim() == "CANCELADO")
+                                        {
+                                            <h6><span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-danger">@contrato.SituacaoContrato.ToUpper()</span></h6>
+                                        }
+                                        else if (contrato.SituacaoContrato.Trim() == "ATIVO")
+                                        {
+                                            <h6><span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-dark">@contrato.SituacaoContrato.ToUpper()</span></h6>
+                                        }
+                                        else
+                                        {
+                                            <h6><span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-warning">@contrato.SituacaoContrato.ToUpper()</span></h6>
+                                        }
                                         <label class="text-info">*@contrato.Licencas.Count() Licenças Registradas</label>
-                            </div>
+                                    </div>
 
-                            <div class="card-body">
-                                <h5 class="card-title @situacao">@contrato.PontosContratados pontos contratatados</h5>
-                                <p class="card-text @situacao"><span class="@situacao">Valor:</span> @contrato.Valor.ToString("C2")</p>
-                                <p class="card-text @situacao"><span class="@situacao">Virgência:</span> @contrato.DataInicio.ToString("dd/MM/yyyy") a @contrato.DataFim.ToString("dd/MM/yyyy")</p>
-                                @if (contrato.SituacaoContrato.Trim() == "CANCELADO")
-                                {
-                                    <button disabled class="btn danger-icon btn-danger btn-block" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></button>
-                                }
-                                else
-                                {
-                                    <a asp-action="Detalhar" asp-route-id="@contrato.ContratoId" class="btn dark-icon btn-primary btn-block" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></a>
-                                }
+                                    <div class="card-body">
+                                        <h5 class="card-title @situacao">@contrato.PontosContratados pontos contratatados</h5>
+                                        <p class="card-text @situacao"><span class="@situacao">Valor:</span> @contrato.Valor.ToString("C2")</p>
+                                        <p class="card-text @situacao"><span class="@situacao">Virgência:</span> @contrato.DataInicio.ToString("dd/MM/yyyy") a @contrato.DataFim.ToString("dd/MM/yyyy")</p>
+                                        @if (contrato.SituacaoContrato.Trim() == "CANCELADO")
+                                        {
+                                            <button disabled class="btn danger-icon btn-danger btn-block" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></button>
+                                        }
+                                        else
+                                        {
+                                            <a asp-action="Detalhar" asp-route-id="@contrato.ContratoId" class="btn dark-icon btn-primary btn-block" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></a>
+                                        }
 
-                            </div>
-                        </div>                               
-                    }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
-            </div>
+                <hr />
+            }
         </div>
-        <hr />
-    }
-</div>
-
-<!-- Aqui ficam os botões de paginação -->
-<div id="paginationContainer" class="d-flex justify-content-center"></div>
-
+        <!-- Aqui ficam os botões de paginação -->
+        <div id="paginationContainer" class="d-flex justify-content-center"></div>
     </div>
 </div>
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         var pageSize = 2; // Número de grupos por página
         var maxButtons = 10; // Número máximo de botões de paginação
         var groups = $(".group-container"); // Todos os grupos de clientes
@@ -129,18 +127,18 @@
 
             $("#paginationContainer").html(paginationHTML);
 
-            $(".pagination-button").on("click", function() {
+            $(".pagination-button").on("click", function () {
                 var page = $(this).data("page");
                 showPage(page);
             });
 
-            $(".pagination-prev").on("click", function() {
+            $(".pagination-prev").on("click", function () {
                 currentButtonSet--;
                 generatePagination();
                 showPage((currentButtonSet - 1) * maxButtons + 1);
             });
 
-            $(".pagination-next").on("click", function() {
+            $(".pagination-next").on("click", function () {
                 currentButtonSet++;
                 generatePagination();
                 showPage((currentButtonSet - 1) * maxButtons + 1);
@@ -152,7 +150,7 @@
             var searchText = $("#searchCliente").val().toLowerCase();
 
             // Filtrar os grupos que correspondem ao texto de busca
-            filteredGroups = groups.filter(function() {
+            filteredGroups = groups.filter(function () {
                 var clienteNome = $(this).find(".cliente-nome").text().toLowerCase();
                 return clienteNome.includes(searchText);
             });
@@ -170,7 +168,7 @@
         showPage(1);
 
         // Adiciona evento para o filtro
-        $("#searchCliente").on("keyup", function() {
+        $("#searchCliente").on("keyup", function () {
             filterGroups();
         });
     });
