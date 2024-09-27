@@ -29,12 +29,13 @@ namespace AppSysoHelp.Service
                     var jsonResponse = await response.Content.ReadAsStringAsync();
                     var objectList = JsonSerializer.Deserialize<List<ViewModelApiContrato>>(jsonResponse);
                     foreach (var item in objectList.GroupBy(a => a.DESCRICAOCONTRATO))
-                    {
+                    {                        
                         var idPlataforma = (item.Key.Contains("BACKUP")) ? 9 :
                                            (item.Key.Contains("SYSO MOBILE")) ? 10 :
                                            (item.Key.Contains("IMENDES")) ? 4 :
                                            (item.Key.Contains("COLETOR")) ? 11 :
-                                           (item.Key.Contains("SYSO CAR")) ? 7 : 0;
+                                           (item.Key.Contains("SYSO CAR")) ? 7 :
+                                           (item.Key.Contains("E-COMMERCE")) ? 18 : 0;
                         foreach (var contratos in item)
                         {
                             if (idPlataforma > 0)
@@ -97,7 +98,7 @@ namespace AppSysoHelp.Service
             return _context.Contratos.Include(a => a.FkPlataforma)
                                      .Include(a => a.FkCliente)
                                      .Include(a=> a.Licencas)
-                                      .Where(a => a.SituacaoContrato == "RENOVADO" || a.SituacaoContrato == "ATIVO")
+                                      .Where(a => a.SituacaoContrato == "PENDENTE" || a.SituacaoContrato == "ATIVO")
                                      .ToList();
         }
 
