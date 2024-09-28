@@ -199,11 +199,11 @@ namespace AppSysoHelp.Service
                 retorno.Mensagem = "Chave Suspensa";
                 return retorno;
             }
-            else if (contrato.Licencas.FirstOrDefault(a => a.Hash == licenca).Ativo == true && contrato.SituacaoContrato.Trim() == "Pendende")
+            else if (contrato.Licencas.FirstOrDefault(a => a.Hash == licenca).Ativo == true && contrato.SituacaoContrato.Trim() == "PENDENTE")
             {
                 retorno.Status = true;
                 retorno.Mensagem = "1 - Ativa";
-                retorno.Mensagem2 = "Olá! Esperamos que você esteja tendo uma ótima experiência com o nosso app. Para garantir que tudo continue funcionando bem, sugerimos dar uma olhada em alguns detalhes da sua conta. Se precisar de assistência, nossos administradores estão aqui para ajudar. Agradecemos sua compreensão!";
+                retorno.Mensagem2 = "Olá\r\n\r\nEsperamos que você esteja tendo uma ótima experiência com o nosso app. \r\n\r\nPara garantir que tudo continue funcionando bem, se faz necessário entrar em contato com a empresa Syso Tecnologia (69) 3222-0609. \r\n\r\nAguardo seu contato!";
                 return retorno;
             }
 
