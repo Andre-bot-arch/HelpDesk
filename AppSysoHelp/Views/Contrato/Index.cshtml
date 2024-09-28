@@ -22,7 +22,7 @@
     </div>
     <div class="iq-card-body">
         <div class="row">
-            @foreach (var item in Model.Where(a => a.SituacaoContrato.Trim() == "ATIVO").GroupBy(a => a.FkClienteId))
+            @foreach (var item in Model.Where(a => a.SituacaoContrato.Trim() == "ATIVO" || a.SituacaoContrato.Contains("PENDENTE")).GroupBy(a => a.FkClienteId))
             {
                 <div class="container mb-3 group-container">
                     <div class="card" style="background-color: #222e35">
