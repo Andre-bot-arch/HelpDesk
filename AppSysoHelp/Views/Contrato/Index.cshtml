@@ -22,11 +22,11 @@
     </div>
     <div class="iq-card-body">
         <div class="row">
-            @foreach (var item in Model.Where(a => a.SituacaoContrato.Trim() == "ATIVO" || a.SituacaoContrato.Contains("PENDENTE")).GroupBy(a => a.FkClienteId))
+            @foreach (var item in Model.Where(a => a.SituacaoContrato.Trim() == "ATIVO").GroupBy(a => a.FkClienteId))
             {
                 <div class="container mb-3 group-container">
                     <div class="card" style="background-color: #222e35">
-                        <div class="card-header text-primary cliente-nome" style="background-color: #111b21">
+                        <div class="card-header text-primary cliente-nome" style="background-color: #111b21; font-size: 16px;">
                             <i class="fa fa-address-book"></i> @item.FirstOrDefault()?.FkCliente?.Fantasia.ToUpper() - <span style="font-size: 11px; ">@item.FirstOrDefault()?.FkCliente?.NomeCliente.ToUpper()</span>
                         </div>
                         <div class="card-body">
