@@ -1,9 +1,11 @@
 using AppSysoHelp.Models;
+using AppSysoHelp.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddTransient<ServiceContato>();
 // Configurar os serviços
 builder.Services.AddDbContext<HelpdesksysoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
