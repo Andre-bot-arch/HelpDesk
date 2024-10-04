@@ -29,7 +29,6 @@ namespace AppSysoHelp.Service
             {
                 var fromAddress = new MailAddress(email, "Contato SysoTecnologia");
                 var toAddress = new MailAddress("sysotecnologia@gmail.com", "Cliente SysoTecnologia");
-                const string fromPassword = "senha";
                 const string subject = "Novo contato pelo formulário";
 
                 var mail = new MailMessage(fromAddress, toAddress)
