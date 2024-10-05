@@ -28,15 +28,19 @@ namespace AppSysoHelp.Controllers
         {
             if (!string.IsNullOrEmpty(query))
             {
-                var lista = _contrato.BuscarContratos().Where(a=> a.FkCliente.Fantasia.Contains(query.ToUpper()) ||
-                                                                   a.FkCliente.NomeCliente.Contains(query.ToUpper()))
-                                                       .OrderBy(a=> a.FkCliente.Fantasia)  
+                var lista = _contrato.BuscarContratos().Where(a => (a.FkCliente.Fantasia.Contains(query.ToUpper()) ||
+                                                                   a.FkCliente.NomeCliente.Contains(query.ToUpper())) &&
+                                                                  a.DataFim.ToDateTime(TimeOnly.MinValue) >= DateTime.Now.Date)
+                                                       .OrderBy(a => a.FkCliente.Fantasia)
                                                        .ToList();
                 return View(lista);
             }
             else
             {
-                var lista = _contrato.BuscarContratos();
+                var lista = _contrato.BuscarContratos()
+                                    .Where(a => a.DataFim.ToDateTime(TimeOnly.MinValue) >= DateTime.Now)
+                                     .OrderBy(a => a.FkCliente.Fantasia)
+                                     .ToList();
                 return View(lista);
             }
         }
@@ -53,7 +57,8 @@ namespace AppSysoHelp.Controllers
             }
             else
             {
-                var lista = _contrato.BuscarContratosCancelados();
+                var lista = _contrato.BuscarContratosCancelados().OrderBy(a => a.FkCliente.Fantasia)
+                                                       .ToList();
                 return View(lista);
             }
         }
@@ -87,7 +92,7 @@ namespace AppSysoHelp.Controllers
             if (id > 0)
             {
                 var contrato = _contrato.BuscarContratosPorId(id);
-                contrato.SituacaoContrato = (ativo == "Ativo") ?"Inativo" : "Ativo";
+                contrato.SituacaoContrato = (ativo == "Ativo") ? "Inativo" : "Ativo";
                 if (_generico.UpdateGenerico(contrato))
                     return Json(new { success = true, message = "Finalizado com sucesso! " });
 

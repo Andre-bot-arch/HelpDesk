@@ -4,7 +4,7 @@
 <div class="iq-card" style="background-color: #0B141A">
     <div class="iq-card-header d-flex justify-content-between align-items-center">
         <div class="iq-header-title">
-            <h4 class="card-title text-primary">Lista de Contratos Cancelados</h4>
+            <h4 class="card-title text-white">Lista de Contratos Cancelados</h4>
         </div>
         <form asp-action="Cancelados" asp-controller="Contrato" class="d-flex align-items-center mx-auto">
             <div class="input-group">
@@ -23,7 +23,7 @@
             {
                 <div class="container mb-3 group-container">
                     <div class="card" style="background-color: #222e35">
-                        <div class="card-header text-primary cliente-nome" style="background-color: #111b21">
+                        <div class="card-header text-white cliente-nome" style="background-color: #394247">
                             <i class="fa fa-address-book"></i> @item.FirstOrDefault()?.FkCliente?.Fantasia.ToUpper() - <span style="font-size: 11px; ">@item.FirstOrDefault()?.FkCliente?.NomeCliente.ToUpper()</span>
                         </div>
                         <div class="card-body">
@@ -42,7 +42,7 @@
                                         }
                                         else if (contrato.SituacaoContrato.Trim() == "CANCELADO")
                                         {
-                                            <h6><span class="@situacao">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-danger">@contrato.SituacaoContrato.ToUpper()</span></h6>
+                                            <h6><span class="text-white">@contrato.FkPlataforma.NomePlataforma: @contrato.FkPlataforma.Descricao</span> - <span style="width:120px" class="badge dark-icon badge-danger">@contrato.SituacaoContrato.ToUpper()</span></h6>
                                         }
                                         else if (contrato.SituacaoContrato.Trim() == "ATIVO")
                                         {
@@ -55,9 +55,9 @@
                                     </div>
 
                                     <div class="card-body">
-                                        <h5 class="card-title @situacao">@contrato.PontosContratados pontos contratatados</h5>
-                                        <p class="card-text @situacao"><span class="@situacao">Valor:</span> @contrato.Valor.ToString("C2")</p>
-                                        <p class="card-text @situacao"><span class="@situacao">Virgência:</span> @contrato.DataInicio.ToString("dd/MM/yyyy") a @contrato.DataFim.ToString("dd/MM/yyyy")</p>
+                                        <h5 class="card-title text-white">@contrato.PontosContratados pontos contratatados</h5>
+                                        <p class="card-text text-white"><span class="text-white">Valor:</span> @contrato.Valor.ToString("C2")</p>
+                                        <p class="card-text text-white"><span class="text-white">Virgência:</span> @contrato.DataInicio.ToString("dd/MM/yyyy") a @contrato.DataFim.ToString("dd/MM/yyyy")</p>
                                         @if (contrato.SituacaoContrato.Trim() == "CANCELADO")
                                         {
                                             <button disabled class="btn danger-icon btn-danger btn-block" data-id="@contrato.ContratoId">Detalhar <i class="ri-edit-box-fill"></i></button>

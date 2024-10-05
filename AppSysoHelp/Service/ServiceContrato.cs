@@ -49,7 +49,7 @@ namespace AppSysoHelp.Service
 
                                 if (contrato != null && idcliente > 0)
                                 {
-                                    contrato.DataFim = DateOnly.FromDateTime(contratos.DATAINICIO);
+                                    contrato.DataFim = DateOnly.FromDateTime(contratos.DATAFIM);
                                     contrato.DataInicio = DateOnly.FromDateTime(contratos.DATAINICIO);
                                     contrato.DescricaoContrato = contratos.DESCRICAOCONTRATO;
                                     contrato.FkClienteId = idcliente;
