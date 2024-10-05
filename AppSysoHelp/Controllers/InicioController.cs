@@ -21,6 +21,8 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Index()
         {
+            var time = _context.Time.ToList();
+            ViewData["Time"] = time;
             return View(_context.PlataformasContratos.ToList());
         }
 

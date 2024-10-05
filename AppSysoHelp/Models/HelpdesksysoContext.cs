@@ -41,6 +41,8 @@ public partial class HelpdesksysoContext : DbContext
 
     public virtual DbSet<TecnicosSupervisores> TecnicosSupervisores { get; set; }
 
+    public virtual DbSet<Time> Time { get; set; }
+
     public virtual DbSet<TiposChamados> TiposChamados { get; set; }
 
     public virtual DbSet<TotalizadorChamadosPorTecnico> TotalizadorChamadosPorTecnico { get; set; }
@@ -302,6 +304,18 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.EmailContato).HasMaxLength(100);
             entity.Property(e => e.NomeCompleto).HasMaxLength(150);
             entity.Property(e => e.TelefoneContato).HasMaxLength(20);
+        });
+
+        modelBuilder.Entity<Time>(entity =>
+        {
+            entity.HasKey(e => e.PkId);
+
+            entity.ToTable("Time", "dbo");
+
+            entity.Property(e => e.Ativo).HasDefaultValue(true);
+            entity.Property(e => e.CaminhoImagem).IsUnicode(false);
+            entity.Property(e => e.Funcao).IsUnicode(false);
+            entity.Property(e => e.Nome).IsUnicode(false);
         });
 
         modelBuilder.Entity<TiposChamados>(entity =>

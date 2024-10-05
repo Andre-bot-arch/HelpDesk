@@ -1,0 +1,43 @@
+﻿<div id="modalEditarTime" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalEditarTime" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header position-sticky top-0 bg-white">
+                <h5 class="modal-title" id="modalEditarTime">Editar Colaborador</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form id="formEditarTime" class="was-validated" enctype="multipart/form-data">
+                <input type="hidden" id="pkid" name="PkId" />
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Nome da Plataforma -->
+                    <div class="form-group">
+                        <div class="mb-3">
+                            <input name="Nome" type="text" maxlength="100" class="form-control" id="nome" placeholder="Nome do Colaborador" required>
+                        </div>
+                    </div>
+                    <!-- Descrição -->
+                    <div class="form-group">
+                        <div class="mb-3">
+                            <textarea name="Funcao" maxlength="500" rows="3" class="form-control" id="funcao" placeholder="Função na equipe" required></textarea>
+                        </div>
+                    </div>
+                    <!-- Imagem -->
+                    <div class="form-group">
+                        <label for="imagemPlataformaEditar">Foto do Colaborador</label>
+                        <input type="file" class="form-control-file" id="imagemBase64Editar" name="imagemBase64" accept="image/*">
+                    </div>
+                    <!-- Pré-visualização da Imagem -->
+                    <div class="form-group">
+                        <label>Pré-visualização:</label>
+                        <img id="previewImagemEditar" src="#" alt="Pré-visualização" style="display: none; max-width: 50%; height: auto;" />
+                    </div>
+                </div>
+                <div class="modal-footer position-sticky bottom-0 bg-white">
+                    <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">Sair</button>
+                    <button type="button" id="btnEditar" style="width: 80px" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
