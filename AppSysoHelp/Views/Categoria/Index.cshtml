@@ -1,0 +1,48 @@
+﻿@model IEnumerable<AppSysoHelp.Models.ChamadosCategoria>
+@{
+}
+<div class="iq-card" style="background-color: #0B141A">
+    <div class="iq-card-header d-flex justify-content-between align-items-center">
+        <div class="iq-header-title">
+            <h4 class="card-title text-white">Lista de Categorias Ativas</h4>
+        </div>       
+        <div>
+            <a href="#" class="btn dark-icon btn-primary text-white">Cadastar Categorias</a>
+        </div>
+    </div>
+    <div class="iq-card-body">
+        <div class="row">
+            <div class="col-sm-12">           
+            <div class="form-group">
+                <select name="categoriaId" class="form-control" required style="width: 100%">
+                    <option value="">Buscar Categoria</option>
+                </select>
+            </div>
+            </div>
+        </div>       
+    </div>
+</div>
+
+<div class="iq-card" style="background-color: #0B141A">
+    <div class="iq-card-header d-flex justify-content-between align-items-center">
+        <div class="iq-header-title">
+            <h4 class="card-title text-white">Sub Categorias</h4>
+        </div>        
+    </div>
+    <div class="iq-card-body">
+        <div class="row">
+            <div class="col-sm-12">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+   
+    });
+</script>
+
+<partial name="_ModalCadastrarCategoria.cshtml" />
+<script src="~/assets/js/contrato.js"></script>
