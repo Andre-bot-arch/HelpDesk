@@ -9,9 +9,11 @@ public partial class ChamadosSubCategoria
 
     public long FkCategoria { get; set; }
 
-    public string DescricaoTipoChamado { get; set; } = null!;
+    public string Descricao { get; set; } = null!;
 
     public string Prioridade { get; set; } = null!;
 
-    public int Peso { get; set; }
+    public long Complexidade { get; set; }
+
+    public virtual ChamadosCategoria FkCategoriaNavigation { get; set; } = null!;
 }

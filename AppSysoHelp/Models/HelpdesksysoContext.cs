@@ -140,6 +140,7 @@ public partial class HelpdesksysoContext : DbContext
             entity.ToTable("ChamadosCategoria", "dbo");
 
             entity.Property(e => e.DescricaoTipoChamado).HasMaxLength(150);
+            entity.Property(e => e.Status).HasDefaultValue(true);
         });
 
         modelBuilder.Entity<ChamadosSubCategoria>(entity =>
@@ -148,8 +149,15 @@ public partial class HelpdesksysoContext : DbContext
 
             entity.ToTable("ChamadosSubCategoria", "dbo");
 
-            entity.Property(e => e.DescricaoTipoChamado).HasMaxLength(150);
-            entity.Property(e => e.Prioridade).HasMaxLength(15);
+            entity.Property(e => e.Descricao).HasMaxLength(150);
+            entity.Property(e => e.Prioridade)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.FkCategoriaNavigation).WithMany(p => p.ChamadosSubCategoria)
+                .HasForeignKey(d => d.FkCategoria)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ChamadosSubCategoria_ChamadosCategoria");
         });
 
         modelBuilder.Entity<Clientes>(entity =>
