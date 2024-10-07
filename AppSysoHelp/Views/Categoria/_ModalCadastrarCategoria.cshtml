@@ -3,64 +3,24 @@
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenteredScrollableTitle">Cadastrar Contrato</h5>
+                <h5 class="modal-title" id="exampleModalCenteredScrollableTitle">Cadastrar Categoria</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <form class="was-validated" asp-action="Gravar" method="post">
-                <input type="hidden" name="ContratoId" id="ContratoId" />
-                <div class="modal-body">
-                    <div class="form-group">
-                        <select id="sistemaSelect" name="FkPlataformaId" class="FkPlataformaId" required style="width: 100%">
-                            <option value="">'Buscar Sistema</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <select id="clienteSelect88" name="FkClienteId" class="FkClienteId" required style="width: 100%">
-                            <option value="">Selecione um Cliente</option>
-                        </select>
-                    </div>
+            <form class="was-validated" id="salvarCategoria" asp-action="Gravar" method="post">             
+                <div class="modal-body">                   
                     <div class="form-group">
                         <div class="mb-3">
-                            <input type="text" name="DescricaoContrato" id="DescricaoContrato" maxlength="100" class="form-control is-invalid" id="validationTooltip01" placeholder="Detalhes do Contrato" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <div class="mb-3">
-                                <input type="text" name="Valor" id="Valor" maxlength="100" class="form-control is-invalid" id="validationTooltip01" placeholder="Valor do Contrato" required>
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="mb-3">
-                                <input type="number" name="PontosContratados" id="PontosContratados" class="form-control is-invalid" id="validationTooltip01" placeholder="Pontos" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <label>Vigência</label>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="mb-3">
-                                <input type="month" name="DataInicio" id="DataInicio" class="form-control is-invalid" id="exampleInputmonth" placeholder="Data Inicial" required>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="mb-3">
-                                <input type="month" name="DataFim" id="DataFim" class="form-control" id="exampleInputmonth" placeholder="Data Final">
-                            </div>
+                            <input type="text" name="Descricao" id="Descricao" maxlength="100" class="form-control is-invalid"  placeholder="Nome da categoria" required>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">sair</button>
-                    <button type="submit" style="width: 80px" class="btn btn-primary">Salvar</button>
+                    <button type="button" style="width: 80px" class="btn btn-primary btn-salvar">Salvar</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-<script src="~/assets/js/select2Cliente.js"></script>

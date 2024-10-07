@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AppSysoHelp.Models.ChamadosCategoria>
+﻿
 @{
 }
 <div class="iq-card" style="background-color: #0B141A">
@@ -7,7 +7,7 @@
             <h4 class="card-title text-white">Lista de Categorias Ativas</h4>
         </div>       
         <div>
-            <button type="button" data-toggle="modal" data-target="#modalCadastrarCategoria" class="btn dark-icon btn-primary mb-3">Adicionar Categorias<i class="ri-add-box-line"></i></button>        
+            <button type="button" data-toggle="modal" data-target="#modalCadastrarCategoria" class="btn dark-icon btn-primary mb-3">Adicionar Categorias <i class="ri-add-box-line"></i></button>        
         </div>
         
     </div>
@@ -15,8 +15,8 @@
         <div class="row">
             <div class="col-sm-12">           
             <div class="form-group">
-                <select name="categoriaId" class="form-control" required style="width: 100%">
-                    <option value="">Buscar Categoria</option>
+                    <select asp-items="@ViewBag.categorias" class="form-control" required style="width: 100%">
+                    <option value="">Selecione uma Categoria</option>
                 </select>
             </div>
             </div>
@@ -46,4 +46,4 @@
 </script>
 
 <partial name="_ModalCadastrarCategoria.cshtml" />
-<script src="~/assets/js/contrato.js"></script>
+<script src="~/assets/js/categoria.js"></script>

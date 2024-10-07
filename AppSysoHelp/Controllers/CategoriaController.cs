@@ -1,5 +1,6 @@
 ﻿using AppSysoHelp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AppSysoHelp.Controllers
 {
@@ -14,7 +15,8 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Index()
         {
-            return View(_context.ChamadosCategoria.ToList());
+            ViewBag.categorias = new SelectList(_context.ChamadosCategoria.ToList(), "CategoriaId", "Descricao");
+            return View();
         }
 
         [HttpPost]
