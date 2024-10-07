@@ -7,7 +7,7 @@ public partial class ChamadosCategoria
 {
     public long CategoriaId { get; set; }
 
-    public string DescricaoTipoChamado { get; set; } = null!;
+    public string Descricao { get; set; } = null!;
 
     public bool Status { get; set; }
 

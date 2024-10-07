@@ -139,7 +139,7 @@ public partial class HelpdesksysoContext : DbContext
 
             entity.ToTable("ChamadosCategoria", "dbo");
 
-            entity.Property(e => e.DescricaoTipoChamado).HasMaxLength(150);
+            entity.Property(e => e.Descricao).HasMaxLength(150);
             entity.Property(e => e.Status).HasDefaultValue(true);
         });
 
