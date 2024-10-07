@@ -1,4 +1,4 @@
-$(document).ready(function () {      
+$(document).ready(function () {
     $('.btn-salvar').click(function () {
         var form = $('#salvarCategoria')[0]; // Obtendo o formulário real
         var formData = new FormData(form);
@@ -17,7 +17,7 @@ $(document).ready(function () {
                         let timerInterval;
                         Swal.fire({
                             icon: 'success',
-                            title: response.message,   
+                            title: response.message,
                             html: '<b>4</b> segundos.',
                             timer: 4000, // 5 segundos
                             timerProgressBar: true,
@@ -60,6 +60,103 @@ $(document).ready(function () {
             });
         }
     });
+
+    $('.btn-salvar-sub').click(function () {
+        var form = $('#salvarSubCategoria')[0]; // Obtendo o formulário real
+        var formData = new FormData(form);
+
+        if (form.checkValidity() === false) {
+            $('#salvarSubCategoria').addClass('was-validated');
+        } else {
+            $.ajax({
+                url: '/SubCategoria/Create',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        let timerInterval;
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            html: '<b>4</b> segundos.',
+                            timer: 4000,
+                            timerProgressBar: true,
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                const b = Swal.getHtmlContainer().querySelector('b');
+                                timerInterval = setInterval(() => {
+                                    b.textContent = Math.ceil(Swal.getTimerLeft() / 1000);
+                                }, 1000);
+                            },
+                            willClose: () => {
+                                clearInterval(timerInterval);
+                            }
+                        }).then((result) => {
+                            $('#modalCadastrarSubCategoria').modal('hide');
+                            location.reload();
+                            $('#modalCadastrarSubCategoria').modal('hide');
+                        });
+
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro!',
+                            text: response.message,
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: 'Ocorreu um erro inesperado.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        }
+    });
+
+    $('#categoriaId').on("change", function () {      
+        var cat = parseInt($(this).val());
+        $("#_FkCategoria").val(cat);
+        console.log(cat);
+        $.ajax({
+            url: '/SubCategoria/Detalhes',
+            type: 'POST',
+            data: { id: cat },
+            success: function (response) {
+                // Exibe a resposta no HTML
+                $("#tableDetalhes").html(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sem SubCategorias',                  
+                    html: '<b>2</b> segundos.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        const b = Swal.getHtmlContainer().querySelector('b');
+                        timerInterval = setInterval(() => {
+                            b.textContent = Math.ceil(Swal.getTimerLeft() / 1000);
+                        }, 1000);
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval);
+                    }
+                }).then((result) => {
+                  
+                });               
+            }
+        });
+
+    });
+
 
     // Função para preencher o formulário de edição com dados e a imagem atual
     $(document).on('click', '.btn-edit', function () {

@@ -20,49 +20,62 @@ namespace AppSysoHelp.Controllers
         }
 
         [HttpPost]
-        public JsonResult Create(ChamadosSubCategoria form)
+        public IActionResult Create(ChamadosSubCategoria form)
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    _context.Add(form);
-                    _context.SaveChanges();
+                _context.Add(form);
+                _context.SaveChanges();
 
-                    return Json(new { success = true, message = "Subcategoria cadastrada com sucesso!" });
-                }
-                else
-                {
-                    return Json(new { success = false, message = "Dados inválidos!" });
-                }
+                var chamado = _context.ChamadosSubCategoria.Where(a => a.FkCategoria == form.FkCategoria).ToList();
+                return PartialView("_DetalharSubCategorias", chamado);
+
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Erro ao cadastrar subcategoria: " + ex.Message });
-            }
+                return PartialView("_DetalharSubCategorias", new List<ChamadosSubCategoria>());
+            }           
         }
 
+        [HttpPost]
         public IActionResult Detalhes(long id)
         {
+            // Verifica se o ID fornecido é válido
+            if (id <= 0)
+            {
+                return BadRequest("ID inválido fornecido.");
+            }
+
             try
             {
-                // Supondo que você tenha um método para buscar a plataforma por ID
+                // Procura a subcategoria pelo ID
                 var subcategoria = _context.ChamadosSubCategoria.FirstOrDefault(a => a.SubCategoriaId == id);
 
                 if (subcategoria != null)
                 {
-                    return Json(new { success = true, data = subcategoria });
+                    // Busca todos os chamados relacionados à subcategoria
+                    var chamados = _context.ChamadosSubCategoria
+                                           .Where(a => a.FkCategoria == id)
+                                           .ToList();
+
+                    return PartialView("_DetalharSubCategorias", chamados);
                 }
                 else
                 {
-                    return Json(new { success = false, message = "Subcategoria não encontrada." });
+                    // Retorna erro 404 se não encontrar a subcategoria
+                    return NotFound("Subcategoria não encontrada.");
                 }
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Erro ao buscar os detalhes: " + ex.Message });
+                // Log de erro (opcional, se você tiver um sistema de logs)
+                // _logger.LogError(ex, "Erro ao buscar detalhes da subcategoria com ID {id}", id);
+
+                // Retorna erro 500 se houver uma exceção
+                return StatusCode(500, $"Erro no servidor: {ex.Message}");
             }
         }
+
 
         [HttpPost]
         public JsonResult Edit(ChamadosSubCategoria form)
