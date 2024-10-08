@@ -34,7 +34,7 @@ namespace AppSysoHelp.Controllers
             catch (Exception ex)
             {
                 return PartialView("_DetalharSubCategorias", new List<ChamadosSubCategoria>());
-            }           
+            }
         }
 
         [HttpPost]
@@ -74,6 +74,17 @@ namespace AppSysoHelp.Controllers
                 // Retorna erro 500 se houver uma exceção
                 return StatusCode(500, $"Erro no servidor: {ex.Message}");
             }
+        }
+
+
+        [HttpPost]
+        public IActionResult ListarPorIdCategoria(long id = 0)
+        {
+            var categoria = _context.ChamadosSubCategoria
+                                                   .Where(a => a.FkCategoria == id)
+                                                   .ToList();
+
+            return Json(categoria);
         }
 
 

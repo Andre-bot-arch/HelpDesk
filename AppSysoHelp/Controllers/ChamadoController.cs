@@ -59,6 +59,20 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Aberto()
         {
+            var userIdClaim = User.FindFirst("Id");
+            var userId = userIdClaim?.Value;
+            var atendimento = _context.Atendimentos.Where(a => a.FkTecnicoId == Convert.ToInt32(userId) && a.AtendimentoEncerrado == false).ToList();
+
+            if (atendimento.Count > 0)
+            {
+                ViewBag.emAtendimento = true;
+            }
+            else
+            {
+                ViewBag.emAtendimento = false;
+            }
+
+            ViewBag.categoria = _context.ChamadosCategoria.ToList();
             return View(_context.Chamados.Include(a => a.FkAtendenteNavigation)
                                          .Include(a => a.FkCliente)
                                          .Include(a => a.FkTecnico)

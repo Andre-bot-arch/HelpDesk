@@ -26,7 +26,7 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            <tr>
+                            <tr style="font-size: 16px">
                                 <td style="text-align:left">@item.Descricao</td>
                                 <td contenteditable="true">@item.Complexidade</td>
                                 @if (item.Prioridade.Trim() == "Urgente")
@@ -46,7 +46,9 @@
                                     <td class="text-center"><div class="badge badge-pill iq-bg-dark" style="width: 80px">NORMAL</div></td>
                                 }
                                 <td>
-                                    <button type="button" class="btn btn-danger"><i class="ri-delete-bin-2-fill"></i></button>
+                                    <a href="#" class="btn-exluir-sub" data-id="@item.SubCategoriaId">
+                                        <i class="ri-delete-bin-5-line text-danger pr-1" style="font-size: 20px;"></i>
+                                    </a>
                                 </td>
                             </tr>
                         }

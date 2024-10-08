@@ -1,4 +1,8 @@
 ﻿@model IEnumerable<AppSysoHelp.Models.Chamados> 
+@{
+    ViewData["Title"] = "Chamados";
+    var categoria = (List<ChamadosCategoria>)ViewBag.categoria ?? new List<ChamadosCategoria>();
+}
 <div class="iq-card" style="background-color: #111b21">
     <div class="iq-card-header d-flex justify-content-between">
         <div class="iq-header-title">
@@ -40,10 +44,10 @@
     </div>
 </div>
 
-<partial name="_ModalCadastrarChamado.cshtml" />
+<partial name="_ModalCadastrarChamado.cshtml" model="@categoria" />
 <partial name="_ModalRemarcarChamado.cshtml" />
 <partial name="_ModalCancelarChamado.cshtml" />
- <partial name="_ModalPrintChamado.cshtml" model="new Chamados()" />  
+<partial name="_ModalPrintChamado.cshtml" model="new Chamados()" />  
 
 <script>
     $(document).ready(function () {

@@ -75,38 +75,8 @@ $(document).ready(function () {
                 contentType: false,
                 processData: false,
                 success: function (response) {
-                    if (response.success) {
-                        let timerInterval;
-                        Swal.fire({
-                            icon: 'success',
-                            title: response.message,
-                            html: '<b>4</b> segundos.',
-                            timer: 4000,
-                            timerProgressBar: true,
-                            allowOutsideClick: false,
-                            didOpen: () => {
-                                const b = Swal.getHtmlContainer().querySelector('b');
-                                timerInterval = setInterval(() => {
-                                    b.textContent = Math.ceil(Swal.getTimerLeft() / 1000);
-                                }, 1000);
-                            },
-                            willClose: () => {
-                                clearInterval(timerInterval);
-                            }
-                        }).then((result) => {
-                            $('#modalCadastrarSubCategoria').modal('hide');
-                            location.reload();
-                            $('#modalCadastrarSubCategoria').modal('hide');
-                        });
-
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Erro!',
-                            text: response.message,
-                            confirmButtonText: 'OK'
-                        });
-                    }
+                    $("#_Descricao").val();
+                    $("#tableDetalhes").html(response);
                 },
                 error: function () {
                     Swal.fire({

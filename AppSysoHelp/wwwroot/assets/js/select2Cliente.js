@@ -125,4 +125,54 @@
             cache: true
         }
     });
+
+    $("#fkCategoria").on("change", function () {
+        var definido = $(this).val();
+        $.ajax({
+            url: '/SubCategoria/ListarPorIdCategoria',
+            type: 'POST',
+            data: { id: definido },
+            success: function (response) {
+                $("#fkSubCategoria").empty(); 
+                var option = $("<option></option>")
+                    .val("")
+                    .text("Selecione uma SubCategoria");
+                $("#fkSubCategoria").append(option);
+                if (response.length > 0) {
+                    for (var i = 0; i < response.length; i++) {                        
+                        var option = $("<option></option>")
+                            .val(response[i].prioridade)
+                            .text(response[i].descricao);                        
+                        $("#fkSubCategoria").append(option);
+                    }
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Ocorreu um erro inesperado.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+
+    $("#fkSubCategoria").on("change", function () {
+        var definido = $(this).val();
+        $("#_Prioridade").val(definido);
+        if (definido == "Urgente") {
+            $("#priori").html('<button type="button" style="font-size: 18px; font-weight:bold" disabled class="btn dark-icon btn-dark btn-block">Urgente</button>');
+        }
+        else if (definido == "Alta") {
+            $("#priori").html('<button type="button" style="font-size: 18px; font-weight:bold" disabled class="btn dark-icon btn-danger btn-block">Alta</button>');
+        }
+        else if (definido == "Media") {
+            $("#priori").html('<button type="button" style="font-size: 18px; font-weight:bold" disabled class="btn dark-icon btn-warning btn-block">Media</button>');
+        }
+        else {
+            $("#priori").html('<button type="button" style="font-size: 18px; font-weight:bold; border: 1px solid black" disabled class="btn dark-icon btn btn-block text-black">Normal</button>');
+        }
+    });
+
 });

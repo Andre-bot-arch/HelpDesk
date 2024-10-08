@@ -1,4 +1,8 @@
-﻿<style>
+﻿@model IEnumerable<AppSysoHelp.Models.ChamadosCategoria>
+@{
+
+}
+<style>
     .modal-body {
         max-height: 550px;
         overflow-y: auto;
@@ -50,24 +54,54 @@
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-between mb-1 p-2">
-                        <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
-                            <input type="radio" id="customRadio-1" name="Prioridade" value="Normal" class="custom-control-input bg-success" checked>
-                            <label class="custom-control-label text-black" for="customRadio-1" style="color: black">Normal</label>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <select name="fkCategoria" id="fkCategoria" class="custom-select is-invalid" required style="width: 100%; height: 44px">
+                                    <option value="" selected>Selecione uma Categoria</option>
+                                    @foreach (var item in Model)
+                                    {
+                                        <option value="@item.CategoriaId">@item.Descricao</option>
+                                    }
+                                </select>
+                            </div>
                         </div>
-                        <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
-                            <input type="radio" id="customRadio-2" name="Prioridade" value="Media" class="custom-control-input bg-warning">
-                            <label class="custom-control-label text-black" for="customRadio-2" style="color: black">Média</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
-                            <input type="radio" id="customRadio-3" name="Prioridade" value="Alta" class="custom-control-input bg-danger">
-                            <label class="custom-control-label text-black" for="customRadio-3" style="color: black">Alta</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
-                            <input type="radio" id="customRadio-4" name="Prioridade" value="Urgente" class="custom-control-input bg-dark">
-                            <label class="custom-control-label text-black" for="customRadio-4" style="color: black">Urgente</label>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <select name="fkCategoria" id="fkSubCategoria" class="custom-select is-invalid" required style="width: 100%; height: 44px">
+                                    <option value="" selected>---------------------------</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-sm-12 mb-2">
+                            <div id="priori">
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="Prioridade" id="_Prioridade" />
+                    
+
+                    @* <div class="d-flex justify-content-between mb-1 p-2">
+                    <button type="button" class="btn dark-icon btn-primary btn-block">Block level button</button>
+                    <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                    <input type="radio" id="customRadio-1" name="Prioridade" value="Normal" class="custom-control-input bg-success" checked>
+                    <label class="custom-control-label text-black" for="customRadio-1" style="color: black">Normal</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                    <input type="radio" id="customRadio-2" name="Prioridade" value="Media" class="custom-control-input bg-warning">
+                    <label class="custom-control-label text-black" for="customRadio-2" style="color: black">Média</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                    <input type="radio" id="customRadio-3" name="Prioridade" value="Alta" class="custom-control-input bg-danger">
+                    <label class="custom-control-label text-black" for="customRadio-3" style="color: black">Alta</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                    <input type="radio" id="customRadio-4" name="Prioridade" value="Urgente" class="custom-control-input bg-dark">
+                    <label class="custom-control-label text-black" for="customRadio-4" style="color: black">Urgente</label>
+                    </div>
+                    </div> *@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="mb-3">

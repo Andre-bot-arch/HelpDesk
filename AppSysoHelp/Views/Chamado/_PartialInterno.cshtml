@@ -8,6 +8,8 @@
            return prioridades.IndexOf(prioridade ?? string.Empty);
        })
        .ToList();
+
+    bool emAtendimento = (bool)ViewBag.emAtendimento;
 }
 
 
@@ -46,7 +48,7 @@
                     {
                         <tr>
                             <td>
-                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type ="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />
                                 @item.FkCliente.Fantasia<br />
                                 <span style="font-size: 11px">@item.FkCliente.NomeCliente</span>
                             </td>
@@ -65,11 +67,11 @@
                             }
                             else if (item.Prioridade.Trim() == "Alta")
                             {
-                                 <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
                             }
                             else if (item.Prioridade.Trim() == "Media")
                             {
-                               <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
                             }
                             else
                             {
@@ -96,7 +98,10 @@
                                             <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
                                         </span>
                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="Atendimento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                            @if (emAtendimento == false)
+                                            {
+                                                <a class="dropdown-item" asp-controller="Chamado" asp-action="Atendimento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                            }
                                             @* <a class="dropdown-item btn-adicionarId" href="#" data-prioridade="@item.Prioridade.Trim()" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalRemarcarChamado"><i class="ri-pencil-fill mr-2"></i>Remarcar</a> *@
                                             <a class="dropdown-item btn-adicionarIdPrint" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalPrintChamado"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
                                             <a class="dropdown-item btn-adicionarIdCancelamento" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalCancelarChamado"><i class="ri-delete-bin-6-fill mr-2"></i>Excluir</a>
@@ -129,7 +134,7 @@
                     {
                         <tr>
                             <td>
-                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type ="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />
                                 @item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
@@ -154,11 +159,11 @@
                             }
                             else if (item.Prioridade.Trim() == "Alta")
                             {
-                                 <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
                             }
                             else if (item.Prioridade.Trim() == "Media")
                             {
-                               <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
                             }
                             else
                             {
@@ -217,7 +222,7 @@
                     {
                         <tr>
                             <td>
-                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type ="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />
                                 @item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
@@ -242,11 +247,11 @@
                             }
                             else if (item.Prioridade.Trim() == "Alta")
                             {
-                                 <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
                             }
                             else if (item.Prioridade.Trim() == "Media")
                             {
-                               <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
                             }
                             else
                             {
@@ -273,7 +278,11 @@
                                             <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
                                         </span>
                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="Atendimento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                            @if (emAtendimento == false)
+                                            {
+                                                <a class="dropdown-item" asp-controller="Chamado" asp-action="Atendimento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                            }
+
                                             @* <a class="dropdown-item btn-adicionarId" href="#" data-prioridade="@item.Prioridade.Trim()" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalRemarcarChamado"><i class="ri-pencil-fill mr-2"></i>Remarcar</a> *@
                                             <a class="dropdown-item btn-adicionarIdPrint" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalPrintChamado"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
                                             <a class="dropdown-item btn-adicionarIdCancelamento" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalCancelarChamado"><i class="ri-delete-bin-6-fill mr-2"></i>Excluir</a>
@@ -309,7 +318,7 @@
                         }
                         <tr class="@cancelado">
                             <td>
-                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type ="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />
                                 @item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
@@ -334,7 +343,7 @@
                             }
                             else if (item.Prioridade.Trim() == "Alta")
                             {
-                                 <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
                             }
                             else if (item.Prioridade.Trim() == "Media")
                             {
