@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    var tipoRelatorio = ViewBag.tipo;
+}
+
+@if (tipoRelatorio == 1)
+{
+    <div class="row">
+        <div class="col">
+            <h3 class="text-white">Chamados x Período</h3>
+        </div>
+    </div>
+    <hr />
+    <form asp-action="ChamadosPorPeriodo" asp-controller="Relatorios" target="_blank" onsubmit="return validateDates()">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="pb-3">
+                    <label class="text-white" for="dataInicial">Data Inicial</label>
+                    <input type="date" id="dataInicial" name="dataInicio" class="form-control" style="background-color: white" required />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="">
+                    <label class="text-white" for="dataFinal">Data Final</label>
+                    <input type="date" id="dataFinal" name="dataFinal" class="form-control" style="background-color: white" required />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5 pb-3">
+                <select id="tecnicoSelect10" name="tecnico" class="FkPlataformaId tecnicoSelect10" style="width: 100%; height: 44px">
+                    <option value="">Buscar Sistema</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <select id="clienteSelect88" name="cliente" class="FkClienteId"  style="width: 100%">
+                    <option value="">Selecione um Cliente</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-12 text-right mt-3">
+            <button type="submit" class="btn btn-primary">Gerar Relatório</button>
+        </div>
+    </form>
+    <hr />
+}
+
+<script src="~/assets/js/select2Cliente.js"></script>
+<script>
+    // Função para validar as datas
+    function validateDates() {
+        const dataInicial = document.getElementById("dataInicial").value;
+        const dataFinal = document.getElementById("dataFinal").value;
+        const hoje = new Date().toISOString().split('T')[0]; // Data de hoje no formato YYYY-MM-DD
+
+        // Verificar se a data inicial não é maior que a data final
+        if (dataInicial > dataFinal) {
+            alert("A data inicial não pode ser maior que a data final.");
+            return false;
+        }
+
+        // Verificar se a data inicial não é maior que a data atual
+        if (dataInicial > hoje) {
+            alert("A data inicial não pode ser maior que a data de hoje.");
+            return false;
+        }
+
+        // Verificar se a data final não é maior que a data atual
+        if (dataFinal > hoje) {
+            alert("A data final não pode ser maior que a data de hoje.");
+            return false;
+        }
+
+        // Se todas as verificações passarem, o formulário pode ser enviado
+        return true;
+    }
+
+    // Definir o valor máximo permitido para os campos de data
+    window.onload = function () {
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById("dataInicial").max = hoje;
+        document.getElementById("dataFinal").max = hoje;
+    };
+</script>

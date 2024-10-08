@@ -1,0 +1,152 @@
+﻿@model IEnumerable<AppSysoHelp.Models.Chamados>
+@{
+    ViewData["Title"] = "PedidosPorPeriodo";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chamados x Período</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 40px;
+            color: #333;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a4a4a;
+        }
+
+        .report-header, .report-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+            .report-header div, .report-footer div {
+                width: 48%;
+            }
+
+        .report-period {
+            font-size: 1.1em;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+            .report-table thead {
+                background-color: #314151;
+                color: white;
+            }
+
+            .report-table th, .report-table td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .report-table th {
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                font-size: 0.9em;
+            }
+
+            .report-table tbody tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: #f4f4f9;
+        }
+
+        .collapse-content {
+            display: none;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #ddd;
+        }
+
+        .collapse-row:hover {
+            cursor: pointer;
+            background-color: #eaeaea;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="report-footer" style="position: relative; padding: 1px; display: flex; flex-direction: column; align-items: center;">
+        <!-- Cabeçalho com logo -->
+        <div class="row" style="text-align: center; position: relative;">
+            <h1 style="color: #4a4a4a; margin-bottom: 5px;"><img src="~/images/helpdesk/_logo.png" width="15%" alt="profile-img" class="avatar-130 img-fluid"> Syso Tecnologia</h1>
+        </div>
+
+        <!-- Detalhes do relatório -->
+        <div class="report-details " style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+            <div style="text-align: left; padding: 10px">
+                <h3 style="margin: 0;">Período do Relatório</h3>
+                <p class="report-period" style="margin: 0;">@ViewBag.DataInicio x @ViewBag.DataFinal</p>
+            </div>
+            <div class="text-right" style="text-align: right; padding: 10px" ">
+                <h3 style="margin: 0;">Total de Chamados</h3>
+                <p class="report-period" style="margin: 0;"><b>@ViewBag.TotalChamados</b></p>
+            </div>
+        </div>
+    </div>
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Data Criação</th>
+                <th>Data Fechamento</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaPedidos">
+            @foreach (var item in Model.OrderByDescending(b => b.ChamadoId))
+            {
+                <tr>
+                    <td>@item.ChamadoId</td>
+                    <td>@item.FkCliente.Fantasia</td>
+                    <td>@item.DataCriacao</td>
+                    <td>@item.DataFechamento</td>
+                    <td>@item.FkSituacaoChamado.DescricaoSituacao</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="6" class="text-right">Total Geral:</td>
+                @* <td class="text-right">@ViewBag.TotalPeriodo <span id="totalGeral"></span></td> *@
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>
+
