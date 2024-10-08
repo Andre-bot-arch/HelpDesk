@@ -1,0 +1,59 @@
+﻿@model IEnumerable<AppSysoHelp.Models.ChamadosSubCategoria>
+
+<div class="iq-card" style="background-color: #0B141A">
+    <div class="iq-card-header d-flex justify-content-between align-items-center">
+        <div class="iq-header-title">
+            <h4 class="card-title text-white">SubCategorias</h4>
+        </div>
+        <div class="text-end">
+            <button type="button" data-toggle="modal" data-target="#modalCadastrarSubCategoria" class="btn dark-icon btn-primary mb-3">Adicionar Sub Categorias <i class="ri-add-box-line"></i></button>
+        </div>
+    </div>
+    <div class="iq-card-body">
+        <div class="row">
+            <div class="col-sm-12">
+
+
+                <table class="table table-bordered table-responsive-md table-striped text-center">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Complexidade</th>
+                            <th>Priodidade</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td style="text-align:left">@item.Descricao</td>
+                                <td contenteditable="true">@item.Complexidade</td>
+                                @if (item.Prioridade.Trim() == "Urgente")
+                                {
+                                    <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
+                                }
+                                else if (item.Prioridade.Trim() == "Alta")
+                                {
+                                    <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                                }
+                                else if (item.Prioridade.Trim() == "Media")
+                                {
+                                    <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
+                                }
+                                else
+                                {
+                                    <td class="text-center"><div class="badge badge-pill iq-bg-dark" style="width: 80px">NORMAL</div></td>
+                                }
+                                <td>
+                                    <button type="button" class="btn btn-danger"><i class="ri-delete-bin-2-fill"></i></button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
