@@ -15,5 +15,7 @@ public partial class ChamadosSubCategoria
 
     public long Complexidade { get; set; }
 
+    public bool? Situacao { get; set; }
+
     public virtual ChamadosCategoria FkCategoriaNavigation { get; set; } = null!;
 }

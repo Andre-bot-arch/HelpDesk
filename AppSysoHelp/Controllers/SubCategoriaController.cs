@@ -87,6 +87,25 @@ namespace AppSysoHelp.Controllers
             return Json(categoria);
         }
 
+        [HttpPost]
+        public IActionResult Inativar(long id = 0)
+        {
+            var categoria = _context.ChamadosSubCategoria
+                                                   .FirstOrDefault(a => a.SubCategoriaId == id);
+            categoria.Situacao = false;
+
+            return Ok();
+        }
+
+        public IActionResult Editar(long id = 0)
+        {
+            var subcategoria = _context.ChamadosSubCategoria
+                                                   .FirstOrDefault(a => a.SubCategoriaId == id);
+
+
+            return PartialView("_ModalEditarSubCategoria",subcategoria);
+        }
+
 
         [HttpPost]
         public JsonResult Edit(ChamadosSubCategoria form)

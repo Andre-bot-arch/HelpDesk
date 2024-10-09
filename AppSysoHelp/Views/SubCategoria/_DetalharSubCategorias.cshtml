@@ -26,7 +26,8 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            <tr style="font-size: 16px">
+                            var linha = "_" + item.SubCategoriaId;
+                            <tr style="font-size: 16px" id="@linha">
                                 <td style="text-align:left">@item.Descricao</td>
                                 <td contenteditable="true">@item.Complexidade</td>
                                 @if (item.Prioridade.Trim() == "Urgente")
@@ -46,7 +47,10 @@
                                     <td class="text-center"><div class="badge badge-pill iq-bg-dark" style="width: 80px">NORMAL</div></td>
                                 }
                                 <td>
-                                    <a href="#" class="btn-exluir-sub" data-id="@item.SubCategoriaId">
+                                    <a href="#" class="btn-editar-sub" data-id="@item.SubCategoriaId" title="Editar">
+                                        <i class="ri-edit-line text-info pr-1" style="font-size: 20px;"></i>
+                                    </a>
+                                    <a href="#" class="btn-exluir-sub" data-nome="@item.Descricao" data-id="@item.SubCategoriaId" title="Deletar">
                                         <i class="ri-delete-bin-5-line text-danger pr-1" style="font-size: 20px;"></i>
                                     </a>
                                 </td>
@@ -59,3 +63,5 @@
         </div>
     </div>
 </div>
+<div id="editarSubCat"></div>
+

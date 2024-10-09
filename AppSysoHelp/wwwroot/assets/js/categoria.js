@@ -125,10 +125,7 @@ $(document).ready(function () {
             }
         });
 
-    });
-
-
-    // Função para preencher o formulário de edição com dados e a imagem atual
+    });    
     $(document).on('click', '.btn-edit', function () {
         var plataformaId = $(this).data('id'); // Pegar o ID da plataforma
 
@@ -170,8 +167,7 @@ $(document).ready(function () {
             }
         });
     });
-
-    // Submit para o formulário de Editar
+   
     $('#btnEditar').click(function () {
         var form = $('#formEditarPlataforma')[0]; // Obtendo o formulário real
         var formData = new FormData(form); // Criando o FormData para enviar arquivo
@@ -223,5 +219,78 @@ $(document).ready(function () {
                 }
             });
         }
+    });
+
+    $(document).on('click', '.btn-exluir-sub', function () {
+        var id = $(this).data("id");
+        var nome = $(this).data("nome");
+        Swal.fire({
+            icon: 'info',
+            title: 'Aten&ccedil;&atilde;o!',
+            text: "Excluir a subcategoria " + id + "-" + nome,
+            showDenyButton: true,          
+            denyButtonText: 'Sair',       
+            confirmButtonText: 'Excluir', 
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/SubCategoria/Inativar',
+                    type: 'POST',
+                    data: {id: id},
+                    success: function (response) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Finalizado com sucesso!",
+                            html: '<b>2</b> segundos.',
+                            timer: 2000,
+                            timerProgressBar: true,
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                const b = Swal.getHtmlContainer().querySelector('b');
+                                timerInterval = setInterval(() => {
+                                    b.textContent = Math.ceil(Swal.getTimerLeft() / 1000);
+                                }, 1000);
+                            },
+                            willClose: () => {
+                                clearInterval(timerInterval);
+                            }
+                        }).then((result) => {
+                            $("#_" + id).remove();
+                        });  
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro!',
+                            text: 'Ocorreu um erro inesperado.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+
+    $(document).on('click', '.btn-editar-sub', function () {
+        var id = $(this).data("id");
+        var nome = $(this).data("nome");
+        $.ajax({
+            url: '/SubCategoria/Editar',
+            type: 'Get',
+            data: { id: id },
+            success: function (response) {
+                $("#modalEditarSubCategoria").modal("show");
+                $("#editarSubCat").html(response);
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Ocorreu um erro inesperado.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
     });
 });

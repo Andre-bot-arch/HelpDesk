@@ -155,6 +155,7 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.Prioridade)
                 .HasMaxLength(10)
                 .IsUnicode(false);
+            entity.Property(e => e.Situacao).HasDefaultValue(true);
 
             entity.HasOne(d => d.FkCategoriaNavigation).WithMany(p => p.ChamadosSubCategoria)
                 .HasForeignKey(d => d.FkCategoria)

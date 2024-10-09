@@ -174,5 +174,4 @@
             $("#priori").html('<button type="button" style="font-size: 18px; font-weight:bold; border: 1px solid black" disabled class="btn dark-icon btn btn-block text-black">Normal</button>');
         }
     });
-
 });
