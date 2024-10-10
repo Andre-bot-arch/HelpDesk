@@ -1,5 +1,6 @@
-﻿@model IEnumerable<AppSysoHelp.Models.Chamados>
+﻿@model IEnumerable<AppSysoHelp.Models.Atendimentos>
 @{
+    var lista = Model.ToList();
     ViewData["Title"] = "PedidosPorPeriodo";
     Layout = null;
 }
@@ -33,9 +34,9 @@
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-            .report-header div, .report-footer div {
-                width: 48%;
-            }
+        .report-header div, .report-footer div {
+            width: 48%;
+        }
 
         .report-period {
             font-size: 1.1em;
@@ -51,26 +52,27 @@
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-            .report-table thead {
-                background-color: #314151;
-                color: white;
-            }
+        .report-table thead {
+            background-color: #314151;
+            color: white;
+        }
 
-            .report-table th, .report-table td {
-                padding: 12px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-            }
+        .report-table th, .report-table td {
+            padding: 8px;  /* Reduzido para ocupar menos espaço */
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
 
-            .report-table th {
-                text-transform: uppercase;
-                letter-spacing: 0.1em;
-                font-size: 0.9em;
-            }
+        .report-table th {
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.9em;
+        }
 
-            .report-table tbody tr:nth-child(even) {
-                background-color: #f9f9f9;
-            }
+        /* Estilo de striping para as linhas da tabela */
+        .report-table tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;  /* Cor de fundo para linhas ímpares */
+        }
 
         .center-text {
             text-align: center;
@@ -96,6 +98,41 @@
             cursor: pointer;
             background-color: #eaeaea;
         }
+
+        @@media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            .report-table {
+                margin: 0;
+                box-shadow: none;
+                width: 100%; /* Garante que a tabela ocupe 100% da largura ao imprimir */
+            }
+
+                .report-table th, .report-table td {
+                    padding: 4px; /* Reduzido para impressão */
+                    border: 1px solid #ddd; /* Adiciona bordas completas na impressão */
+                }
+
+                .report-table thead {
+                    background-color: #314151; /* Mantém o fundo do cabeçalho na impressão */
+                    color: white; /* Mantém a cor do texto no cabeçalho */
+                }
+
+                .report-table tbody tr {
+                    page-break-inside: avoid; /* Evita quebras de página dentro das linhas */
+                }
+
+                    .report-table tbody tr:nth-child(odd) {
+                        background-color: #f9f9f9; /* Cor de fundo para linhas ímpares */
+                    }
+
+                    .report-table tbody tr:nth-child(even) {
+                        background-color: #ffffff; /* Cor de fundo para linhas pares */
+                    }
+        }
     </style>
 </head>
 
@@ -103,11 +140,14 @@
     <div class="report-footer" style="position: relative; padding: 1px; display: flex; flex-direction: column; align-items: center;">
         <!-- Cabeçalho com logo -->
         <div class="row" style="text-align: center; position: relative;">
-            <h1 style="color: #4a4a4a; margin-bottom: 5px;"><img src="~/images/helpdesk/_logo.png" width="15%" alt="profile-img" class="avatar-130 img-fluid"> Syso Tecnologia</h1>
+            <h1 style="color: #4a4a4a; margin-bottom: 5px;">
+                <img src="~/images/helpdesk/_logo.png" width="15%" alt="profile-img" class="avatar-130 img-fluid"> 
+                Syso Tecnologia
+            </h1>
         </div>
 
         <!-- Detalhes do relatório -->
-        <div class="report-details " style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+        <div class="report-details" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
             <div style="text-align: left; padding: 10px">
                 <h3 style="margin: 0;">Período do Relatório</h3>
                 <p class="report-period" style="margin: 0;">@ViewBag.DataInicio x @ViewBag.DataFinal</p>
@@ -118,35 +158,44 @@
             </div>
         </div>
     </div>
-    <table class="report-table">
+    <table class="report-table" width="100%">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Cliente</th>
                 <th>Data Criação</th>
                 <th>Data Fechamento</th>
+                <th>Atendente</th>
                 <th>Status</th>
             </tr>
         </thead>
         <tbody id="tabelaPedidos">
-            @foreach (var item in Model.OrderByDescending(b => b.ChamadoId))
+            @foreach (var item in lista.OrderBy(a => a.FkChamadoId))
             {
                 <tr>
-                    <td>@item.ChamadoId</td>
-                    <td>@item.FkCliente.Fantasia</td>
-                    <td>@item.DataCriacao</td>
-                    <td>@item.DataFechamento</td>
-                    <td>@item.FkSituacaoChamado.DescricaoSituacao</td>
+                    <td rowspan="2">@item.FkChamado.ChamadoId</td>
+                    <td>
+                        @item.FkChamado.FkCliente.Fantasia
+                    </td>
+                    <td>@item.FkChamado.DataCriacao?.ToShortDateString()</td>
+                    <td>@item.FkChamado.DataFechamento?.ToShortDateString()</td>
+                    <td>@item.FkTecnico.NomeCompleto</td>
+                    <td>@item.FkChamado.FkSituacaoChamado.DescricaoSituacao</td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <ul>
+                            <li>@item.ProcedimentosAplicados</li>
+                        </ul>
+                    </td>
                 </tr>
             }
         </tbody>
         <tfoot>
             <tr class="total-row">
                 <td colspan="6" class="text-right">Total Geral:</td>
-                @* <td class="text-right">@ViewBag.TotalPeriodo <span id="totalGeral"></span></td> *@
             </tr>
         </tfoot>
     </table>
 </body>
 </html>
-
