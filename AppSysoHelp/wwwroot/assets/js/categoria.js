@@ -90,6 +90,38 @@ $(document).ready(function () {
         }
     });
 
+    $('.btn-editarSalvar-sub').click(function () {
+        $("#modalEditarSubCategoria").modal("hide");
+        var form = $('#editarSubCategoria')[0]; // Obtendo o formulário real
+        var formData = new FormData(form);       
+
+        if (form.checkValidity() === false) {
+            $('#editarSubCategoria').addClass('was-validated');
+        } else {
+            $.ajax({
+                url: '/SubCategoria/Create',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $("#_Descricao").val();
+                    $("#tableDetalhes").html(response);
+                 
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: 'Ocorreu um erro inesperado.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        }
+      
+    });
+
     $('#categoriaId').on("change", function () {      
         var cat = parseInt($(this).val());
         $("#_FkCategoria").val(cat);

@@ -1,6 +1,7 @@
 ﻿using AppSysoHelp.Models;
 using AppSysoHelp.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 
 namespace AppSysoHelp.Controllers
 {
@@ -24,10 +25,22 @@ namespace AppSysoHelp.Controllers
         {
             try
             {
-                _context.Add(form);
-                _context.SaveChanges();
-
-                var chamado = _context.ChamadosSubCategoria.Where(a => a.FkCategoria == form.FkCategoria).ToList();
+                if (form.SubCategoriaId > 0)
+                {
+                    var sub = _context.ChamadosSubCategoria.FirstOrDefault(a => a.SubCategoriaId == form.SubCategoriaId);
+                    sub.Descricao = form.Descricao;
+                    sub.Prioridade = form.Prioridade;
+                    sub.Complexidade = form.Complexidade;
+                    _context.Update(sub);
+                    _context.SaveChanges();
+                    form.FkCategoria = sub.FkCategoria;
+                }
+                else
+                {
+                    _context.Add(form);
+                    _context.SaveChanges();
+                }
+                var chamado = _context.ChamadosSubCategoria.Where(a => a.FkCategoria == form.FkCategoria && a.Situacao == true).ToList();
                 return PartialView("_DetalharSubCategorias", chamado);
 
             }
@@ -49,7 +62,7 @@ namespace AppSysoHelp.Controllers
             try
             {
                 // Procura a subcategoria pelo ID
-                var subcategoria = _context.ChamadosSubCategoria.FirstOrDefault(a => a.SubCategoriaId == id);
+                var subcategoria = _context.ChamadosSubCategoria.FirstOrDefault(a => a.SubCategoriaId == id && a.Situacao == true);
 
                 if (subcategoria != null)
                 {
@@ -81,7 +94,7 @@ namespace AppSysoHelp.Controllers
         public IActionResult ListarPorIdCategoria(long id = 0)
         {
             var categoria = _context.ChamadosSubCategoria
-                                                   .Where(a => a.FkCategoria == id)
+                                                   .Where(a => a.FkCategoria == id && a.Situacao == true)
                                                    .ToList();
 
             return Json(categoria);
@@ -93,6 +106,9 @@ namespace AppSysoHelp.Controllers
             var categoria = _context.ChamadosSubCategoria
                                                    .FirstOrDefault(a => a.SubCategoriaId == id);
             categoria.Situacao = false;
+
+            _context.Update(categoria);
+            _context.SaveChanges();
 
             return Ok();
         }
