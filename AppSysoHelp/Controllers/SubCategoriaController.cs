@@ -62,13 +62,13 @@ namespace AppSysoHelp.Controllers
             try
             {
                 // Procura a subcategoria pelo ID
-                var subcategoria = _context.ChamadosSubCategoria.FirstOrDefault(a => a.SubCategoriaId == id && a.Situacao == true);
+                var subcategoria = _context.ChamadosSubCategoria.FirstOrDefault(a => a.FkCategoria == id && a.Situacao == true);
 
                 if (subcategoria != null)
                 {
                     // Busca todos os chamados relacionados à subcategoria
                     var chamados = _context.ChamadosSubCategoria
-                                           .Where(a => a.FkCategoria == id)
+                                           .Where(a => a.FkCategoria == id && a.Situacao == true)
                                            .ToList();
 
                     return PartialView("_DetalharSubCategorias", chamados);
