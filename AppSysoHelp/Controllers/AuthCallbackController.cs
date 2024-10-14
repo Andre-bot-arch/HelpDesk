@@ -1,13 +1,13 @@
-﻿using AppSysoHelp.Service;
-using Microsoft.AspNetCore.Mvc;
+﻿//using AppSysoHelp.Service;
+//using Microsoft.AspNetCore.Mvc;
 
-namespace AppSysoHelp.Controllers
-{
-    public class AuthCallbackController : Google.Apis.Auth.OAuth2.Mvc.Controllers.AuthCallbackController
-    {
-        protected override Google.Apis.Auth.OAuth2.Mvc.FlowMetadata FlowData
-        {
-            get { return new ServiceGoogle(); }
-        }
-    }
-}
+//namespace AppSysoHelp.Controllers
+//{
+//    public class AuthCallbackController : Google.Apis.Auth.OAuth2.Mvc.Controllers.AuthCallbackController
+//    {
+//        protected override Google.Apis.Auth.OAuth2.Mvc.FlowMetadata FlowData
+//        {
+//            get { return new ServiceGoogle(); }
+//        }
+//    }
+//}

@@ -72,7 +72,7 @@ namespace AppSysoHelp.Controllers
                 ViewBag.emAtendimento = false;
             }
 
-            ViewBag.categoria = _context.ChamadosCategoria.ToList();
+            ViewBag.categoria = _context.ChamadosCategoria.OrderBy(a => a.Descricao).ToList();
             return View(_context.Chamados.Include(a => a.FkAtendenteNavigation)
                                          .Include(a => a.FkCliente)
                                          .Include(a => a.FkTecnico)

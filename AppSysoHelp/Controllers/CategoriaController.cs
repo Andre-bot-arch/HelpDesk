@@ -15,7 +15,7 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Index()
         {
-            ViewBag.categorias = new SelectList(_context.ChamadosCategoria.ToList(), "CategoriaId", "Descricao");
+            ViewBag.categorias = new SelectList(_context.ChamadosCategoria.OrderBy(a => a.Descricao).ToList(), "CategoriaId", "Descricao");
             return View();
         }
 

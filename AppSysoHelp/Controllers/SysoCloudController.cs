@@ -14,7 +14,7 @@ namespace AppSysoHelp.Controllers
         private readonly HelpdesksysoContext _context;
         private readonly ServiceContrato _contrato;
         private readonly ServiceGenerico _generico;
-        private readonly ServiceGoogle _google;
+        //private readonly ServiceGoogle _google;
 
         public SysoCloudController(IConfiguration configuration, HelpdesksysoContext context)
         {
@@ -148,27 +148,27 @@ namespace AppSysoHelp.Controllers
             return View();
         }
 
-        public async System.Threading.Tasks.Task<ActionResult> Index(System.Threading.CancellationToken cancellationToken)
-        {
-            var result = await new Google.Apis.Auth.OAuth2.Mvc.AuthorizationCodeMvcApp(this, new ServiceGoogle()).
-                AuthorizeAsync(cancellationToken);
+        //public async System.Threading.Tasks.Task<ActionResult> Index(System.Threading.CancellationToken cancellationToken)
+        //{
+        //    //var result = await new Google.Apis.Auth.OAuth2.Mvc.AuthorizationCodeMvcApp(this, new ServiceGoogle()).
+        //        //AuthorizeAsync(cancellationToken);
 
-            if (result.Credential != null)
-            {
-                var service = new Google.Apis.Drive.v3.DriveService(new Google.Apis.Services.BaseClientService.Initializer
-                {
-                    HttpClientInitializer = result.Credential,
-                    ApplicationName = "ASP.NET MVC Sample"
-                });
+        //    if (result.Credential != null)
+        //    {
+        //        var service = new Google.Apis.Drive.v3.DriveService(new Google.Apis.Services.BaseClientService.Initializer
+        //        {
+        //            HttpClientInitializer = result.Credential,
+        //            ApplicationName = "ASP.NET MVC Sample"
+        //        });
 
-                ViewBag.Arquivos = ListarArquivos(service);
+        //        ViewBag.Arquivos = ListarArquivos(service);
 
-                return View();
-            }
-            else
-            {
-                return new RedirectResult(result.RedirectUri);
-            }
-        }
+        //        return View();
+        //    }
+        //    else
+        //    {
+        //        return new RedirectResult(result.RedirectUri);
+        //    }
+        //}
     }
 }
