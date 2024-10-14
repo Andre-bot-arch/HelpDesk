@@ -20,12 +20,11 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult ChamadosPorPeriodo(string? tecnico, string? cliente, DateTime dataInicio, DateTime dataFinal)
         {
-            
 
             var chamadosFiltrados = _context.Atendimentos.Include(a => a.FkTecnico)
                                                          .Include(c => c.FkChamado).ThenInclude(c => c.FkSituacaoChamado)
                                                          .Include(a => a.FkChamado).ThenInclude(c => c.FkCliente)
-                                                         .Where(a => a.DataFechamento >= dataInicio.Date && a.DataFechamento <= dataFinal.Date)
+                                                         .Where(a => a.DataFechamento >= dataInicio && a.DataFechamento <= Convert.ToDateTime(dataFinal.ToString("dd/MM/yyyy 23:59:59")))
                                                          .AsEnumerable();
             var agrupamento = new List<Atendimentos>();
             foreach (var item in chamadosFiltrados.GroupBy(a=> a.FkChamadoId))

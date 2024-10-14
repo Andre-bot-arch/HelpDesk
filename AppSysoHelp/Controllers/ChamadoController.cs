@@ -165,6 +165,18 @@ namespace AppSysoHelp.Controllers
         }
 
         [HttpPost]
+        public IActionResult BuscarDetalhes2(long id)
+        {
+            var chamado = _context.Chamados.Include(a => a.FkAtendenteNavigation)
+                                         .Include(a => a.FkCliente)
+                                         .Include(a => a.FkTecnico)
+                                         .Include(a => a.Atendimentos)
+                                         .ThenInclude(a => a.FkTecnico)
+                                         .FirstOrDefault(a => a.ChamadoId == id);
+            return PartialView("_DetalhesDoAtendimento2", chamado);
+        }
+
+        [HttpPost]
         public IActionResult FinalizarChamado(Chamados d, IFormFile imagem)
         {
             var chamado = _context.Chamados.FirstOrDefault(a => a.ChamadoId == d.ChamadoId);

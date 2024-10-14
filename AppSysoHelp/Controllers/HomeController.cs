@@ -24,15 +24,26 @@ namespace AppSysoHelp.Controllers
         {
 
             // Obtém a lista de chamados nos últimos 6 meses
-            var lista = _context.Chamados
+            var totalizadores = _context.Chamados.ToList();
+
+            var lista = totalizadores
                 .Where(a => a.DataCriacao > DateTime.Now.AddMonths(-6).Date)
                 .ToList();
-            
+
+
             var chamados = _context.TotalizadorChamadosPorTecnico.ToList();
+
 
             // Passa as informações para a View
             ViewBag.tecnicosAtendimento = chamados;
 
+            ViewBag.pendentes = totalizadores.Where(a => a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2).Count();
+
+            ViewBag.cancelados = totalizadores.Where(a => a.FkSituacaoChamadoId == 4).Count();
+
+            ViewBag.fechado = totalizadores.Where(a => a.FkSituacaoChamadoId == 3).Count();
+
+            ViewBag.total = totalizadores.Count();
             return View(lista);
 
         }
