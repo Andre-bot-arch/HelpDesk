@@ -1,0 +1,23 @@
+﻿@model IList<Google.Apis.Drive.v3.Data.File>
+
+<h1>Arquivos e Pastas do Google Drive</h1>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>ID</th>
+            <th>Tipo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var file in Model)
+        {
+            <tr>
+                <td>@file.Name</td>
+                <td>@file.Id</td>
+                <td>@file.MimeType</td>
+            </tr>
+        }
+    </tbody>
+</table>
