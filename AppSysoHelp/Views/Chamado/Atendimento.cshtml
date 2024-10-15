@@ -205,7 +205,7 @@
                                                                     <div class="row" id="agenda" style="display: block">
                                                                         <div class="col-sm-12">
                                                                             <div class="mb-3">
-                                                                                <input type="datetime-local" name="DataAgendamento" required class="form-control is-invalid text-white" placeholder="Data Agendamento" style="background-color: #222e35">
+                                                                                <input type="datetime-local" name="DataAgendamento" id="data" required class="form-control is-invalid text-white" placeholder="Data Agendamento" style="background-color: #222e35">
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -236,6 +236,16 @@
 
 <script>
     $(document).ready(function () {
+
+        const now = new Date();
+
+        const offset = -4 * 60; 
+        const localTime = new Date(now.getTime() + offset * 60000);
+
+        const formattedDate = localTime.toISOString().slice(0, 16);
+
+        document.getElementById('data').setAttribute('min', formattedDate);
+
         $(".mostrarcaixa12").click(function () {
             var definido = $(this).data("id");
             if ($(this).is(":checked")) {
@@ -284,4 +294,3 @@
     });
 </script>
 <script src="~/assets/js/imageBase64.js"></script>
-
