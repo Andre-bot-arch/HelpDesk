@@ -98,7 +98,7 @@ namespace AppSysoHelp.Controllers
 
             _generico.GravarGenerico(m);
 
-            return RedirectToAction("Aberto");
+            return Ok();
         }
 
         [HttpPost]
