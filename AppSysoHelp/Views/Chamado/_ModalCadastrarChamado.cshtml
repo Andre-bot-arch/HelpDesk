@@ -1,26 +1,59 @@
 ﻿@model IEnumerable<AppSysoHelp.Models.ChamadosCategoria>
 @{
-
 }
 <style>
+    /* Limitar a largura do modal grande */
+    .modal-lg {
+        max-width: 800px;
+    }
+
+    /* Configurações do modal para fazer o corpo rolar corretamente */
+    .modal-content {
+        max-height: 90vh; /* Limita a altura total do modal */
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Corpo do modal com rolagem */
     .modal-body {
-        max-height: 550px;
         overflow-y: auto;
+        flex: 1 1 auto; /* Permitir que o corpo do modal ocupe o espaço restante */
+        max-height: 550px; /* Limitar a altura máxima */
+    }
+
+    /* Fixar cabeçalho e rodapé no modal */
+    .modal-header,
+    .modal-footer {
+        flex-shrink: 0;
+    }
+
+    /* Ajustar o rodapé para garantir que os botões fiquem dentro do modal */
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        padding: 1rem;
+        border-top: 1px solid #dee2e6;
+        background-color: #f1f1f1;
     }
 </style>
 
 <div id="modalCadastroChamado" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenteredScrollableTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
+            <!-- Cabeçalho do modal -->
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalCenteredScrollableTitle">Cadastrar Chamado - @DateTime.Now.ToString("dd/MM/yyyy")</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
+
+            <!-- Formulário dentro do modal -->
             <form class="was-validated" id="salvarChamado" method="post">
                 <input type="hidden" name="FkTipoChamadoId" value="1" />
                 <input type="hidden" name="ChamadoId" id="ChamadoId" />
+
+                <!-- Corpo do modal -->
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-sm-12">
@@ -31,6 +64,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
@@ -40,6 +74,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
@@ -54,6 +89,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="form-group">
@@ -74,13 +110,16 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-sm-12 mb-2">
                             <div id="priori">
                             </div>
                         </div>
                     </div>
+
                     <input type="hidden" name="Prioridade" id="_Prioridade" />
+
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="mb-3">
@@ -93,6 +132,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="custom-control custom-switch custom-switch-color custom-control-inline mb-2">
@@ -122,10 +162,13 @@
                             </div>
                         </div>
                     </div>
+
                     <div>
                         <textarea class="form-control is-invalid" id="validationTextarea" name="DescricaoCompleta" placeholder="Descrição do Chamado...." required="" style="min-height: 132px; max-height:132px "></textarea>
                     </div>
                 </div>
+
+                <!-- Rodapé do modal -->
                 <div class="modal-footer">
                     <button type="button" style="width: 80px" class="btn btn-danger" data-dismiss="modal">Sair</button>
                     <button type="submit" style="width: 80px" class="btn btn-primary btn-salvar">Salvar</button>
@@ -134,5 +177,6 @@
         </div>
     </div>
 </div>
+
 <script src="~/assets/js/select2Cliente.js"></script>
 <script src="~/assets/js/chamado.js"></script>
