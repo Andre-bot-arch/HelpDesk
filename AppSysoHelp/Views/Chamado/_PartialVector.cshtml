@@ -39,7 +39,7 @@
                                  #@item.ChamadoId.ToString().PadLeft(8, '0')<i type ="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br/>
                                 @item.FkCliente.NomeCliente
                             </td>
-                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
+                            <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
                             @if (item.Atendimentos.Count > 0)
                             {
                                 <td>@Convert.ToDateTime(item.Atendimentos.OrderByDescending(a => a.AtendimentoId).FirstOrDefault().DataAtendimento).ToString("dd/MM/yyyy HH:mm")</td>
@@ -121,7 +121,7 @@
                                  #@item.ChamadoId.ToString().PadLeft(8, '0')<i type ="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br/>
                                 @item.FkCliente.NomeCliente
                             </td>
-                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
+                            <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
                             <td>
                                 @if (!String.IsNullOrEmpty(item.DataAgendamento.ToString()))
                                 {
@@ -208,7 +208,7 @@
                                  #@item.ChamadoId.ToString().PadLeft(8, '0')<i type ="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br/>
                                 @item.FkCliente.NomeCliente
                             </td>
-                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
+                            <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
                             <td>
                                 @if (!String.IsNullOrEmpty(item.DataAgendamento.ToString()))
                                 {
@@ -299,7 +299,7 @@
                                  #@item.ChamadoId.ToString().PadLeft(8, '0')<i type ="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br/>
                                 @item.FkCliente.NomeCliente
                             </td>
-                            <td>@Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</td>
+                            <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
                             <td>
                                 @if (!String.IsNullOrEmpty(item.DataFechamento.ToString()))
                                 {
