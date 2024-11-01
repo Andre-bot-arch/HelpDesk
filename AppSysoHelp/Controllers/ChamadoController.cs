@@ -114,15 +114,17 @@ namespace AppSysoHelp.Controllers
             atendimentoExistente.DataFechamento = DateTime.Now;
             atendimentoExistente.AtendimentoEncerrado = true;
 
-            _generico.UpdateGenerico(atendimentoExistente);
+            if (chamado!.FkSituacaoChamado.SituacaoChamadoId != 3)
+            {
+                _generico.UpdateGenerico(atendimentoExistente);
 
-            chamado.FkSituacaoChamadoId = 2;
-            chamado.DataAgendamento = dados.DataAgendamento;
-            chamado.FkTecnicoId = dados.FkTecnicoId;
-            chamado.Prioridade = dados.Prioridade;
+                chamado.FkSituacaoChamadoId = 2;
+                chamado.DataAgendamento = dados.DataAgendamento;
+                chamado.FkTecnicoId = dados.FkTecnicoId;
+                chamado.Prioridade = dados.Prioridade;
 
-            _generico.UpdateGenerico(chamado);
-
+                _generico.UpdateGenerico(chamado);
+            }
             return RedirectToAction("Aberto");
         }
 
