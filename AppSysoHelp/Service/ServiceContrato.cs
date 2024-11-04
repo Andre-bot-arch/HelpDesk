@@ -35,15 +35,16 @@ namespace AppSysoHelp.Service
                                            (item.Key.Contains("IMENDES")) ? 4 :
                                            (item.Key.Contains("COLETOR")) ? 11 :
                                            (item.Key.Contains("SYSO CAR")) ? 7 :
-                                           (item.Key.Contains("E-COMMERCE")) ? 18 : 0;
+                                           (item.Key.Contains("E-COMMERCE")) ? 18 :
+                                           (item.Key.Contains("SYSO ONE")) ? 19 : 0;
                         foreach (var contratos in item)
                         {
                             if (idPlataforma > 0)
                             {
                                 var pkid = _context.PlataformasContratos.FirstOrDefault(a => a.PlataformaId == idPlataforma);
                                 var contrato = _context.Contratos.Include(a => a.FkCliente)
-                                                                 .FirstOrDefault(a => a.IdSolution.Trim() == contratos.IDSOLUTION.Trim()
-                                                                                   && a.FkCliente.IdSolution == contratos.FKCLIENTEID);
+                                                 .FirstOrDefault(a => a.IdSolution.Trim() == contratos.IDSOLUTION.Trim() 
+                                                 && a.FkCliente.IdSolution == contratos.FKCLIENTEID);
 
                                 var idcliente = _context.Clientes.FirstOrDefault(a => a.IdSolution == contratos.FKCLIENTEID).ClienteId;
 
