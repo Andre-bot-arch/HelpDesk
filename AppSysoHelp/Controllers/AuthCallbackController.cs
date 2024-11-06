@@ -1,5 +1,4 @@
-﻿//using AppSysoHelp.Service;
-//using Microsoft.AspNetCore.Mvc;
+﻿
 
 //namespace AppSysoHelp.Controllers
 //{
@@ -7,7 +6,7 @@
 //    {
 //        protected override Google.Apis.Auth.OAuth2.Mvc.FlowMetadata FlowData
 //        {
-//            get { return new ServiceGoogle(); }
+//            get { return new AppFlowMetadata(); }
 //        }
 //    }
 //}
