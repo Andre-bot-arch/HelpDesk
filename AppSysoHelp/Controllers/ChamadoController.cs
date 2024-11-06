@@ -54,6 +54,9 @@ namespace AppSysoHelp.Controllers
                                          .Include(a => a.Atendimentos)
                                          .ThenInclude(a => a.FkTecnico)
                                          .FirstOrDefault(a => a.ChamadoId == id);
+            chamado.DataAgendamento = DateTime.Now;
+            _context.Update(chamado);
+            _context.SaveChanges();
             return View(chamado);
         }
 
