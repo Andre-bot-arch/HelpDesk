@@ -104,7 +104,7 @@ namespace AppSysoHelp.Controllers
         [HttpPost]
         public IActionResult RemarcarChamado(Chamados dados)
         {
-            var chamado = _context.Chamados.FirstOrDefault(a => a.ChamadoId == dados.ChamadoId);
+            var chamado = _context.Chamados.Include(a=> a.FkSituacaoChamado).FirstOrDefault(a => a.ChamadoId == dados.ChamadoId);
             var userIdClaim = User.FindFirst("Id");
             var userId = userIdClaim?.Value;
             var atendimentoExistente = _context.Atendimentos.FirstOrDefault(a => a.FkChamadoId == dados.ChamadoId && a.AtendimentoEncerrado != true);
