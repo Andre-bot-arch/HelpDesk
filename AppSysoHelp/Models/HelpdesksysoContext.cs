@@ -47,6 +47,10 @@ public partial class HelpdesksysoContext : DbContext
 
     public virtual DbSet<TotalizadorChamadosPorTecnico> TotalizadorChamadosPorTecnico { get; set; }
 
+    public virtual DbSet<Treinamento> Treinamento { get; set; }
+
+    public virtual DbSet<TreinamentoTempo> TreinamentoTempo { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=mssql2017.hostingzone.com.br,1433;Initial Catalog=helpdesksyso;Persist Security Info=True;User ID=helpdesk;Password=syso@3680;Encrypt=True;TrustServerCertificate=True;");
@@ -98,6 +102,7 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.FkPlataforma).HasColumnName("Fk_Plataforma");
             entity.Property(e => e.FkSetores).HasColumnName("Fk_Setores");
             entity.Property(e => e.FkSituacaoChamadoId).HasColumnName("Fk_SituacaoChamadoId");
+            entity.Property(e => e.FkSubCategoria).HasColumnName("Fk_SubCategoria");
             entity.Property(e => e.FkTecnicoId).HasColumnName("Fk_TecnicoId");
             entity.Property(e => e.FkTipoChamadoId).HasColumnName("Fk_TipoChamadoId");
             entity.Property(e => e.Prioridade)
@@ -350,6 +355,82 @@ public partial class HelpdesksysoContext : DbContext
                 .HasMaxLength(10)
                 .IsFixedLength();
             entity.Property(e => e.Total).HasColumnName("total");
+        });
+
+        modelBuilder.Entity<Treinamento>(entity =>
+        {
+            entity.HasKey(e => e.ChamadoId).HasName("PK__Treiname__A9D1243BC3DDD0C6");
+
+            entity.ToTable("Treinamento", "dbo");
+
+            entity.Property(e => e.Contato).HasMaxLength(150);
+            entity.Property(e => e.DataAgendamento).HasColumnType("datetime");
+            entity.Property(e => e.DataCriacao)
+                .HasColumnType("datetime")
+                .HasColumnName("Data_Criacao");
+            entity.Property(e => e.DataFechamento).HasColumnType("datetime");
+            entity.Property(e => e.FkAtendente).HasColumnName("Fk_Atendente");
+            entity.Property(e => e.FkClienteId).HasColumnName("Fk_ClienteId");
+            entity.Property(e => e.FkPlataforma).HasColumnName("Fk_Plataforma");
+            entity.Property(e => e.FkSetores).HasColumnName("Fk_Setores");
+            entity.Property(e => e.FkSituacaoChamadoId).HasColumnName("Fk_SituacaoChamadoId");
+            entity.Property(e => e.FkSubCategoria).HasColumnName("Fk_SubCategoria");
+            entity.Property(e => e.FkTecnicoId).HasColumnName("Fk_TecnicoId");
+            entity.Property(e => e.FkTipoChamadoId).HasColumnName("Fk_TipoChamadoId");
+            entity.Property(e => e.Horas).HasColumnName("horas");
+            entity.Property(e => e.Prioridade)
+                .HasMaxLength(10)
+                .IsFixedLength();
+
+            entity.HasOne(d => d.FkAtendenteNavigation).WithMany(p => p.TreinamentoFkAtendenteNavigation)
+                .HasForeignKey(d => d.FkAtendente)
+                .HasConstraintName("FK_Treinamento_TecnicosSupervisores1");
+
+            entity.HasOne(d => d.FkCliente).WithMany(p => p.Treinamento)
+                .HasForeignKey(d => d.FkClienteId)
+                .HasConstraintName("FK_Treinamento_Clientes");
+
+            entity.HasOne(d => d.FkSetoresNavigation).WithMany(p => p.Treinamento)
+                .HasForeignKey(d => d.FkSetores)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Treinamento_SetoresChamados");
+
+            entity.HasOne(d => d.FkSituacaoChamado).WithMany(p => p.Treinamento)
+                .HasForeignKey(d => d.FkSituacaoChamadoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Treinamento_SituacoesChamados");
+
+            entity.HasOne(d => d.FkTecnico).WithMany(p => p.TreinamentoFkTecnico)
+                .HasForeignKey(d => d.FkTecnicoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Treinamento_TecnicosSupervisores");
+
+            entity.HasOne(d => d.FkTipoChamado).WithMany(p => p.Treinamento)
+                .HasForeignKey(d => d.FkTipoChamadoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Treinamento_TiposChamados");
+        });
+
+        modelBuilder.Entity<TreinamentoTempo>(entity =>
+        {
+            entity.HasKey(e => e.PkId).HasName("PK__Treiname__8BEF1566A8CA9504");
+
+            entity.ToTable("TreinamentoTempo", "dbo");
+
+            entity.Property(e => e.PkId).HasColumnName("Pk_Id");
+            entity.Property(e => e.FkTecnico).HasColumnName("fk_Tecnico");
+            entity.Property(e => e.FkTreinamento).HasColumnName("fk_Treinamento");
+            entity.Property(e => e.Tempo).HasColumnName("tempo");
+
+            entity.HasOne(d => d.FkTecnicoNavigation).WithMany(p => p.TreinamentoTempo)
+                .HasForeignKey(d => d.FkTecnico)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TreinamentoTempo_TecnicosSupervisores");
+
+            entity.HasOne(d => d.FkTreinamentoNavigation).WithMany(p => p.TreinamentoTempo)
+                .HasForeignKey(d => d.FkTreinamento)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TreinamentoTempo_Treinamento");
         });
 
         OnModelCreatingPartial(modelBuilder);

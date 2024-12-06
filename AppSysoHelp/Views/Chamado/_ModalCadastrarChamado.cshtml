@@ -52,6 +52,7 @@
             <form class="was-validated" id="salvarChamado" method="post">
                 <input type="hidden" name="FkTipoChamadoId" value="1" />
                 <input type="hidden" name="ChamadoId" id="ChamadoId" />
+                <input type="hidden" name="fkSubCategoria" id="setarsub" />
 
                 <!-- Corpo do modal -->
                 <div class="modal-body">
@@ -104,7 +105,7 @@
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <select name="fkCategoria" id="fkSubCategoria" class="custom-select is-invalid" required style="width: 100%; height: 44px">
+                                <select  id="fkSubCategoria" class="custom-select is-invalid" required style="width: 100%; height: 44px">
                                     <option value="" selected>---------------------------</option>
                                 </select>
                             </div>

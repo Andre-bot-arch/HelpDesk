@@ -141,7 +141,7 @@
                 if (response.length > 0) {
                     for (var i = 0; i < response.length; i++) {                        
                         var option = $("<option></option>")
-                            .val(response[i].prioridade)
+                            .val(response[i].prioridade + "|" + response[i].subCategoriaId)
                             .text(response[i].descricao);                        
                         $("#fkSubCategoria").append(option);
                     }
@@ -159,15 +159,18 @@
     });
 
     $("#fkSubCategoria").on("change", function () {
-        var definido = $(this).val();
-        $("#_Prioridade").val(definido);
-        if (definido == "Urgente") {
+        var definido = $(this).val().trim();
+        var array = definido.split("|");
+        $("#_Prioridade").val(array[0]);
+        $("#setarsub").val(array[1]);
+
+        if (definido.includes("Urgente")) {
             $("#priori").html('<button type="button" style="font-size: 18px; font-weight:bold" disabled class="btn dark-icon btn-dark btn-block">Urgente</button>');
         }
-        else if (definido == "Alta") {
+        else if (definido.includes("Alta")) {
             $("#priori").html('<button type="button" style="font-size: 18px; font-weight:bold" disabled class="btn dark-icon btn-danger btn-block">Alta</button>');
         }
-        else if (definido == "Media") {
+        else if (definido.includes("Media")) {
             $("#priori").html('<button type="button" style="font-size: 18px; font-weight:bold" disabled class="btn dark-icon btn-warning btn-block">Media</button>');
         }
         else {

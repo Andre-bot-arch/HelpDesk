@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AppSysoHelp.Models;
 
-public partial class Chamados
+public partial class Treinamento
 {
     public long ChamadoId { get; set; }
 
@@ -37,7 +37,7 @@ public partial class Chamados
 
     public long? FkSubCategoria { get; set; }
 
-    public virtual ICollection<Atendimentos> Atendimentos { get; set; } = new List<Atendimentos>();
+    public int? Horas { get; set; }
 
     public virtual TecnicosSupervisores? FkAtendenteNavigation { get; set; }
 
@@ -50,4 +50,6 @@ public partial class Chamados
     public virtual TecnicosSupervisores FkTecnico { get; set; } = null!;
 
     public virtual TiposChamados FkTipoChamado { get; set; } = null!;
+
+    public virtual ICollection<TreinamentoTempo> TreinamentoTempo { get; set; } = new List<TreinamentoTempo>();
 }

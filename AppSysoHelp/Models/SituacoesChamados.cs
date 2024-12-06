@@ -10,4 +10,6 @@ public partial class SituacoesChamados
     public string DescricaoSituacao { get; set; } = null!;
 
     public virtual ICollection<Chamados> Chamados { get; set; } = new List<Chamados>();
+
+    public virtual ICollection<Treinamento> Treinamento { get; set; } = new List<Treinamento>();
 }

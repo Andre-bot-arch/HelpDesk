@@ -38,4 +38,6 @@ public partial class Clientes
     public virtual ICollection<Contratos> Contratos { get; set; } = new List<Contratos>();
 
     public virtual ICollection<SysoCloud> SysoCloud { get; set; } = new List<SysoCloud>();
+
+    public virtual ICollection<Treinamento> Treinamento { get; set; } = new List<Treinamento>();
 }

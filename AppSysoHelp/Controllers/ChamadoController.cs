@@ -88,20 +88,26 @@ namespace AppSysoHelp.Controllers
         [HttpPost]
         public IActionResult GravarChamado(Chamados m)
         {
-            var userIdClaim = User.FindFirst("Id");
-            var userId = userIdClaim?.Value;
 
-            m.FkSituacaoChamadoId = 1;
-            m.DataCriacao = DateTime.Now;
-            m.FkAtendente = Convert.ToInt32(userId);
-            if (m.DataAgendamento == null)
+            if (m.FkSubCategoria > 0 )
             {
-                m.DataAgendamento = DateTime.Now;
+                var userIdClaim = User.FindFirst("Id");
+                var userId = userIdClaim?.Value;
+
+                m.FkSituacaoChamadoId = 1;
+                m.DataCriacao = DateTime.Now;
+                m.FkAtendente = Convert.ToInt32(userId);
+                if (m.DataAgendamento == null)
+                {
+                    m.DataAgendamento = DateTime.Now;
+                }
+
+                _generico.GravarGenerico(m);
+
+                return Ok();
             }
+            return BadRequest(new { message = "Subcategoria inválida." });
 
-            _generico.GravarGenerico(m);
-
-            return Ok();
         }
 
         [HttpPost]
