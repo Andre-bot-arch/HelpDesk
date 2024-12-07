@@ -53,16 +53,11 @@ namespace AppSysoHelp.Controllers
             var chamados = ListaAtendimentos();
             return View(chamados);
         }
-        public List<Atendimentos> ListaAtendimentos()
+        public List<VwAtendimentos> ListaAtendimentos()
         {
             // Realiza a consulta com a ordenação diretamente no Entity Framework
-            var todosAtendimentos = _context.Atendimentos
-                .Include(a => a.FkTecnico)
-                .Include(c => c.FkChamado)
-                    .ThenInclude(c => c.FkSituacaoChamado)
-                .Include(a => a.FkChamado)
-                    .ThenInclude(c => c.FkCliente)
-                .OrderBy(a => a.FkChamadoId) // Ordenação antes do ToList()
+            var todosAtendimentos = _context.VwAtendimentos
+                .OrderByDescending(a => a.ProtocoloChamado) // Ordenação antes do ToList()
                 .ToList();
 
             return todosAtendimentos;

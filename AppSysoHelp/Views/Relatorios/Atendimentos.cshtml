@@ -1,11 +1,23 @@
-﻿@model IEnumerable<AppSysoHelp.Models.Atendimentos>
+﻿@model IEnumerable<AppSysoHelp.Models.VwAtendimentos>
 
 <div class="row align-items-center mb-3">
-    <div class="col-md-4 col-lg-2">
-        <input class="form-control" type="text" id="filter-id" placeholder="Digite o Protocolo">
+    <div class="col-md-2">
+        <input class="form-control" type="text" id="filter-id" placeholder="Protocolo">
     </div>
-    <div class="col-md-6 col-lg-3">
-        <input class="form-control" type="text" id="filter-tecnico" placeholder="Digite o nome do Técnico">
+    <div class="col-md-2">
+        <input class="form-control" type="text" id="filter-cliente" placeholder="Cliente">
+    </div>
+    <div class="col-md-2">
+        <input class="form-control" type="text" id="filter-tecnico" placeholder="Técnico">
+    </div>
+    <div class="col-md-2">
+        <input class="form-control" type="text" id="filter-situacao" placeholder="Situação">
+    </div>
+    <div class="col-md-2">
+        <input class="form-control" type="text" id="filter-categoria" placeholder="Categoria">
+    </div>
+    <div class="col-md-2">
+        <input class="form-control" type="text" id="filter-subcategoria" placeholder="SubCategoria">
     </div>
 </div>
 
@@ -15,9 +27,13 @@
             <thead>
                 <tr style="border-bottom: 1px solid #222e35;">
                     <th>#</th>
+                    <th>Cliente</th>
                     <th>Tecnico</th>
-                    <th>Data Atendimento</th>
-                    <th>Data Fechamento</th>
+                    @* <th>Data Atendimento</th> *@
+                    @* <th>Data Fechamento</th> *@
+                    <th>Situação</th>
+                    <th>Categoria</th>
+                    <th>SubCategoria</th>
                     <th>Motivo Abertura</th>
                     <th>Descrição Atendimento</th>
                 </tr>
@@ -26,11 +42,15 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.FkChamadoId</td>
-                        <td>@item.FkTecnico?.NomeCompleto</td>
-                        <td>@item.DataAtendimento</td>
-                        <td>@item.DataFechamento</td>
-                        <td>@item.FkChamado.DescricaoCompleta</td>
+                        <td>@item.ProtocoloChamado</td>
+                        <td>@item.Cliente</td>
+                        <td>@item.Tecnico</td>
+                        @* <td>@item.DataAtendimento</td> *@
+                        @* <td>@item.DataFechamento</td> *@
+                        <td>@item.Situacao</td>
+                        <td>@item.Categoria</td>
+                        <td>@item.SubCategoria</td>
+                        <td>@item.MotivoAbertura</td>
                         <td>@item.ProcedimentosAplicados</td>
                     </tr>
                 }
@@ -58,7 +78,11 @@
         // Função para atualizar a tabela com base na página atual e no filtro
         function updateTable() {
             const filterId = $('#filter-id').val().toLowerCase();
+            const filterCliente = $('#filter-cliente').val().toLowerCase();
             const filterTecnico = $('#filter-tecnico').val().toLowerCase();
+            const filterSituacao = $('#filter-situacao').val().toLowerCase();
+            const filterCategoria = $('#filter-categoria').val().toLowerCase();
+            const filterSubcategoria = $('#filter-subcategoria').val().toLowerCase();
 
             let filteredRows = [];
 
@@ -66,10 +90,18 @@
             table.each(function () {
                 const row = $(this);
                 const id = row.find('td:nth-child(1)').text().toLowerCase();
-                const tecnico = row.find('td:nth-child(2)').text().toLowerCase();
+                const cliente = row.find('td:nth-child(2)').text().toLowerCase();
+                const tecnico = row.find('td:nth-child(3)').text().toLowerCase();
+                const situacao = row.find('td:nth-child(4)').text().toLowerCase();
+                const categoria = row.find('td:nth-child(5)').text().toLowerCase();
+                const subcategoria = row.find('td:nth-child(6)').text().toLowerCase();
 
                 const show = (!filterId || id.includes(filterId)) &&
-                    (!filterTecnico || tecnico.includes(filterTecnico));
+                    (!filterCliente || cliente.includes(filterCliente)) &&
+                    (!filterTecnico || tecnico.includes(filterTecnico)) &&
+                    (!filterSituacao || situacao.includes(filterSituacao)) &&
+                    (!filterCategoria || categoria.includes(filterCategoria)) &&
+                    (!filterSubcategoria || subcategoria.includes(filterSubcategoria));
 
                 if (show) {
                     filteredRows.push(row);
@@ -117,7 +149,7 @@
         });
 
         // Adicionando eventos aos inputs de filtro
-        $('#filter-id, #filter-tecnico').on('input', function () {
+        $('#filter-id, #filter-cliente, #filter-tecnico, #filter-situacao, #filter-categoria, #filter-subcategoria').on('input', function () {
             currentPage = 1; // Resetar para a primeira página sempre que o filtro mudar
             updateTable();
         });
