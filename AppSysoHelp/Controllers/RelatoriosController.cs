@@ -47,5 +47,25 @@ namespace AppSysoHelp.Controllers
 
             return View(agrupamento);
         }
+
+        public IActionResult Atendimentos()
+        {
+            var chamados = ListaAtendimentos();
+            return View(chamados);
+        }
+        public List<Atendimentos> ListaAtendimentos()
+        {
+            // Realiza a consulta com a ordenação diretamente no Entity Framework
+            var todosAtendimentos = _context.Atendimentos
+                .Include(a => a.FkTecnico)
+                .Include(c => c.FkChamado)
+                    .ThenInclude(c => c.FkSituacaoChamado)
+                .Include(a => a.FkChamado)
+                    .ThenInclude(c => c.FkCliente)
+                .OrderBy(a => a.FkChamadoId) // Ordenação antes do ToList()
+                .ToList();
+
+            return todosAtendimentos;
+        }
     }
 }

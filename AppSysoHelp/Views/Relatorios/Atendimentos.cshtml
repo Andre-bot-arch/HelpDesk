@@ -1,0 +1,143 @@
+﻿@model IEnumerable<AppSysoHelp.Models.Atendimentos>
+
+<div class="row align-items-center mb-3">
+    <div class="col-md-4 col-lg-2">
+        <input class="form-control" type="text" id="filter-id" placeholder="Digite o Protocolo">
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <input class="form-control" type="text" id="filter-tecnico" placeholder="Digite o nome do Técnico">
+    </div>
+</div>
+
+<div id="tabela-container">
+    <div class="table-responsive">
+        <table id="datatable" class="table table-striped table-bordered">
+            <thead>
+                <tr style="border-bottom: 1px solid #222e35;">
+                    <th>#</th>
+                    <th>Tecnico</th>
+                    <th>Data Atendimento</th>
+                    <th>Data Fechamento</th>
+                    <th>Motivo Abertura</th>
+                    <th>Descrição Atendimento</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.FkChamadoId</td>
+                        <td>@item.FkTecnico?.NomeCompleto</td>
+                        <td>@item.DataAtendimento</td>
+                        <td>@item.DataFechamento</td>
+                        <td>@item.FkChamado.DescricaoCompleta</td>
+                        <td>@item.ProcedimentosAplicados</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div id="pagination" class="text-center">
+        <button id="prevPage" class="btn btn-primary">Anterior</button>
+        <span id="pageNumber">1</span>
+        <button id="nextPage" class="btn btn-primary">Próxima</button>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        const rowsPerPage = 10; // Número de linhas por página
+        let currentPage = 1;
+
+        const table = $('#datatable tbody tr');
+        const totalRows = table.length;
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+        // Função para atualizar a tabela com base na página atual e no filtro
+        function updateTable() {
+            const filterId = $('#filter-id').val().toLowerCase();
+            const filterTecnico = $('#filter-tecnico').val().toLowerCase();
+
+            let filteredRows = [];
+
+            // Filtrar as linhas da tabela
+            table.each(function () {
+                const row = $(this);
+                const id = row.find('td:nth-child(1)').text().toLowerCase();
+                const tecnico = row.find('td:nth-child(2)').text().toLowerCase();
+
+                const show = (!filterId || id.includes(filterId)) &&
+                    (!filterTecnico || tecnico.includes(filterTecnico));
+
+                if (show) {
+                    filteredRows.push(row);
+                }
+                row.toggle(show); // Exibe ou oculta a linha
+            });
+
+            // Calcular páginas baseadas nas linhas filtradas
+            const filteredRowsCount = filteredRows.length;
+            const filteredTotalPages = Math.ceil(filteredRowsCount / rowsPerPage);
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = currentPage * rowsPerPage;
+
+            // Ocultar todas as linhas
+            table.hide();
+
+            // Exibir apenas as linhas da página atual
+            filteredRows.slice(start, end).forEach(function (row) {
+                row.show();
+            });
+
+            // Atualizar o número da página
+            $('#pageNumber').text(currentPage);
+            $('#nextPage').prop('disabled', currentPage >= filteredTotalPages);
+            $('#prevPage').prop('disabled', currentPage <= 1);
+
+            // Atualizar os números de página
+            updatePageNumbers(filteredTotalPages);
+        }
+
+        // Função para navegar para a próxima página
+        $('#nextPage').click(function () {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updateTable();
+            }
+        });
+
+        // Função para navegar para a página anterior
+        $('#prevPage').click(function () {
+            if (currentPage > 1) {
+                currentPage--;
+                updateTable();
+            }
+        });
+
+        // Adicionando eventos aos inputs de filtro
+        $('#filter-id, #filter-tecnico').on('input', function () {
+            currentPage = 1; // Resetar para a primeira página sempre que o filtro mudar
+            updateTable();
+        });
+
+        // Função para atualizar a numeração das páginas
+        function updatePageNumbers(totalPages) {
+            let pageNumbers = '';
+            for (let i = 1; i <= totalPages; i++) {
+                pageNumbers += `<button class="page-link btn btn-sm btn-outline-primary" data-page="${i}">${i}</button> `;
+            }
+            $('#pageNumbers').html(pageNumbers);
+
+            // Evento para navegar para a página clicada
+            $('#pageNumbers .page-link').click(function () {
+                currentPage = $(this).data('page');
+                updateTable();
+            });
+        }
+
+        // Inicializar a tabela com a primeira página
+        updateTable();
+    });
+</script>
