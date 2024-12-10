@@ -1,36 +1,59 @@
 ﻿@model IEnumerable<AppSysoHelp.Models.VwAtendimentos>
 
+<style>
+    /* Tornar as letras do DataTable brancas */
+    #myTable, #myTable th, #myTable td {
+        color: white;
+    }
+    /* Fundo para destacar as letras brancas */
+    #myTable {
+        background-color: #222;
+    }
+    /* Ajustar os botões do DataTables */
+    .dt-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        margin-right: 5px;
+    }
+
+        .dt-button:hover {
+            background-color: #0056b3;
+        }
+</style>
+
 <div class="row align-items-center mb-3">
-    <div class="col-md-2">
-        <input class="form-control" type="text" id="filter-id" placeholder="Protocolo">
+    <div class="col-sm-2">
+        <input class="form-control filter-input" data-column="0" type="text" placeholder="Protocolo">
     </div>
-    <div class="col-md-2">
-        <input class="form-control" type="text" id="filter-cliente" placeholder="Cliente">
+    <div class="col-sm-2">
+        <input class="form-control filter-input" data-column="1" type="text" placeholder="Cliente">
     </div>
-    <div class="col-md-2">
-        <input class="form-control" type="text" id="filter-tecnico" placeholder="Técnico">
+    <div class="col-sm-2">
+        <input class="form-control filter-input" data-column="2" type="text" placeholder="Técnico">
     </div>
-    <div class="col-md-2">
-        <input class="form-control" type="text" id="filter-situacao" placeholder="Situação">
+    <div class="col-sm-2">
+        <input class="form-control filter-input" data-column="3" type="text" placeholder="Situação">
     </div>
-    <div class="col-md-2">
-        <input class="form-control" type="text" id="filter-categoria" placeholder="Categoria">
+    <div class="col-sm-2">
+        <input class="form-control filter-input" data-column="4" type="text" placeholder="Categoria">
     </div>
-    <div class="col-md-2">
-        <input class="form-control" type="text" id="filter-subcategoria" placeholder="SubCategoria">
+    <div class="col-sm-2">
+        <input class="form-control filter-input" data-column="5" type="text" placeholder="SubCategoria">
     </div>
 </div>
 
+
 <div id="tabela-container">
     <div class="table-responsive">
-        <table id="datatable" class="table table-striped table-bordered">
+        <table id="myTable" class="table table-bordered">
             <thead>
-                <tr style="border-bottom: 1px solid #222e35;">
+                <tr>
                     <th>#</th>
                     <th>Cliente</th>
-                    <th>Tecnico</th>
-                    @* <th>Data Atendimento</th> *@
-                    @* <th>Data Fechamento</th> *@
+                    <th>Técnico</th>
                     <th>Situação</th>
                     <th>Categoria</th>
                     <th>SubCategoria</th>
@@ -45,8 +68,6 @@
                         <td>@item.ProtocoloChamado</td>
                         <td>@item.Cliente</td>
                         <td>@item.Tecnico</td>
-                        @* <td>@item.DataAtendimento</td> *@
-                        @* <td>@item.DataFechamento</td> *@
                         <td>@item.Situacao</td>
                         <td>@item.Categoria</td>
                         <td>@item.SubCategoria</td>
@@ -57,119 +78,44 @@
             </tbody>
         </table>
     </div>
-
-    <div id="pagination" class="text-center">
-        <button id="prevPage" class="btn btn-primary">Anterior</button>
-        <span id="pageNumber">1</span>
-        <button id="nextPage" class="btn btn-primary">Próxima</button>
-    </div>
-
 </div>
 
-<script>
-    $(document).ready(function () {
-        const rowsPerPage = 10; // Número de linhas por página
-        let currentPage = 1;
+@section scripts {
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-        const table = $('#datatable tbody tr');
-        const totalRows = table.length;
-        const totalPages = Math.ceil(totalRows / rowsPerPage);
-
-        // Função para atualizar a tabela com base na página atual e no filtro
-        function updateTable() {
-            const filterId = $('#filter-id').val().toLowerCase();
-            const filterCliente = $('#filter-cliente').val().toLowerCase();
-            const filterTecnico = $('#filter-tecnico').val().toLowerCase();
-            const filterSituacao = $('#filter-situacao').val().toLowerCase();
-            const filterCategoria = $('#filter-categoria').val().toLowerCase();
-            const filterSubcategoria = $('#filter-subcategoria').val().toLowerCase();
-
-            let filteredRows = [];
-
-            // Filtrar as linhas da tabela
-            table.each(function () {
-                const row = $(this);
-                const id = row.find('td:nth-child(1)').text().toLowerCase();
-                const cliente = row.find('td:nth-child(2)').text().toLowerCase();
-                const tecnico = row.find('td:nth-child(3)').text().toLowerCase();
-                const situacao = row.find('td:nth-child(4)').text().toLowerCase();
-                const categoria = row.find('td:nth-child(5)').text().toLowerCase();
-                const subcategoria = row.find('td:nth-child(6)').text().toLowerCase();
-
-                const show = (!filterId || id.includes(filterId)) &&
-                    (!filterCliente || cliente.includes(filterCliente)) &&
-                    (!filterTecnico || tecnico.includes(filterTecnico)) &&
-                    (!filterSituacao || situacao.includes(filterSituacao)) &&
-                    (!filterCategoria || categoria.includes(filterCategoria)) &&
-                    (!filterSubcategoria || subcategoria.includes(filterSubcategoria));
-
-                if (show) {
-                    filteredRows.push(row);
+    <script>
+        // Inicializar DataTable
+        let table = new DataTable('#myTable', {
+            language: {
+                url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+            },
+            dom: 'Bfrtip', // Adiciona botões na interface
+            buttons: [
+                {
+                    extend: 'csvHtml5',
+                    text: 'Exportar CSV'
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: 'Exportar XLSX',
+                    title: 'DadosExportados' // Nome do arquivo exportado
+                },
+                {
+                    extend: 'print',
+                    text: 'Imprimir'
                 }
-                row.toggle(show); // Exibe ou oculta a linha
-            });
-
-            // Calcular páginas baseadas nas linhas filtradas
-            const filteredRowsCount = filteredRows.length;
-            const filteredTotalPages = Math.ceil(filteredRowsCount / rowsPerPage);
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = currentPage * rowsPerPage;
-
-            // Ocultar todas as linhas
-            table.hide();
-
-            // Exibir apenas as linhas da página atual
-            filteredRows.slice(start, end).forEach(function (row) {
-                row.show();
-            });
-
-            // Atualizar o número da página
-            $('#pageNumber').text(currentPage);
-            $('#nextPage').prop('disabled', currentPage >= filteredTotalPages);
-            $('#prevPage').prop('disabled', currentPage <= 1);
-
-            // Atualizar os números de página
-            updatePageNumbers(filteredTotalPages);
-        }
-
-        // Função para navegar para a próxima página
-        $('#nextPage').click(function () {
-            if (currentPage < totalPages) {
-                currentPage++;
-                updateTable();
-            }
+            ]
         });
 
-        // Função para navegar para a página anterior
-        $('#prevPage').click(function () {
-            if (currentPage > 1) {
-                currentPage--;
-                updateTable();
-            }
-        });
-
-        // Adicionando eventos aos inputs de filtro
-        $('#filter-id, #filter-cliente, #filter-tecnico, #filter-situacao, #filter-categoria, #filter-subcategoria').on('input', function () {
-            currentPage = 1; // Resetar para a primeira página sempre que o filtro mudar
-            updateTable();
-        });
-
-        // Função para atualizar a numeração das páginas
-        function updatePageNumbers(totalPages) {
-            let pageNumbers = '';
-            for (let i = 1; i <= totalPages; i++) {
-                pageNumbers += `<button class="page-link btn btn-sm btn-outline-primary" data-page="${i}">${i}</button> `;
-            }
-            $('#pageNumbers').html(pageNumbers);
-
-            // Evento para navegar para a página clicada
-            $('#pageNumbers .page-link').click(function () {
-                currentPage = $(this).data('page');
-                updateTable();
+        // Adicionar listener nos inputs
+        document.querySelectorAll('.filter-input').forEach(input => {
+            input.addEventListener('input', function () {
+                let columnIndex = this.getAttribute('data-column');
+                table.columns(columnIndex).search(this.value).draw();
             });
-        }
-
-        // Inicializar a tabela com a primeira página
-        updateTable();
-    });
-</script>
+        });
+    </script>
+}
