@@ -1,121 +1,183 @@
 ﻿@model IEnumerable<AppSysoHelp.Models.VwAtendimentos>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
 
-<style>
-    /* Tornar as letras do DataTable brancas */
-    #myTable, #myTable th, #myTable td {
-        color: white;
-    }
-    /* Fundo para destacar as letras brancas */
-    #myTable {
-        background-color: #222;
-    }
-    /* Ajustar os botões do DataTables */
-    .dt-button {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 4px;
-        margin-right: 5px;
-    }
-
-        .dt-button:hover {
-            background-color: #0056b3;
+    <style>
+        /* Filtros */
+        .filter-input {
+            border-radius: 0.25rem; /* Bordas arredondadas */
+            box-shadow: none; /* Remove sombra */
+            margin-bottom: 10px; /* Espaço entre filtros */
         }
-</style>
 
-<div class="row align-items-center mb-3">
-    <div class="col-sm-2">
-        <input class="form-control filter-input" data-column="0" type="text" placeholder="Protocolo">
-    </div>
-    <div class="col-sm-2">
-        <input class="form-control filter-input" data-column="1" type="text" placeholder="Cliente">
-    </div>
-    <div class="col-sm-2">
-        <input class="form-control filter-input" data-column="2" type="text" placeholder="Técnico">
-    </div>
-    <div class="col-sm-2">
-        <input class="form-control filter-input" data-column="3" type="text" placeholder="Situação">
-    </div>
-    <div class="col-sm-2">
-        <input class="form-control filter-input" data-column="4" type="text" placeholder="Categoria">
-    </div>
-    <div class="col-sm-2">
-        <input class="form-control filter-input" data-column="5" type="text" placeholder="SubCategoria">
-    </div>
-</div>
+            .filter-input:focus {
+                border-color: #007bff; /* Cor da borda ao focar */
+                box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Sombras para foco */
+            }
+
+        /* Container da Tabela */
+        #tabela-container {
+            margin-top: 20px; /* Espaçamento superior */
+        }
+
+        /* Tabela */
+        .table thead th {
+            background-color: #f8f9fa; /* Fundo claro para cabeçalhos */
+            color: #343a40; /* Cor escura para o texto */
+            text-align: center; /* Centraliza o texto */
+            font-weight: bold; /* Aumenta o peso da fonte */
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1; /* Destaca a linha ao passar o mouse */
+        }
+
+        .table td, .table th {
+            vertical-align: middle; /* Alinha verticalmente o conteúdo */
+            text-align: center; /* Alinha o conteúdo no centro */
+        }
+
+        /* Botões */
+        .dt-buttons {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+            .dt-buttons .dt-button {
+                background-color: #007bff; /* Cor de fundo */
+                color: #ffffff; /* Cor do texto */
+                border: none;
+                padding: 10px 20px;
+                font-size: 14px;
+                font-weight: bold;
+                border-radius: 5px; /* Bordas arredondadas */
+                margin: 0 5px;
+                cursor: pointer;
+                transition: all 0.3s ease; /* Transição suave */
+            }
 
 
-<div id="tabela-container">
-    <div class="table-responsive">
-        <table id="myTable" class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Cliente</th>
-                    <th>Técnico</th>
-                    <th>Situação</th>
-                    <th>Categoria</th>
-                    <th>SubCategoria</th>
-                    <th>Motivo Abertura</th>
-                    <th>Descrição Atendimento</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.ProtocoloChamado</td>
-                        <td>@item.Cliente</td>
-                        <td>@item.Tecnico</td>
-                        <td>@item.Situacao</td>
-                        <td>@item.Categoria</td>
-                        <td>@item.SubCategoria</td>
-                        <td>@item.MotivoAbertura</td>
-                        <td>@item.ProcedimentosAplicados</td>
-                    </tr>
+        /* Paginação */
+        .dataTables_paginate {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+            .dataTables_paginate .paginate_button {
+                background-color: #ffffff;
+                color: #007bff;
+                border: 1px solid #ddd;
+                margin: 0 5px;
+                padding: 8px 15px;
+                border-radius: 4px;
+            }
+
+                .dataTables_paginate .paginate_button:hover {
+                    background-color: #007bff;
+                    color: #ffffff;
+                    border-color: #007bff;
                 }
-            </tbody>
-        </table>
-    </div>
-</div>
 
-@section scripts {
+                .dataTables_paginate .paginate_button.disabled {
+                    color: #ccc;
+                    cursor: not-allowed;
+                }
+    </style>
+</head>
+<body>
+    <div class="row align-items-center mb-3 mt-5">
+        <div class="col-sm-2">
+            <input class="form-control filter-input" data-column="0" type="text" placeholder="Protocolo">
+        </div>
+        <div class="col-sm-2">
+            <input class="form-control filter-input" data-column="1" type="text" placeholder="Cliente">
+        </div>
+        <div class="col-sm-2">
+            <input class="form-control filter-input" data-column="2" type="text" placeholder="Técnico">
+        </div>
+        <div class="col-sm-2">
+            <input class="form-control filter-input" data-column="3" type="text" placeholder="Situação">
+        </div>
+        <div class="col-sm-2">
+            <input class="form-control filter-input" data-column="4" type="text" placeholder="Categoria">
+        </div>
+        <div class="col-sm-2">
+            <input class="form-control filter-input" data-column="5" type="text" placeholder="SubCategoria">
+        </div>
+    </div>
+
+
+    <div id="tabela-container">
+        <div class="table-responsive">
+            <table id="myTable" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Cliente</th>
+                        <th>Técnico</th>
+                        <th>Situação</th>
+                        <th>Categoria</th>
+                        <th>SubCategoria</th>
+                        <th>Motivo Abertura</th>
+                        <th>Descrição Atendimento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.ProtocoloChamado</td>
+                            <td>@item.Cliente</td>
+                            <td>@item.Tecnico</td>
+                            <td>@item.Situacao</td>
+                            <td>@item.Categoria</td>
+                            <td>@item.SubCategoria</td>
+                            <td>@item.MotivoAbertura</td>
+                            <td>@item.ProcedimentosAplicados</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <script>
-        // Inicializar DataTable
-        let table = new DataTable('#myTable', {
-            language: {
-                url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
-            },
-            dom: 'Bfrtip', // Adiciona botões na interface
-            buttons: [
-                {
-                    extend: 'csvHtml5',
-                    text: 'Exportar CSV'
+        $(document).ready(function () {
+            let table = new DataTable('#myTable', {
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
                 },
-                {
-                    extend: 'excelHtml5',
-                    text: 'Exportar XLSX',
-                    title: 'DadosExportados' // Nome do arquivo exportado
-                },
-                {
-                    extend: 'print',
-                    text: 'Imprimir'
-                }
-            ]
-        });
+                dom: 'Bfrtip', // Botões no topo
+                buttons: [
+                    { extend: 'csvHtml5', text: 'Exportar CSV' },
+                    { extend: 'excelHtml5', text: 'Exportar XLSX', title: 'DadosExportados' },
+                    { extend: 'print', text: 'Imprimir' }
+                ]
+            });
 
-        // Adicionar listener nos inputs
-        document.querySelectorAll('.filter-input').forEach(input => {
-            input.addEventListener('input', function () {
-                let columnIndex = this.getAttribute('data-column');
+            // Adiciona filtro
+            $('.filter-input').on('input', function () {
+                let columnIndex = $(this).data('column');
                 table.columns(columnIndex).search(this.value).draw();
             });
         });
     </script>
-}
+</body>
+</html>
