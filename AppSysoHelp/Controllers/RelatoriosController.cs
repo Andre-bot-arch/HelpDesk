@@ -57,7 +57,8 @@ namespace AppSysoHelp.Controllers
         {
             // Realiza a consulta com a ordenação diretamente no Entity Framework
             var todosAtendimentos = _context.VwAtendimentos
-                .OrderByDescending(a => a.ProtocoloChamado) // Ordenação antes do ToList()
+                .OrderByDescending(a => a.ProtocoloChamado)
+                .ThenBy(a => a.DataAtendimento)
                 .ToList();
 
             return todosAtendimentos;

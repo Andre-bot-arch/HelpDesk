@@ -115,7 +115,6 @@
         </div>
     </div>
 
-
     <div id="tabela-container">
         <div class="table-responsive">
             <table id="myTable" class="table table-striped table-bordered">
@@ -127,6 +126,9 @@
                         <th>Situação</th>
                         <th>Categoria</th>
                         <th>SubCategoria</th>
+                        <th>Abertura Chamado</th>
+                        <th>Atendimento em:</th>
+                        <th>Encerrado em:</th>
                         <th>Motivo Abertura</th>
                         <th>Descrição Atendimento</th>
                     </tr>
@@ -141,6 +143,9 @@
                             <td>@item.Situacao</td>
                             <td>@item.Categoria</td>
                             <td>@item.SubCategoria</td>
+                            <td>@item.DataAbertura</td>
+                            <td>@item.DataAtendimento</td>
+                            <td>@item.DataFechamento</td>
                             <td>@item.MotivoAbertura</td>
                             <td>@item.ProcedimentosAplicados</td>
                         </tr>
