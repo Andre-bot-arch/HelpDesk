@@ -203,7 +203,7 @@ namespace AppSysoHelp.Controllers
                 {
                     imagem.CopyTo(fileStream);
                 }
-                caminhoImagem = $"/imagens_chamado/{fileName}";
+                caminhoImagem = $"imagens_chamado/{fileName}";
             }
 
             var atendimentoExistente = _context.Atendimentos.FirstOrDefault(a => a.FkChamadoId == d.ChamadoId && a.AtendimentoEncerrado != true);
