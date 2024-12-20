@@ -38,7 +38,7 @@ namespace AppSysoHelp.Controllers
             else
             {
                 var lista = _contrato.BuscarContratos()
-                                    .Where(a => a.DataFim.ToDateTime(TimeOnly.MinValue) >= DateTime.Now)
+                                    .Where(a => a.DataFim.ToDateTime(TimeOnly.MinValue) >= DateTime.UtcNow.AddHours(-4))
                                      .OrderBy(a => a.FkCliente.Fantasia)
                                      .ToList();
                 return View(lista);
