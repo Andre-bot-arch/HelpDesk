@@ -48,9 +48,16 @@ namespace AppSysoHelp.Controllers
             return View(agrupamento);
         }
 
-        public IActionResult Atendimentos()
+        public IActionResult Atendimentos(DateTime? startDate, DateTime? endDate)
         {
             var chamados = ListaAtendimentos();
+
+            // Filtra os chamados de acordo com o intervalo de datas, se as datas forem fornecidas
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                chamados = chamados.Where(ch => ch.DataAbertura >= startDate.Value && ch.DataAbertura <= endDate.Value).ToList();
+            }
+
             return View(chamados);
         }
         public List<VwAtendimentos> ListaAtendimentos()

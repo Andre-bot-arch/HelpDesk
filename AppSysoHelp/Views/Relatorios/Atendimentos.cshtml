@@ -9,6 +9,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.1/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.1/dist/sweetalert2.min.js"></script>
 
     <style>
         /* Filtros */
@@ -95,23 +100,32 @@
 </head>
 <body>
     <div class="row align-items-center mb-3 mt-5">
-        <div class="col-sm-2">
+        <!-- Filtros de Texto -->
+        <div class="col-md-2 mb-2">
             <input class="form-control filter-input" data-column="0" type="text" placeholder="Protocolo">
         </div>
-        <div class="col-sm-2">
+        <div class="col-md-2 mb-2">
             <input class="form-control filter-input" data-column="1" type="text" placeholder="Cliente">
         </div>
-        <div class="col-sm-2">
+        <div class="col-md-2 mb-2">
             <input class="form-control filter-input" data-column="2" type="text" placeholder="Técnico">
         </div>
-        <div class="col-sm-2">
+        <div class="col-md-2 mb-2">
             <input class="form-control filter-input" data-column="3" type="text" placeholder="Situação">
         </div>
-        <div class="col-sm-2">
+        <div class="col-md-2 mb-2">
             <input class="form-control filter-input" data-column="4" type="text" placeholder="Categoria">
         </div>
-        <div class="col-sm-2">
+        <div class="col-md-2 mb-2">
             <input class="form-control filter-input" data-column="5" type="text" placeholder="SubCategoria">
+        </div>
+
+        <!-- Botões -->
+        <div class="col-md-2 mb-2">
+            <button class="btn btn-primary w-100" id="setPeriodBtn">Definir um período de abertura</button>
+        </div>
+        <div class="col-md-2 mb-2">
+            <button class="btn btn-secondary w-100" id="clearFiltersBtn">Limpar Filtros</button>
         </div>
     </div>
 
@@ -165,6 +179,49 @@
 
     <script>
         $(document).ready(function () {
+            // Quando o botão "Limpar Filtros" for clicado
+            $('#clearFiltersBtn').click(function () {
+                // Limpa todos os campos de filtro
+                $('.filter-input').val('');
+
+                // Reinicia os filtros da DataTable
+                let table = $('#myTable').DataTable();
+                table.columns().search('').draw();
+
+                // Redireciona para a controller, mas sem os parâmetros startDate e endDate
+                window.location.href = '@Url.Action("Atendimentos", "Relatorios")';
+            });
+
+            // Quando o botão for clicado
+            $('#setPeriodBtn').click(function () {
+                // Exibe o SweetAlert com inputs de data
+                Swal.fire({
+                    title: 'Selecione o Período de Abertura',
+                    html: `
+                            <label for="startDate">Data Início:</label>
+                            <input type="date" id="startDate" class="swal2-input" required><br><br>
+                            <label for="endDate">Data Fim:</label>
+                            <input type="date" id="endDate" class="swal2-input" required><br><br>
+                        `,
+                    focusConfirm: false,
+                    preConfirm: () => {
+                        // Obter os valores dos inputs
+                        const startDate = $('#startDate').val();
+                        const endDate = $('#endDate').val();
+
+                        if (!startDate || !endDate) {
+                            Swal.showValidationMessage('Por favor, preencha todas as datas!');
+                            return false;
+                        }
+
+                        // Redireciona para a controller passando os parâmetros de data
+                        window.location.href = `@Url.Action("Atendimentos", "Relatorios")?startDate=${startDate}&endDate=${endDate}`;
+                    }
+                });
+            });
+
+
+
             let table = new DataTable('#myTable', {
                 language: {
                     url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
