@@ -55,6 +55,7 @@ namespace AppSysoHelp.Controllers
             // Filtra os chamados de acordo com o intervalo de datas, se as datas forem fornecidas
             if (startDate.HasValue && endDate.HasValue)
             {
+                endDate = endDate.Value.Date.AddDays(1).AddTicks(-1);
                 chamados = chamados.Where(ch => ch.DataAbertura >= startDate.Value && ch.DataAbertura <= endDate.Value).ToList();
             }
 

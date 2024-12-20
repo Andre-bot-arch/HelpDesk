@@ -96,6 +96,17 @@
                     color: #ccc;
                     cursor: not-allowed;
                 }
+
+        .swal2-confirm.confirm-button-green {
+            background-color: #28a745; /* Verde */
+            border-color: #28a745;
+            color: white;
+        }
+
+            .swal2-confirm.confirm-button-green:hover {
+                background-color: #218838; /* Verde escuro ao passar o mouse */
+                border-color: #1e7e34;
+            }
     </style>
 </head>
 <body>
@@ -192,18 +203,23 @@
                 window.location.href = '@Url.Action("Atendimentos", "Relatorios")';
             });
 
-            // Quando o botão for clicado
             $('#setPeriodBtn').click(function () {
                 // Exibe o SweetAlert com inputs de data
                 Swal.fire({
                     title: 'Selecione o Período de Abertura',
                     html: `
-                            <label for="startDate">Data Início:</label>
-                            <input type="date" id="startDate" class="swal2-input" required><br><br>
-                            <label for="endDate">Data Fim:</label>
-                            <input type="date" id="endDate" class="swal2-input" required><br><br>
-                        `,
+                        <label for="startDate">Data Início:</label>
+                        <input type="date" id="startDate" class="swal2-input" required><br><br>
+                        <label for="endDate">Data Fim:</label>
+                        <input type="date" id="endDate" class="swal2-input" required><br><br>
+                        <button id="setTodayBtn" class="swal2-confirm swal2-styled">Hoje</button>
+                    `,
                     focusConfirm: false,
+                    confirmButtonText: 'Buscar',
+                    // Personaliza o estilo do botão de confirmação para verde
+                    customClass: {
+                        confirmButton: 'confirm-button-green'
+                    },
                     preConfirm: () => {
                         // Obter os valores dos inputs
                         const startDate = $('#startDate').val();
@@ -218,9 +234,15 @@
                         window.location.href = `@Url.Action("Atendimentos", "Relatorios")?startDate=${startDate}&endDate=${endDate}`;
                     }
                 });
+
+                // Quando o botão "Hoje" for clicado
+                $(document).on('click', '#setTodayBtn', function () {
+                    // Define a data de hoje no formato adequado para o input date
+                    const today = new Date().toISOString().split('T')[0]; // Formata para YYYY-MM-DD
+                    $('#startDate').val(today);
+                    $('#endDate').val(today);
+                });
             });
-
-
 
             let table = new DataTable('#myTable', {
                 language: {
