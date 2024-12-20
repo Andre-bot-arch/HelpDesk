@@ -60,7 +60,7 @@ namespace AppSysoHelp.Controllers
         [HttpPost]
         public IActionResult Create(SysoCloud s)
         {
-            s.DataCreate = DateTime.Now;
+            s.DataCreate = DateTime.UtcNow.AddHours(-4);
             _generico.GravarGenerico(s);
             return RedirectToAction("Detalhar", "SysoCloud", new { id = s.FkContratoId });
         }

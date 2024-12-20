@@ -32,7 +32,7 @@ namespace AppSysoHelp.Controllers
                 ViewBag.atendimento = false;
                 atendimento = new Atendimentos
                 {
-                    DataAtendimento = DateTime.Now,
+                    DataAtendimento = DateTime.UtcNow.AddHours(-4),
                     FkChamadoId = id,
                     ProcedimentosAplicados = "EM ATENDIMENTO",
                     FkTecnicoId = Convert.ToInt32(userId),
@@ -54,7 +54,7 @@ namespace AppSysoHelp.Controllers
                                          .Include(a => a.Atendimentos)
                                          .ThenInclude(a => a.FkTecnico)
                                          .FirstOrDefault(a => a.ChamadoId == id);
-            chamado.DataAgendamento = DateTime.Now;
+            chamado.DataAgendamento = DateTime.UtcNow.AddHours(-4);
             _context.Update(chamado);
             _context.SaveChanges();
             return View(chamado);
@@ -95,11 +95,11 @@ namespace AppSysoHelp.Controllers
                 var userId = userIdClaim?.Value;
 
                 m.FkSituacaoChamadoId = 1;
-                m.DataCriacao = DateTime.Now;
+                m.DataCriacao = DateTime.UtcNow.AddHours(-4);
                 m.FkAtendente = Convert.ToInt32(userId);
                 if (m.DataAgendamento == null)
                 {
-                    m.DataAgendamento = DateTime.Now;
+                    m.DataAgendamento = DateTime.UtcNow.AddHours(-4);
                 }
 
                 _generico.GravarGenerico(m);
@@ -120,7 +120,7 @@ namespace AppSysoHelp.Controllers
             atendimentoExistente.ProcedimentosAplicados = dados.DescricaoCompleta;
             atendimentoExistente.FkTecnicoId = Convert.ToInt32(userId);
             atendimentoExistente.NovaDataAtendimento = dados.DataAgendamento;
-            atendimentoExistente.DataFechamento = DateTime.Now;
+            atendimentoExistente.DataFechamento = DateTime.UtcNow.AddHours(-4);
             atendimentoExistente.AtendimentoEncerrado = true;
 
             if (chamado!.FkSituacaoChamado.SituacaoChamadoId != 3)
@@ -145,18 +145,18 @@ namespace AppSysoHelp.Controllers
             var userId = userIdClaim?.Value;
             var atendimento = new Atendimentos
             {
-                DataAtendimento = DateTime.Now,
+                DataAtendimento = DateTime.UtcNow.AddHours(-4),
                 FkChamadoId = dados.ChamadoId,
                 ProcedimentosAplicados = dados.DescricaoCompleta,
                 FkTecnicoId = Convert.ToInt32(userId),
-                NovaDataAtendimento = DateTime.Now,
+                NovaDataAtendimento = DateTime.UtcNow.AddHours(-4),
                 AtendimentoEncerrado = true,
-                DataFechamento = DateTime.Now
+                DataFechamento = DateTime.UtcNow.AddHours(-4)
             };
             _generico.GravarGenerico(atendimento);
 
             chamado.FkSituacaoChamadoId = 4;
-            chamado.DataFechamento = DateTime.Now;
+            chamado.DataFechamento = DateTime.UtcNow.AddHours(-4);
 
             _generico.UpdateGenerico(chamado);
 
@@ -209,14 +209,14 @@ namespace AppSysoHelp.Controllers
             var atendimentoExistente = _context.Atendimentos.FirstOrDefault(a => a.FkChamadoId == d.ChamadoId && a.AtendimentoEncerrado != true);
             atendimentoExistente.ProcedimentosAplicados = d.DescricaoCompleta;
             atendimentoExistente.FkTecnicoId = Convert.ToInt32(userIdClaim);
-            atendimentoExistente.DataFechamento = DateTime.Now;
+            atendimentoExistente.DataFechamento = DateTime.UtcNow.AddHours(-4);
             atendimentoExistente.AtendimentoEncerrado = true;
             atendimentoExistente.CaminhoDaImagem = caminhoImagem;
 
             _generico.UpdateGenerico(atendimentoExistente);
 
             chamado.FkSituacaoChamadoId = 3;
-            chamado.DataFechamento = DateTime.Now;
+            chamado.DataFechamento = DateTime.UtcNow.AddHours(-4);
 
             _generico.UpdateGenerico(chamado);
             return RedirectToAction("Aberto");
