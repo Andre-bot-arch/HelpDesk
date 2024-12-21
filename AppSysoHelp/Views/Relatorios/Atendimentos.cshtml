@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<AppSysoHelp.Models.VwAtendimentos>
 @{
     Layout = null;
+    var categorias = ViewBag.Categorias;
 }
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -125,10 +126,14 @@
             <input class="form-control filter-input" data-column="3" type="text" placeholder="Situação">
         </div>
         <div class="col-md-2 mb-2">
-            <input class="form-control filter-input" data-column="4" type="text" placeholder="Categoria">
+            <select class="form-control filter-input" data-column="4" type="text" placeholder="Categoria" id="categorySelect" asp-items="@categorias">
+                <option value="">Categorias</option>
+            </select>
         </div>
         <div class="col-md-2 mb-2">
-            <input class="form-control filter-input" data-column="5" type="text" placeholder="SubCategoria">
+            <select class="form-control filter-input" data-column="5" id="subcategorySelect">
+                <option value="">SubCategoria</option>
+            </select>
         </div>
 
         <!-- Botões -->
@@ -260,6 +265,50 @@
             $('.filter-input').on('input', function () {
                 let columnIndex = $(this).data('column');
                 table.columns(columnIndex).search(this.value).draw();
+            });
+
+            $('.filter-input').on('change', function () {
+                let columnIndex = $(this).data('column');
+                let selectedText = $(this).find('option:selected').text(); // Obtém o texto do option selecionado
+                table.columns(columnIndex).search(selectedText).draw();
+            });
+
+            $('#categorySelect').on('change', function () {
+                let selectedCategory = this.value;
+
+                // Limpa o select de subcategorias
+                $('#subcategorySelect').html('<option value="">Todos</option>');
+
+                // Se uma categoria foi selecionada, buscar subcategorias
+                if (selectedCategory) {
+                    $.ajax({
+                        url: '/Relatorios/Subcategorias', // Corrigir para a URL correta
+                        method: 'GET',
+                        data: { categoria: selectedCategory },
+                        success: function (response) {
+                            if (response && response.length) {
+                                // Preenche o select de subcategorias com as opções retornadas
+                                response.forEach(function (subcategoria) {
+                                    $('#subcategorySelect').append(
+                                        `<option value="${subcategoria.value}">${subcategoria.text}</option>`
+                                    );
+                                });
+                            } else {
+                                alert('Nenhuma subcategoria encontrada para a categoria selecionada.');
+                            }
+                        },
+                        error: function () {
+                            alert('Erro ao carregar subcategorias. Tente novamente.');
+                        }
+                    });
+                }
+            });
+
+            // Adicionar o evento de filtro ao subcategorySelect
+            $('#subcategorySelect').on('change', function () {
+                let columnIndex = $(this).data('column');
+                let selectedText = $(this).find('option:selected').text(); // Obtém o texto do option selecionado
+                table.columns(columnIndex).search(selectedText).draw();
             });
         });
     </script>

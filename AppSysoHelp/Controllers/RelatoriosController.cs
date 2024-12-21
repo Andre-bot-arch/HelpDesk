@@ -1,5 +1,6 @@
 ﻿using AppSysoHelp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppSysoHelp.Controllers
@@ -50,6 +51,17 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Atendimentos(DateTime? startDate, DateTime? endDate)
         {
+            var categorias = _context.ChamadosCategoria.ToList();
+
+            // Cria a lista de SelectListItem
+            var categoriasSelectList = categorias.Select(c => new SelectListItem
+            {
+                Value = c.CategoriaId.ToString(),
+                Text = c.Descricao
+            }).ToList();
+
+            ViewBag.Categorias = categoriasSelectList;
+
             var chamados = ListaAtendimentos();
 
             // Filtra os chamados de acordo com o intervalo de datas, se as datas forem fornecidas
@@ -70,6 +82,19 @@ namespace AppSysoHelp.Controllers
                 .ToList();
 
             return todosAtendimentos;
+        }
+
+        public IActionResult Subcategorias(long categoria)
+        {
+            var subcategorias = _context.ChamadosSubCategoria.Where(a => a.FkCategoria == categoria && a.Situacao == true).ToList();
+
+            var subcategoriasSelectList = subcategorias.Select(c => new SelectListItem
+            {
+                Value = c.SubCategoriaId.ToString(),
+                Text = c.Descricao
+            }).ToList();
+
+            return Ok(subcategoriasSelectList);
         }
     }
 }
