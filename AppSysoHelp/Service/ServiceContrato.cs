@@ -41,8 +41,12 @@ namespace AppSysoHelp.Service
                         {
                             if (idPlataforma > 0)
                             {
+                                if (contratos.FKCLIENTEID == " 10013941004441" || contratos.FKCLIENTEID == "0010013941001911")
+                                {
+                                    var teste = 0;
+                                }
                                 var pkid = _context.PlataformasContratos.FirstOrDefault(a => a.PlataformaId == idPlataforma);
-                                var contrato = _context.Contratos.Include(a => a.FkCliente)
+                                var contrato = _context.Contratos.Include(a => a.FkCliente).OrderByDescending(a=> a.ContratoId)
                                                  .FirstOrDefault(a => a.IdSolution.Trim() == contratos.IDSOLUTION.Trim() 
                                                  && a.FkCliente.IdSolution == contratos.FKCLIENTEID);
 
@@ -61,6 +65,10 @@ namespace AppSysoHelp.Service
                                     contrato.IdSolution = contratos.IDSOLUTION;
 
                                     _generico.UpdateGenerico(contrato);
+
+                                    var update = _context.Contratos.Include(a => a.FkCliente)
+                                                 .Where(a => a.FkCliente.IdSolution == contratos.FKCLIENTEID
+                                                             && a.FkPlataformaId == idPlataforma).ToList();
                                 }
                                 else if (idcliente > 0)
                                 {

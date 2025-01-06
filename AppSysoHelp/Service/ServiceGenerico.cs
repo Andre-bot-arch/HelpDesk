@@ -66,5 +66,12 @@ namespace AppSysoHelp.Service
             }
             return clientes.Count();
         }
+
+        internal async Task<bool> UpdateGenericoRanger(IQueryable<Contratos> listacontrato)
+        {
+            await _context.AddRangeAsync(listacontrato);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
