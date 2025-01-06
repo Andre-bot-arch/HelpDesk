@@ -44,7 +44,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in chamados.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) == 0 && a.DataAgendamento <= DateTime.Now))
+                    @foreach (var item in chamados.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) == 0 && a.DataAgendamento <= DateTime.UtcNow.AddHours(-4)))
                     {
                         <tr>
                             <td>
@@ -130,7 +130,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in chamados.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) > 0 && a.DataAgendamento <= DateTime.Now))
+                    @foreach (var item in chamados.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) > 0 && a.DataAgendamento <= DateTime.UtcNow.AddHours(-4)))
                     {
                         <tr>
                             <td>
@@ -218,7 +218,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in chamados.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento > DateTime.Now))
+                    @foreach (var item in chamados.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento > DateTime.UtcNow.AddHours(-4)))
                     {
                         <tr>
                             <td>

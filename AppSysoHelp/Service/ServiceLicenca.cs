@@ -132,7 +132,7 @@ namespace AppSysoHelp.Service
         {
             var dispositivo = licencas.Dispositivos.FirstOrDefault(a => a.Equipamento == serial);
             dispositivo.Apelido = apelido.ToUpper();
-            dispositivo.UltimoAcesso = DateTime.Now;
+            dispositivo.UltimoAcesso = DateTime.UtcNow.AddHours(-4);
             _context.Update(dispositivo);
             _context.SaveChanges();
             return true;            
@@ -145,9 +145,9 @@ namespace AppSysoHelp.Service
                 Apelido = apelido.ToUpper(),
                 Chave = licencas.Hash,
                 Equipamento = serial,
-                DataCriacao = DateTime.Now,
+                DataCriacao = DateTime.UtcNow.AddHours(-4),
                 FkLicenca = licencas.LicencaId,
-                UltimoAcesso = DateTime.Now,
+                UltimoAcesso = DateTime.UtcNow.AddHours(-4),
             };
             _context.Add(dispositivo);
             _context.SaveChanges();

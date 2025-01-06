@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<AppSysoHelp.Models.VwAtendimentos>
 @{
     Layout = null;
+    var categorias = ViewBag.Categorias;
 }
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -9,6 +10,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.1/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.1/dist/sweetalert2.min.js"></script>
 
     <style>
         /* Filtros */
@@ -91,27 +97,51 @@
                     color: #ccc;
                     cursor: not-allowed;
                 }
+
+        .swal2-confirm.confirm-button-green {
+            background-color: #28a745; /* Verde */
+            border-color: #28a745;
+            color: white;
+        }
+
+            .swal2-confirm.confirm-button-green:hover {
+                background-color: #218838; /* Verde escuro ao passar o mouse */
+                border-color: #1e7e34;
+            }
     </style>
 </head>
 <body>
     <div class="row align-items-center mb-3 mt-5">
-        <div class="col-sm-2">
+        <!-- Filtros de Texto -->
+        <div class="col-md-2 mb-2">
             <input class="form-control filter-input" data-column="0" type="text" placeholder="Protocolo">
         </div>
-        <div class="col-sm-2">
+        <div class="col-md-2 mb-2">
             <input class="form-control filter-input" data-column="1" type="text" placeholder="Cliente">
         </div>
-        <div class="col-sm-2">
+        <div class="col-md-2 mb-2">
             <input class="form-control filter-input" data-column="2" type="text" placeholder="Técnico">
         </div>
-        <div class="col-sm-2">
+        <div class="col-md-2 mb-2">
             <input class="form-control filter-input" data-column="3" type="text" placeholder="Situação">
         </div>
-        <div class="col-sm-2">
-            <input class="form-control filter-input" data-column="4" type="text" placeholder="Categoria">
+        <div class="col-md-2 mb-2">
+            <select class="form-control filter-input" data-column="4" type="text" placeholder="Categoria" id="categorySelect" asp-items="@categorias">
+                <option value="">Categorias</option>
+            </select>
         </div>
-        <div class="col-sm-2">
-            <input class="form-control filter-input" data-column="5" type="text" placeholder="SubCategoria">
+        <div class="col-md-2 mb-2">
+            <select class="form-control filter-input" data-column="5" id="subcategorySelect">
+                <option value="">SubCategoria</option>
+            </select>
+        </div>
+
+        <!-- Botões -->
+        <div class="col-md-2 mb-2">
+            <button class="btn btn-primary w-100" id="setPeriodBtn">Definir um período de abertura</button>
+        </div>
+        <div class="col-md-2 mb-2">
+            <button class="btn btn-secondary w-100" id="clearFiltersBtn">Limpar Filtros</button>
         </div>
     </div>
 
@@ -165,6 +195,60 @@
 
     <script>
         $(document).ready(function () {
+            // Quando o botão "Limpar Filtros" for clicado
+            $('#clearFiltersBtn').click(function () {
+                // Limpa todos os campos de filtro
+                $('.filter-input').val('');
+
+                // Reinicia os filtros da DataTable
+                let table = $('#myTable').DataTable();
+                table.columns().search('').draw();
+
+                // Redireciona para a controller, mas sem os parâmetros startDate e endDate
+                window.location.href = '@Url.Action("Atendimentos", "Relatorios")';
+            });
+
+            $('#setPeriodBtn').click(function () {
+                // Exibe o SweetAlert com inputs de data
+                Swal.fire({
+                    title: 'Selecione o Período de Abertura',
+                    html: `
+                        <label for="startDate">Data Início:</label>
+                        <input type="date" id="startDate" class="swal2-input" required><br><br>
+                        <label for="endDate">Data Fim:</label>
+                        <input type="date" id="endDate" class="swal2-input" required><br><br>
+                        <button id="setTodayBtn" class="swal2-confirm swal2-styled">Hoje</button>
+                    `,
+                    focusConfirm: false,
+                    confirmButtonText: 'Buscar',
+                    // Personaliza o estilo do botão de confirmação para verde
+                    customClass: {
+                        confirmButton: 'confirm-button-green'
+                    },
+                    preConfirm: () => {
+                        // Obter os valores dos inputs
+                        const startDate = $('#startDate').val();
+                        const endDate = $('#endDate').val();
+
+                        if (!startDate || !endDate) {
+                            Swal.showValidationMessage('Por favor, preencha todas as datas!');
+                            return false;
+                        }
+
+                        // Redireciona para a controller passando os parâmetros de data
+                        window.location.href = `@Url.Action("Atendimentos", "Relatorios")?startDate=${startDate}&endDate=${endDate}`;
+                    }
+                });
+
+                // Quando o botão "Hoje" for clicado
+                $(document).on('click', '#setTodayBtn', function () {
+                    // Define a data de hoje no formato adequado para o input date
+                    const today = new Date().toISOString().split('T')[0]; // Formata para YYYY-MM-DD
+                    $('#startDate').val(today);
+                    $('#endDate').val(today);
+                });
+            });
+
             let table = new DataTable('#myTable', {
                 language: {
                     url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
@@ -181,6 +265,50 @@
             $('.filter-input').on('input', function () {
                 let columnIndex = $(this).data('column');
                 table.columns(columnIndex).search(this.value).draw();
+            });
+
+            $('.filter-input').on('change', function () {
+                let columnIndex = $(this).data('column');
+                let selectedText = $(this).find('option:selected').text(); // Obtém o texto do option selecionado
+                table.columns(columnIndex).search(selectedText).draw();
+            });
+
+            $('#categorySelect').on('change', function () {
+                let selectedCategory = this.value;
+
+                // Limpa o select de subcategorias
+                $('#subcategorySelect').html('<option value="">Todos</option>');
+
+                // Se uma categoria foi selecionada, buscar subcategorias
+                if (selectedCategory) {
+                    $.ajax({
+                        url: '/Relatorios/Subcategorias', // Corrigir para a URL correta
+                        method: 'GET',
+                        data: { categoria: selectedCategory },
+                        success: function (response) {
+                            if (response && response.length) {
+                                // Preenche o select de subcategorias com as opções retornadas
+                                response.forEach(function (subcategoria) {
+                                    $('#subcategorySelect').append(
+                                        `<option value="${subcategoria.value}">${subcategoria.text}</option>`
+                                    );
+                                });
+                            } else {
+                                alert('Nenhuma subcategoria encontrada para a categoria selecionada.');
+                            }
+                        },
+                        error: function () {
+                            alert('Erro ao carregar subcategorias. Tente novamente.');
+                        }
+                    });
+                }
+            });
+
+            // Adicionar o evento de filtro ao subcategorySelect
+            $('#subcategorySelect').on('change', function () {
+                let columnIndex = $(this).data('column');
+                let selectedText = $(this).find('option:selected').text(); // Obtém o texto do option selecionado
+                table.columns(columnIndex).search(selectedText).draw();
             });
         });
     </script>

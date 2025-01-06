@@ -46,7 +46,7 @@ namespace AppSysoHelp.Service
 
 
                 //"https://i.imgur.com/HljFU6v.png  pague menos"
-                string data = DateTime.Now.AddHours(4).ToString("dd/MM/yyyy HH:mm");
+                string data = DateTime.UtcNow.AddHours(-4).ToString("dd/MM/yyyy HH:mm");
                 //hash = Convert.ToBase64String(Encoding.UTF8.GetBytes(data+"||"+ email));
                 // Criando o corpo do e-mail em HTML com formatação CSS
                 var htmlBody = "<html><head><style>body { font-family: Arial, sans-serif; color: #333; }</style></head><body>"

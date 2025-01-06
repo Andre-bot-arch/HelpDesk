@@ -45,7 +45,7 @@ namespace AppSysoHelp.Controllers.Api
                 var dados = _context.Licencas.Include(a=> a.Dispositivos).FirstOrDefault(a => a.Hash.Trim() == licenca.Trim());
                 foreach (var dado in dados.Dispositivos.Where(a => a.Equipamento.Trim() == serial.Trim()))
                 {
-                    dado.UltimoAcesso = DateTime.Now;  
+                    dado.UltimoAcesso = DateTime.UtcNow.AddHours(-4);
                 }
                 _context.UpdateRange(dados);
                 _context.SaveChanges();
