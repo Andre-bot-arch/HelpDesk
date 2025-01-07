@@ -26,71 +26,109 @@ namespace AppSysoHelp.Service
             {
                 if (response.IsSuccessStatusCode)
                 {
+                    /*
                     var jsonResponse = await response.Content.ReadAsStringAsync();
                     var objectList = JsonSerializer.Deserialize<List<ViewModelApiContrato>>(jsonResponse);
                     foreach (var item in objectList.GroupBy(a => a.DESCRICAOCONTRATO))
-                    {                        
-                        var idPlataforma = (item.Key.Contains("BACKUP")) ? 9 :
+                    {
+                        try
+                        {
+                            var idPlataforma = (item.Key.Contains("BACKUP")) ? 9 :
                                            (item.Key.Contains("SYSO MOBILE")) ? 10 :
                                            (item.Key.Contains("IMENDES")) ? 4 :
                                            (item.Key.Contains("COLETOR")) ? 11 :
                                            (item.Key.Contains("SYSO CAR")) ? 7 :
                                            (item.Key.Contains("E-COMMERCE")) ? 18 :
                                            (item.Key.Contains("SYSO ONE")) ? 19 : 0;
-                        foreach (var contratos in item)
-                        {
-                            if (idPlataforma > 0)
+                            foreach (var contratos in item)
                             {
-                                if (contratos.FKCLIENTEID == " 10013941004441" || contratos.FKCLIENTEID == "0010013941001911")
+                                if (idPlataforma > 0)
                                 {
-                                    var teste = 0;
-                                }
-                                var pkid = _context.PlataformasContratos.FirstOrDefault(a => a.PlataformaId == idPlataforma);
-                                var contrato = _context.Contratos.Include(a => a.FkCliente).OrderByDescending(a=> a.ContratoId)
-                                                 .FirstOrDefault(a => a.IdSolution.Trim() == contratos.IDSOLUTION.Trim() 
-                                                 && a.FkCliente.IdSolution == contratos.FKCLIENTEID);
-
-                                var idcliente = _context.Clientes.FirstOrDefault(a => a.IdSolution == contratos.FKCLIENTEID).ClienteId;
-
-                                if (contrato != null && idcliente > 0)
-                                {
-                                    contrato.DataFim = DateOnly.FromDateTime(contratos.DATAFIM);
-                                    contrato.DataInicio = DateOnly.FromDateTime(contratos.DATAINICIO);
-                                    contrato.DescricaoContrato = contratos.DESCRICAOCONTRATO;
-                                    contrato.FkClienteId = idcliente;
-                                    contrato.Valor = contratos.VALOR;
-                                    contrato.SituacaoContrato = contratos.SITUACAOCONTRATO;
-                                    contrato.FkPlataformaId = idPlataforma;
-                                    contrato.PontosContratados = contratos.PONTOSCONTRATADOS;
-                                    contrato.IdSolution = contratos.IDSOLUTION;
-
-                                    _generico.UpdateGenerico(contrato);
-
-                                    var update = _context.Contratos.Include(a => a.FkCliente)
-                                                 .Where(a => a.FkCliente.IdSolution == contratos.FKCLIENTEID
-                                                             && a.FkPlataformaId == idPlataforma).ToList();
-                                }
-                                else if (idcliente > 0)
-                                {
-                                    var obj = new Contratos
+                                    if (contratos.FKCLIENTEID == "10013941004441" || contratos.FKCLIENTEID == "0010013941001911" || contratos.FKCLIENTEID == "10013941004145")
                                     {
-                                        DataFim = DateOnly.FromDateTime(contratos.DATAFIM),
-                                        DataInicio = DateOnly.FromDateTime(contratos.DATAINICIO),
-                                        DescricaoContrato = contratos.DESCRICAOCONTRATO,
-                                        FkClienteId = idcliente,
-                                        Valor = contratos.VALOR,
-                                        SituacaoContrato = contratos.SITUACAOCONTRATO,
-                                        FkPlataformaId = idPlataforma,
-                                        PontosContratados = contratos.PONTOSCONTRATADOS,
-                                        IdSolution = contratos.IDSOLUTION
-                                    };
+                                        var teste = 0;
+                                    }
+                                    var pkid = _context.PlataformasContratos.FirstOrDefault(a => a.PlataformaId == idPlataforma);
+                                    var contrato = _context.Contratos.Include(a => a.FkCliente).OrderByDescending(a => a.ContratoId)
+                                                     .FirstOrDefault(a => a.IdSolution.Trim() == contratos.IDSOLUTION.Trim()
+                                                     && a.FkCliente.IdSolution == contratos.FKCLIENTEID);
 
-                                    _generico.GravarGenerico(obj);
+                                    var idcliente = _context.Clientes.FirstOrDefault(a => a.IdSolution == contratos.FKCLIENTEID).ClienteId;
+
+                                    if (contrato != null && idcliente > 0)
+                                    {
+                                        contrato.DataFim = DateOnly.FromDateTime(contratos.DATAFIM);
+                                        contrato.DataInicio = DateOnly.FromDateTime(contratos.DATAINICIO);
+                                        contrato.DescricaoContrato = contratos.DESCRICAOCONTRATO;
+                                        contrato.FkClienteId = idcliente;
+                                        contrato.Valor = contratos.VALOR;
+                                        contrato.SituacaoContrato = contratos.SITUACAOCONTRATO;
+                                        contrato.FkPlataformaId = idPlataforma;
+                                        contrato.PontosContratados = contratos.PONTOSCONTRATADOS;
+                                        contrato.IdSolution = contratos.IDSOLUTION;
+
+                                        _generico.UpdateGenerico(contrato);
+
+                                       
+                                        if (contratos.SITUACAOCONTRATO.Contains("ATIVO"))
+                                        {
+                                            var update = _context.Contratos.Include(a => a.FkCliente)
+                                              .Include(a => a.Licencas)
+                                              .Where(a => a.FkCliente.IdSolution == contratos.FKCLIENTEID
+                                                          && a.FkPlataformaId == idPlataforma).ToList();
+                                            foreach (var lic in update)
+                                            {
+                                                foreach (var li in lic.Licencas)
+                                                {
+                                                    var licenca = _context.Licencas.FirstOrDefault(a => a.LicencaId == li.LicencaId);
+                                                    licenca.FkContratoId = contrato.ContratoId;
+                                                    _generico.UpdateGenerico(li);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else if (idcliente > 0)
+                                    {
+                                        var obj = new Contratos
+                                        {
+                                            DataFim = DateOnly.FromDateTime(contratos.DATAFIM),
+                                            DataInicio = DateOnly.FromDateTime(contratos.DATAINICIO),
+                                            DescricaoContrato = contratos.DESCRICAOCONTRATO,
+                                            FkClienteId = idcliente,
+                                            Valor = contratos.VALOR,
+                                            SituacaoContrato = contratos.SITUACAOCONTRATO,
+                                            FkPlataformaId = idPlataforma,
+                                            PontosContratados = contratos.PONTOSCONTRATADOS,
+                                            IdSolution = contratos.IDSOLUTION
+                                        };
+
+                                        _generico.GravarGenerico(obj);
+                                    }
                                 }
                             }
+
+                        }
+                        catch (Exception ex)
+                        {
+
+                            throw;
                         }
                     }
-                    return objectList.Count();
+                     */
+                    var lista = _context.Contratos.Where(a => a.SituacaoContrato.Contains("ATIVO"));
+                   
+                    foreach (var item in lista)
+                    {
+                        var contratos = _context.Licencas.Include(a => a.FkContrato).Where(a => a.FkContrato.FkClienteId == item.FkClienteId
+                                                                                           && a.FkContrato.FkPlataformaId == item.FkPlataformaId).ToList();
+                        foreach (var i in contratos)
+                        {
+                            i.FkContratoId = item.ContratoId;
+                        }
+                        _context.SaveChanges();
+                    }                  
+                    
+                    return 0;
                 }
             }
             catch (Exception)
@@ -106,7 +144,7 @@ namespace AppSysoHelp.Service
         {
             return _context.Contratos.Include(a => a.FkPlataforma)
                                      .Include(a => a.FkCliente)
-                                     .Include(a=> a.Licencas)
+                                     .Include(a => a.Licencas)
                                       .Where(a => a.SituacaoContrato == "PENDENTE" || a.SituacaoContrato == "ATIVO")
                                      .ToList();
         }
