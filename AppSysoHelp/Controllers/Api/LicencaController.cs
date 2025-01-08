@@ -54,5 +54,16 @@ namespace AppSysoHelp.Controllers.Api
             }
             return null; 
         }
+
+        [HttpPost("{licenca}/{apelido}/{serial}/{token}")]
+        public ViewModelApiLicenca Post(string licenca, string apelido, string serial, string token)
+        {
+            if (token == "Syso@3680")
+            {
+                var contrato = _licenca.VerificarEstatusDispositivo(licenca, apelido, serial);
+                return contrato;
+            }
+            return null;
+        }
     }
 }

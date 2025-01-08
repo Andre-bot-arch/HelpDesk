@@ -210,7 +210,73 @@ namespace AppSysoHelp.Service
             retorno.Mensagem = "1 - Ativa";
             retorno.Status = true;
             return retorno;
-
         }
+
+        internal ViewModelApiLicenca VerificarEstatusDispositivo(string licenca, string apelido, string serial)
+        {
+            var contrato = _context.Contratos
+                .Include(c => c.FkCliente)
+                .Include(c => c.Licencas)
+                .ThenInclude(c => c.Dispositivos)
+                .FirstOrDefault(c => c.Licencas.Any(l => l.Hash == licenca));
+
+            if (contrato == null)
+            {
+                var retorno1 = new ViewModelApiLicenca
+                {
+                    Status = false,
+                    Chave = licenca,
+                    Mensagem = "Chave inválida",
+                    Cnpj = "",
+                    Empresa = "",
+                    Url = "",
+                };
+                return retorno1;
+            }
+
+            var retorno = new ViewModelApiLicenca
+            {
+                Status = false,
+                Chave = licenca,
+                Mensagem = "",
+                Cnpj = contrato.FkCliente.Documento,
+                Empresa = contrato.FkCliente.NomeCliente,
+                Url = contrato.Licencas.FirstOrDefault(a => a.Hash == licenca).Urlacesso,
+            };
+                       
+            var validador = contrato.Licencas.FirstOrDefault(c => c.Dispositivos.Any(l => l.Equipamento == serial) && c.Hash == licenca);
+
+            if (validador == null)
+            {
+                retorno.Mensagem = "Equipamento não registrado!";
+                return retorno;
+            }
+
+            //verificar chave
+            if (contrato.SituacaoContrato.Trim() == "Inativo")
+            {
+                retorno.Mensagem = "Contrato Inativo";
+                return retorno;
+            }
+
+            //verificar se a licença esta ativa
+            else if (contrato.Licencas.FirstOrDefault(a => a.Hash == licenca).Ativo == false)
+            {
+                retorno.Mensagem = "Chave Suspensa";
+                return retorno;
+            }
+            else if (contrato.Licencas.FirstOrDefault(a => a.Hash == licenca).Ativo == true && contrato.SituacaoContrato.Trim() == "PENDENTE")
+            {
+                retorno.Status = true;
+                retorno.Mensagem = "1 - Ativa";
+                retorno.Mensagem2 = "Olá\r\n\r\nEsperamos que você esteja tendo uma ótima experiência com o nosso app. \r\n\r\nPara garantir que tudo continue funcionando bem, se faz necessário entrar em contato com a empresa Syso Tecnologia (69) 3222-0609. \r\n\r\nAguardo seu contato!";
+                return retorno;
+            }
+
+            retorno.Mensagem = "1 - Ativa";
+            retorno.Status = true;
+            return retorno;
+        }
+
     }
 }
