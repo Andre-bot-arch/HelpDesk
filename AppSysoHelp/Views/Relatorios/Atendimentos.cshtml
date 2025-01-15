@@ -120,10 +120,17 @@
             <input class="form-control filter-input" data-column="1" type="text" placeholder="Cliente">
         </div>
         <div class="col-md-2 mb-2">
-            <input class="form-control filter-input" data-column="2" type="text" placeholder="Técnico">
+            <select class="form-control filter-input" data-column="2" type="text" placeholder="Técnico" asp-items="@ViewBag.tecnicos">
+                <option value="">Técnico</option>
+            </select>
         </div>
-        <div class="col-md-2 mb-2">
-            <input class="form-control filter-input" data-column="3" type="text" placeholder="Situação">
+        <div class="col-md-2 mb-2">            
+            <select class="form-control filter-input" data-column="3" type="text" placeholder="Situação">
+                <option>Situação</option>
+                <option value="Aberta">Aberto</option>
+                <option value="Fechado">Fechado</option>
+                <option value="Cancelado">Cancelado</option> 
+            </select>
         </div>
         <div class="col-md-2 mb-2">
             <select class="form-control filter-input" data-column="4" type="text" placeholder="Categoria" id="categorySelect" asp-items="@categorias">

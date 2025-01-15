@@ -1,0 +1,134 @@
+﻿@model IEnumerable<AppSysoHelp.Models.Chamados>
+@{
+    ViewData["Title"] = "Painel";
+    var lista = (ViewBag.Atendentes != null) ? (List<TecnicosSupervisores>)ViewBag.Atendentes : new List<TecnicosSupervisores>();
+    var atendimento = (ViewBag.Atendimento != null) ? (List<Atendimentos>)ViewBag.Atendimento : new List<Atendimentos>();
+    var nomecliente = "";
+    var dados = "";
+}
+<div class="row">
+    <div class="col-sm-6 col-md-6 col-lg-3">
+        <div class="iq-card iq-card-block iq-card-stretch ">
+            <div class="iq-card-body" style="background-color: #222e35">
+                <div class="d-flex d-flex align-items-center justify-content-between">
+                    <div class="text-white">
+                        <h2 class="text-white">@ViewBag.pendentes</h2>
+                        <p class="fontsize-sm m-0">Pendentes</p>
+                    </div>
+                    <div class="rounded-circle iq-card-icon dark-icon-light iq-bg-primary "> <i class="ri-inbox-fill"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-6 col-lg-3">
+        <div class="iq-card iq-card-block iq-card-stretch ">
+            <div class="iq-card-body" style="background-color: #222e35">
+                <div class="d-flex d-flex align-items-center justify-content-between">
+                    <div class="text-white">
+                        <h2 class="text-white">@ViewBag.cancelados</h2>
+                        <p class="fontsize-sm m-0">Cancelados</p>
+                    </div>
+                    <div class="rounded-circle iq-card-icon iq-bg-danger"><i class="ri-radar-line"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-6 col-lg-3">
+        <div class="iq-card iq-card-block iq-card-stretch ">
+            <div class="iq-card-body" style="background-color: #222e35">
+                <div class="d-flex d-flex align-items-center justify-content-between">
+                    <div class="text-white">
+                        <h2 class="text-white">@ViewBag.fechado</h2>
+                        <p class="fontsize-sm m-0">Fechados</p>
+                    </div>
+                    <div class="rounded-circle iq-card-icon iq-bg-warning "><i class="ri-price-tag-3-line"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-6 col-lg-3">
+        <div class="iq-card iq-card-block iq-card-stretch ">
+            <div class="iq-card-body" style="background-color: #222e35">
+                <div class="d-flex d-flex align-items-center justify-content-between">
+                    <div class="text-white">
+                        <h2 class="text-white">@ViewBag.total</h2>
+                        <p class="fontsize-sm m-0">Todos</p>
+                    </div>
+                    <div class="rounded-circle iq-card-icon iq-bg-info "><i class="ri-refund-line"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    @foreach (var tecnico in lista)
+    {
+        nomecliente = "";
+        dados = "";
+        var emAtendimento = @atendimento.Count(a => a.FkTecnicoId == tecnico.PkId);
+        var fechados = @Model.Count(a => a.Atendimentos.Any(a => a.FkTecnicoId == tecnico.PkId && a.AtendimentoEncerrado == true));
+        var abertos = @Model.Count(a => a.FkAtendente == tecnico.PkId);
+        if (emAtendimento > 0 || fechados > 0 || abertos > 0)
+        {
+            <div class="col-sm-4 col-md-4 col-lg-4">
+                <div class="row">
+                    <div class="col-sm-12 mt-5">
+                        <div class="iq-card" style="background-color: #111b21">
+                            <div class="iq-card-body profile-page p-0">
+                                <div class="profile-header">
+                                    <div class="profile-info p-4">
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-6">
+                                                <div class="user-detail pl-5">
+                                                    <div class="d-flex flex-wrap align-items-center">
+                                                        <div class="profile-img pr-4">
+                                                            <img src="/images/helpdesk/_logo.png" alt="profile-img" class="avatar-130 img-fluid">
+                                                        </div>
+                                                        <div class="profile-detail">
+                                                            <h5 class="text-primary">@tecnico.NomeCompleto</h5>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-6">
+                                                <ul class="nav nav-pills d-flex align-items-end float-right profile-feed-items p-0 m-0">
+                                                    <li style="width:100%" class="mt-2">
+                                                        <a class="nav-link active" style="width:100%" data-toggle="pill" href="#profile-feed">Abertos: @abertos </a>
+                                                    </li>
+                                                    <li style="width:100%" class="mt-2">
+                                                        <a class="nav-link" style="width:100%" data-toggle="pill" href="#profile-activity">Fechados: @fechados </a>
+                                                    </li>
+                                                    <li style="width:100%" class="mt-2">
+                                                        <a class="nav-link" style="width:100%" data-toggle="pill" href="#profile-friends">Atendendo: @emAtendimento</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #222e35">
+                                @{
+                                    var cliente = @atendimento.Where(a => a.FkTecnicoId == tecnico.PkId);
+                                    if (cliente != null && cliente.Count() > 0)
+                                    {
+                                        nomecliente = cliente.FirstOrDefault().FkChamado.FkCliente.Fantasia;
+                                        dados = cliente.FirstOrDefault().FkChamado.DescricaoCompleta;
+                                    }
+                                }
+                                <div class="iq-card-header d-flex justify-content-between">
+                                    <div class="iq-header-title">
+                                        <h6 class="text-white">@nomecliente <i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@dados" class="las la-info-circle text-warning"></i></h6>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+    }
+</div>

@@ -148,7 +148,9 @@ namespace AppSysoHelp.Controllers
         [HttpPost]
         public async Task<IActionResult> BuscarAtualizarContratoSolutionAsync()
         {
-            var totalAtualizado = await _contrato.AtualizarContrato();
+            int totalAtualizado = await _contrato.AtualizarContrato();
+            var contratos = await _contrato.AtualizarLicenca() ?? new List<Contratos>();
+            var ret = await _contrato.UpdateLicenca(contratos);
             return Json(new { success = true, message = $"{totalAtualizado} Contrato(s) atualizado(s) com sucesso!" });
         }
 

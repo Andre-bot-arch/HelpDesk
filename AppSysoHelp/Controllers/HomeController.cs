@@ -48,6 +48,30 @@ namespace AppSysoHelp.Controllers
 
         }
 
+
+        public IActionResult Painel()
+        {
+            var totalizadores = _context.Chamados.Include(a=> a.FkAtendenteNavigation).Include(a=> a.Atendimentos).ToList();
+
+            ViewBag.pendentes = totalizadores.Where(a => a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2).Count();
+
+            ViewBag.cancelados = totalizadores.Where(a => a.FkSituacaoChamadoId == 4).Count();
+
+            ViewBag.fechado = totalizadores.Where(a => a.FkSituacaoChamadoId == 3).Count();
+
+            ViewBag.total = totalizadores.Count();
+
+            var lista = totalizadores
+                .Where(a => a.DataCriacao!.Value.Date == DateTime.Now.Date)
+                .ToList();
+
+            ViewBag.Atendentes = _context.TecnicosSupervisores.OrderBy(a=> a.NomeCompleto).ToList();
+
+            ViewBag.Atendimento = _context.Atendimentos.Include(a=> a.FkChamado).ThenInclude(a=> a.FkCliente).Where(a => a.AtendimentoEncerrado == false).ToList();
+
+            return View(lista);
+        }
+
         public IActionResult Privacy()
         {
             return View();

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace AppSysoHelp.Controllers
 {
@@ -61,6 +62,12 @@ namespace AppSysoHelp.Controllers
             }).ToList();
 
             ViewBag.Categorias = categoriasSelectList;
+
+            ViewBag.tecnicos = _context.TecnicosSupervisores.OrderBy(a=> a.NomeCompleto).ToList().Select(x => new SelectListItem
+            {
+                Value = x.PkId.ToString(),
+                Text = x.NomeCompleto
+            });
 
             var chamados = ListaAtendimentos();
 

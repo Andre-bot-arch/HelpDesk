@@ -81,23 +81,7 @@ namespace AppSysoHelp.Service
                                 }
                             }
                         }
-                    }
-
-                    var lista = _context.Contratos.Where(a=> a.SituacaoContrato == "ATIVO" || a.SituacaoContrato == "PENDENTE");
-                    foreach (var contClientes in lista.GroupBy(a=> a.FkClienteId))
-                    {
-                        foreach (var item in contClientes.GroupBy(a => a.FkPlataformaId))
-                        {
-                            var licencas = _context.Licencas.Include(a=> a.FkContrato)
-                                                            .Where(a => a.FkContrato.ContratoId == item.Key 
-                                                                     && a.FkContrato.SituacaoContrato == "RENOVADO").ToList() ?? new List<Licencas>();
-                            foreach (var licenca in licencas)
-                            {
-                                licenca.FkContratoId = item.Key;
-                                _context.SaveChanges();
-                            }
-                        }
-                    }
+                    }                  
                     
                     return objectList.Count();
                 }
@@ -109,8 +93,42 @@ namespace AppSysoHelp.Service
 
 
             return 0;
-        } 
+        }
 
+        internal async Task<List<Contratos>> AtualizarLicenca()
+        {
+            var lista = await _context.Contratos.Where(a => a.SituacaoContrato == "ATIVO" || a.SituacaoContrato == "PENDENTE").ToListAsync();
+           
+            return lista;
+        }
+
+        internal async Task<int> UpdateLicenca(List<Contratos> lista)
+        {
+            try
+            {
+                foreach (var contClientes in lista.GroupBy(a => a.FkClienteId))
+                {
+                    foreach (var item in contClientes.GroupBy(a => a.FkPlataformaId))
+                    {
+                        var licencas = await _context.Licencas.Include(a => a.FkContrato)
+                                                        .Where(a => a.FkContrato.ContratoId == item.Key
+                                                                 && a.FkContrato.SituacaoContrato == "RENOVADO").ToListAsync() ?? new List<Licencas>();
+                        foreach (var licenca in licencas)
+                        {
+                            licenca.FkContratoId = item.Key;
+                            _context.SaveChanges();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            return 1;
+            
+        }
 
         internal IList<Contratos> BuscarContratos()
         {
