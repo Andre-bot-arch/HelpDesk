@@ -57,6 +57,7 @@ namespace AppSysoHelp.Service
                     clienteExiste.Logradouro = item.Logradouro;
                     clienteExiste.Bairro = item.Bairro;
                     clienteExiste.Uf = item.Uf;
+                    clienteExiste.Situacao = item.Situacao;
                     UpdateGenerico(clienteExiste);
                 }
                 else

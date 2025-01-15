@@ -3,6 +3,7 @@
     ViewData["Title"] = "Painel";
     var lista = (ViewBag.Atendentes != null) ? (List<TecnicosSupervisores>)ViewBag.Atendentes : new List<TecnicosSupervisores>();
     var atendimento = (ViewBag.Atendimento != null) ? (List<Atendimentos>)ViewBag.Atendimento : new List<Atendimentos>();
+    var finalizado = (ViewBag.Finalizado != null) ? (List<Atendimentos>)ViewBag.Finalizado : new List<Atendimentos>();
     var nomecliente = "";
     var dados = "";
 }
@@ -13,7 +14,7 @@
         nomecliente = "";
         dados = "";
         var emAtendimento = @atendimento.Count(a => a.FkTecnicoId == tecnico.PkId);
-        var fechados = @Model.Count(a => a.Atendimentos.Any(a => a.FkTecnicoId == tecnico.PkId && a.AtendimentoEncerrado == true));
+        var fechados = finalizado.Count(a => a.FkTecnicoId == tecnico.PkId);
         var abertos = @Model.Count(a => a.FkAtendente == tecnico.PkId);
         if (emAtendimento > 0 || fechados > 0 || abertos > 0)
         {
@@ -32,7 +33,7 @@
                                                             <img src="/images/helpdesk/_logo.png" alt="profile-img" class="avatar-130 img-fluid">
                                                         </div>
                                                         <div class="profile-detail">
-                                                            <h5 class="text-primary">@tecnico.NomeCompleto</h5>
+                                                            <h5 class="text-primary">@tecnico.PkId - @tecnico.NomeCompleto</h5>
                                                         </div>
                                                     </div>
                                                 </div>
