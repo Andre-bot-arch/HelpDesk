@@ -6,60 +6,7 @@
     var nomecliente = "";
     var dados = "";
 }
-<div class="row">
-    <div class="col-sm-6 col-md-6 col-lg-3">
-        <div class="iq-card iq-card-block iq-card-stretch ">
-            <div class="iq-card-body" style="background-color: #222e35">
-                <div class="d-flex d-flex align-items-center justify-content-between">
-                    <div class="text-white">
-                        <h2 class="text-white">@ViewBag.pendentes</h2>
-                        <p class="fontsize-sm m-0">Pendentes</p>
-                    </div>
-                    <div class="rounded-circle iq-card-icon dark-icon-light iq-bg-primary "> <i class="ri-inbox-fill"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-md-6 col-lg-3">
-        <div class="iq-card iq-card-block iq-card-stretch ">
-            <div class="iq-card-body" style="background-color: #222e35">
-                <div class="d-flex d-flex align-items-center justify-content-between">
-                    <div class="text-white">
-                        <h2 class="text-white">@ViewBag.cancelados</h2>
-                        <p class="fontsize-sm m-0">Cancelados</p>
-                    </div>
-                    <div class="rounded-circle iq-card-icon iq-bg-danger"><i class="ri-radar-line"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-md-6 col-lg-3">
-        <div class="iq-card iq-card-block iq-card-stretch ">
-            <div class="iq-card-body" style="background-color: #222e35">
-                <div class="d-flex d-flex align-items-center justify-content-between">
-                    <div class="text-white">
-                        <h2 class="text-white">@ViewBag.fechado</h2>
-                        <p class="fontsize-sm m-0">Fechados</p>
-                    </div>
-                    <div class="rounded-circle iq-card-icon iq-bg-warning "><i class="ri-price-tag-3-line"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-md-6 col-lg-3">
-        <div class="iq-card iq-card-block iq-card-stretch ">
-            <div class="iq-card-body" style="background-color: #222e35">
-                <div class="d-flex d-flex align-items-center justify-content-between">
-                    <div class="text-white">
-                        <h2 class="text-white">@ViewBag.total</h2>
-                        <p class="fontsize-sm m-0">Todos</p>
-                    </div>
-                    <div class="rounded-circle iq-card-icon iq-bg-info "><i class="ri-refund-line"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 <div class="row">
     @foreach (var tecnico in lista)
     {
