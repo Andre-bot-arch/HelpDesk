@@ -45,6 +45,10 @@ namespace AppSysoHelp.Service
             foreach (var item in clientes)
             {
                 var clienteExiste = _context.Clientes.FirstOrDefault(a => a.IdSolution == item.IdSolution);
+                if (clienteExiste.IdSolution == "10013941004207")
+                {
+                    var aqui = "";
+                }
                 if (clienteExiste != null)
                 {
                     clienteExiste.NomeCliente = item.NomeCliente;
