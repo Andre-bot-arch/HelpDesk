@@ -1,4 +1,9 @@
-﻿<div id="modalEditarTime" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalEditarTime" aria-hidden="true">
+﻿@model IEnumerable<AppSysoHelp.Models.TecnicosSupervisores>;
+@{
+    var tecnicos = Model.ToList();
+    var lista = new SelectList(tecnicos , "PkId", "NomeCompleto");
+}
+<div id="modalEditarTime" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalEditarTime" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header position-sticky top-0 bg-white">
@@ -31,6 +36,14 @@
                     <div class="form-group">
                         <label>Pré-visualização:</label>
                         <img id="previewImagemEditar" src="#" alt="Pré-visualização" style="display: none; max-width: 50%; height: auto;" />
+                    </div>
+
+                    <div class="form-group">
+                        <div class="mb-3">
+                            <select name="FkTecnico" asp-items="@lista" class="form-control" id="FkTecnico" required>
+                                <option>Selecione</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer position-sticky bottom-0 bg-white">

@@ -19,6 +19,7 @@ namespace AppSysoHelp.Controllers
         }
         public IActionResult Index()
         {
+            ViewBag.tecnicos = _context.TecnicosSupervisores.OrderBy(a=> a.NomeCompleto).ToList();
             return View(_context.Time.ToList());
         }
 
@@ -99,6 +100,7 @@ namespace AppSysoHelp.Controllers
                     // Atualiza os dados da plataforma
                     existingTime.Nome = form.Nome;
                     existingTime.Funcao = form.Funcao;
+                    existingTime.FkTecnico = form.FkTecnico;
                     if (form.imagemBase64 != null)
                     {
                         byte[] barr = Convert.FromBase64String(form.imagemBase64);

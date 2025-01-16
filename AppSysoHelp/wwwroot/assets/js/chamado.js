@@ -1,4 +1,12 @@
 ﻿$(document).ready(function () {
+    $("#FkSetores_").change(function (e) {
+        if ($(this).val() == "6") {
+            $("#tempo").show(); // Exibe a div
+        } else {
+            $("#tempo").hide(); // Oculta a div
+        }
+    });
+
     $('.btn-salvar').click(function (e) {
         e.preventDefault();
 

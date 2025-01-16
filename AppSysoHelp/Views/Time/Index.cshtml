@@ -1,6 +1,7 @@
 ﻿﻿
 @model IEnumerable<AppSysoHelp.Models.Time>
 @{
+    var tecnicos = (ViewBag.tecnicos != null) ? (List<TecnicosSupervisores>)ViewBag.tecnicos : new List<TecnicosSupervisores>();
 }
 <style>
     .profile-img-edit {
@@ -96,5 +97,5 @@
 </div>
 
 <partial name="_ModalCadastrarTime.cshtml" />
-<partial name="_ModalEditarTime.cshtml" />
+<partial name="_ModalEditarTime.cshtml" model="@tecnicos" />
 <script src="~/assets/js/time.js"></script>

@@ -30,7 +30,14 @@
                                                 <div class="user-detail pl-5">
                                                     <div class="d-flex flex-wrap align-items-center">
                                                         <div class="profile-img pr-4">
-                                                            <img src="/images/helpdesk/_logo.png" alt="profile-img" class="avatar-130 img-fluid">
+                                                            @if (tecnico.Time.Count() == 0)
+                                                            {
+                                                                <img src="/images/helpdesk/_logo.png" alt="profile-img" class="avatar-130 img-fluid">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="@tecnico.Time.FirstOrDefault().CaminhoImagem" alt="profile-img" class="avatar-130 img-fluid">
+                                                            }                                                            
                                                         </div>
                                                         <div class="profile-detail">
                                                             <h5 class="text-primary">@tecnico.PkId - @tecnico.NomeCompleto</h5>

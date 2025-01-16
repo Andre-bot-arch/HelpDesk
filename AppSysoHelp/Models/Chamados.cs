@@ -37,6 +37,10 @@ public partial class Chamados
 
     public long? FkSubCategoria { get; set; }
 
+    public TimeOnly? HorasContratada { get; set; }
+
+    public TimeOnly? HorasSaldo { get; set; }
+
     public virtual ICollection<Atendimentos> Atendimentos { get; set; } = new List<Atendimentos>();
 
     public virtual TecnicosSupervisores? FkAtendenteNavigation { get; set; }

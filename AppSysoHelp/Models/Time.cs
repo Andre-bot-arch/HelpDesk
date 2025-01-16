@@ -14,4 +14,8 @@ public partial class Time
     public string? CaminhoImagem { get; set; }
 
     public bool Ativo { get; set; }
+
+    public long? FkTecnico { get; set; }
+
+    public virtual TecnicosSupervisores? FkTecnicoNavigation { get; set; }
 }

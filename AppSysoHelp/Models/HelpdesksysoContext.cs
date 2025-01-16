@@ -334,6 +334,10 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.CaminhoImagem).IsUnicode(false);
             entity.Property(e => e.Funcao).IsUnicode(false);
             entity.Property(e => e.Nome).IsUnicode(false);
+
+            entity.HasOne(d => d.FkTecnicoNavigation).WithMany(p => p.Time)
+                .HasForeignKey(d => d.FkTecnico)
+                .HasConstraintName("FK_Time_TecnicosSupervisores");
         });
 
         modelBuilder.Entity<TiposChamados>(entity =>

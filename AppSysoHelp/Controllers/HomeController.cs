@@ -57,7 +57,7 @@ namespace AppSysoHelp.Controllers
                                                   .ToList();                       
 
 
-            ViewBag.Atendentes = _context.TecnicosSupervisores.OrderBy(a=> a.NomeCompleto).ToList();
+            ViewBag.Atendentes = _context.TecnicosSupervisores.Include(a=> a.Time).OrderBy(a=> a.NomeCompleto).ToList();
 
             ViewBag.Atendimento = _context.Atendimentos.Include(a=> a.FkChamado).ThenInclude(a=> a.FkCliente).Where(a => a.AtendimentoEncerrado == false).ToList();
 
