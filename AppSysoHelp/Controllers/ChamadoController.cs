@@ -60,6 +60,47 @@ namespace AppSysoHelp.Controllers
             return View(chamado);
         }
 
+        public async Task<IActionResult> AtendimentoTreinamento(int id)
+        {
+            var userIdClaim = User.FindFirst("Id");
+            var userId = userIdClaim?.Value;
+            var atendimento = _context.Atendimentos.FirstOrDefault(a => a.FkChamadoId == id && a.AtendimentoEncerrado == false);
+
+            if (atendimento == null)
+            {
+                ViewBag.atendimento = false;
+                atendimento = new Atendimentos
+                {
+                    DataAtendimento = DateTime.UtcNow.AddHours(-4),
+                    FkChamadoId = id,
+                    ProcedimentosAplicados = "EM ATENDIMENTO",
+                    FkTecnicoId = Convert.ToInt32(userId),
+                    AtendimentoEncerrado = false,
+                };
+                await _generico.GravarGenericoAsync(atendimento);
+            }
+            else if (atendimento != null && atendimento.FkTecnicoId == Convert.ToInt32(userId))
+            {
+                ViewBag.atendimento = false;
+            }
+            else
+            {
+                ViewBag.atendimento = true;
+            }
+            var chamado = _context.Chamados.Include(a => a.FkAtendenteNavigation)
+                                         .Include(a => a.FkCliente)
+                                         .Include(a => a.FkTecnico)
+                                         .Include(a => a.Atendimentos)
+                                         .ThenInclude(a => a.FkTecnico)
+                                         .FirstOrDefault(a => a.ChamadoId == id);
+            chamado.DataAgendamento = DateTime.UtcNow.AddHours(-4);
+            _context.Update(chamado);
+            _context.SaveChanges();
+            return View(chamado);
+        }
+
+
+
         public IActionResult Aberto()
         {
             var userIdClaim = User.FindFirst("Id");

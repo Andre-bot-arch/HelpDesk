@@ -32,7 +32,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) == 0 && a.DataAgendamento <= DateTime.UtcNow.AddHours(-4)))
+                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) 
+                    && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) == 0 
+                    && a.DataAgendamento <= DateTime.UtcNow.AddHours(-4)))
                     {
                         <tr>
                             <td>
@@ -85,7 +87,7 @@
                                             <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
                                         </span>
                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="Atendimento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="AtendimentoTreinamento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
                                             @* <a class="dropdown-item btn-adicionarId" href="#" data-prioridade="@item.Prioridade.Trim()" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalRemarcarChamado"><i class="ri-pencil-fill mr-2"></i>Remarcar</a> *@
                                             <a class="dropdown-item btn-adicionarIdPrint" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalPrintChamado"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
                                             <a class="dropdown-item btn-adicionarIdCancelamento" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalCancelarChamado"><i class="ri-delete-bin-6-fill mr-2"></i>Excluir</a>
@@ -173,7 +175,7 @@
                                             <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
                                         </span>
                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="Atendimento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="AtendimentoTreinamento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
                                             @* <a class="dropdown-item btn-adicionarId" href="#" data-prioridade="@item.Prioridade.Trim()" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalRemarcarChamado"><i class="ri-pencil-fill mr-2"></i>Remarcar</a> *@
                                             <a class="dropdown-item btn-adicionarIdPrint" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalPrintChamado"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
                                             <a class="dropdown-item btn-adicionarIdCancelamento" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalCancelarChamado"><i class="ri-delete-bin-6-fill mr-2"></i>Excluir</a>
@@ -260,7 +262,7 @@
                                             <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
                                         </span>
                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="Atendimento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="AtendimentoTreinamento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
                                             @* <a class="dropdown-item btn-adicionarId" href="#" data-prioridade="@item.Prioridade.Trim()" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalRemarcarChamado"><i class="ri-pencil-fill mr-2"></i>Remarcar</a> *@
                                             <a class="dropdown-item btn-adicionarIdPrint" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalPrintChamado"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
                                             <a class="dropdown-item btn-adicionarIdCancelamento" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalCancelarChamado"><i class="ri-delete-bin-6-fill mr-2"></i>Excluir</a>

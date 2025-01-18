@@ -1,0 +1,314 @@
+﻿@model AppSysoHelp.Models.Chamados
+@{
+    ViewData["Title"] = "Atendimento";
+    bool validador = (bool)ViewBag.atendimento;
+}
+@if (validador == true)
+{
+    <div class="alert alert-danger col-sm-12 col-md-12" role="alert" style="background-color: #111b21">
+        <div class="iq-alert-icon" style="background-color: #111b21">
+            <i class="ri-information-line"></i>
+        </div>
+        <div class="iq-alert-text" style="background-color: #111b21"> <b>Atenção!!</b> Chamado já em atendimento!</div>
+    </div>
+}
+<div class="row">
+    <div class="col-sm-12 mt-5">
+        <div class="iq-card" style="background-color: #111b21">
+            <div class="iq-card-body profile-page p-0">
+                <div class="profile-header">
+                    <div class="profile-info p-4">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-6">
+                                <div class="user-detail pl-5">
+                                    <div class="d-flex flex-wrap align-items-center">
+                                        <div class="profile-img pr-4">
+                                            <img src="~/images/helpdesk/_logo.png" alt="profile-img" class="avatar-130 img-fluid">
+                                        </div>
+                                        <div class="profile-detail">
+                                            <h5 class="text-primary">@Model.ChamadoId.ToString().PadLeft(6, '0')</h5>
+                                            <h6 class="text-primary">Cliente: @Model.FkCliente?.NomeCliente</h6>
+                                            <h6 class="text-warning">Contato: @Model.Contato / @Model.TelefoneContato</h6>
+                                            <h6 class="text-primary" style="text-align:justify;">Descrição: @Model.DescricaoCompleta</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+                                <ul class="nav nav-pills d-flex align-items-end float-right profile-feed-items p-0 m-0">
+                                    <li>
+                                        <a class="nav-link active" data-toggle="pill" href="#profile-feed"> @Convert.ToDateTime(Model.DataCriacao).ToString("dd/MM/yyyy hh:mm")</a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link" data-toggle="pill" href="#profile-activity">@Convert.ToDateTime(Model.DataAgendamento).ToString("dd/MM/yyyy hh:mm")</a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link" data-toggle="pill" href="#profile-friends">@Model.Prioridade</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #111b21">
+                <div class="iq-card-body">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="iq-card" style="background-color: #111b21">
+                                <div class="iq-card-header d-flex justify-content-between">
+                                    <div class="iq-header-title">
+                                        <h4 class="card-title text-primary">Histórico</h4>
+                                    </div>
+                                </div>
+                                <div class="iq-card-body">
+                                    <ul class="iq-timeline">
+                                        @foreach (var item in Model.Atendimentos.OrderBy(a => a.DataAtendimento))
+                                        {
+                                            <li style="border-bottom: 1px solid seashell">
+                                                <div class="timeline-dots"></div>
+                                                <h6 class="float-left mb-1" style="color: seashell">@item.FkTecnico.NomeCompleto</h6>
+                                                <small class="float-right mt-1 text-primary">@Convert.ToDateTime(item.DataAtendimento).ToString("dd/MM/yyyy hh:mm")</small>
+                                                <div class="d-inline-block w-100">
+                                                    <p style="color: seashell">@item.ProcedimentosAplicados</p>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="iq-card" style="background-color: #111b21">
+                                <div class="iq-card-header d-flex justify-content-between">
+                                    <div class="iq-header-title">
+                                        <h4 class="card-title text-primary">Atendimento</h4>
+                                    </div>
+                                    <div class="iq-card-header-toolbar d-flex align-items-center">
+                                        <a href="~/Chamado/Aberto" class="btn dark-icon btn-light m-1">Voltar <i class="ri-reply-line"></i></a>
+                                    </div>
+                                </div>
+                                <div class="iq-card-body">
+                                    <div class="new-user-info">
+                                        <div class="iq-card-body">
+                                            <ul class="nav nav-tabs justify-content-end" id="myTab-4" role="tablist">
+                                                <li class="nav-item">
+                                                    <a class="nav-link active text-primary" id="Finalizar-tab-end" data-toggle="tab" href="#Finalizar-end" role="tab" aria-controls="Finalizar" aria-selected="true">Finalizar</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link text-primary" id="Remarcar-tab-end" data-toggle="tab" href="#Remarcar-end" role="tab" aria-controls="Remarcar" aria-selected="false">Remarcar</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content" id="myTabContent-5">
+                                                <div class="tab-pane fade show active" id="Finalizar-end" role="tabpanel" aria-labelledby="Finalizar-tab-end">
+                                                    <form class="was-validated" asp-action="FinalizarChamado" asp-controller="Chamado" method="post" enctype="multipart/form-data">
+                                                        <input type="hidden" name="FkTipoChamadoId" value="1" />
+                                                        <input type="hidden" id="ChamadoIdRemarcado" asp-for="ChamadoId" value="@Model.ChamadoId" />
+                                                        <div class="modal-body">
+                                                            <div class="row">
+                                                                <div class="col-sm-12">
+                                                                    <div class="form-group">
+                                                                        <div class="row">
+                                                                            <div class="col-sm-6">
+                                                                                <div class="mb-3">
+                                                                                    <div class="form-group">
+                                                                                        <label class="text-primary">Hora Inicial:</label>
+                                                                                        <input type="time" name="Inicio" id="data" required class="form-control is-invalid text-white" placeholder="Hora Inicial" style="background-color: #222e35">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-sm-6">
+                                                                                <div class="mb-3">
+                                                                                    <div class="form-group">
+                                                                                        <label class="text-primary">Hora Final:</label>
+                                                                                        <input type="time" name="Fim" id="data" required class="form-control is-invalid text-white" placeholder="Hora Final" tyle="background-color: #222e35">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <!-- Pré-visualização da Imagem -->
+                                                                        <div class="form-group">
+                                                                            <label class="text-primary">Pré-visualização:</label>
+                                                                            <img id="previewImagemCadastrar" src="#" alt="Pré-visualização" style="display: none; max-width: 30%; height: auto;" />
+                                                                        </div>
+                                                                        <div class="custom-file" style="background-color: #222e35; color: seashell">
+                                                                            <input name="imagem" type="file" class="custom-file-input" id="imagemBase64Cadastrar" style="background-color: #222e35; color: seashell">
+                                                                            <label class="custom-file-label" for="customFile" style="background-color: #222e35; color: seashell">Selecione imagens</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <textarea class="form-control is-invalid" id="validationTextarea" name="DescricaoCompleta" placeholder="Descrição...." required="" style="min-height: 132px; max-height:132px; background-color: #222e35; color: seashell"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            @* <button type="button" style="width: 180px" class="btn btn-danger" data-dismiss="modal">sair</button> *@
+                                                            <button type="submit" style="width: 180px" class="btn btn-primary btn-remarcar">Finalizar Chamado</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="tab-pane fade" id="Remarcar-end" role="tabpanel" aria-labelledby="Remarcar-tab-end">
+                                                    <form class="was-validated" asp-action="RemarcarChamado" method="post">
+                                                        <input type="hidden" name="ChamadoId" value="@Model.ChamadoId" />
+                                                        <input type="hidden" name="FkTipoChamadoId" value="1" />
+                                                        <div class="modal-body">
+                                                            <div class="row">
+                                                                <div class="col-sm-12">
+                                                                    @{
+                                                                        var urgente = ""; var alta = ""; var media = ""; var normal = "";
+                                                                        @if (Model.Prioridade.Trim() == "Urgente")
+                                                                        {
+                                                                            urgente = "checked";
+                                                                        }
+                                                                        else if (Model.Prioridade.Trim() == "Alta")
+                                                                        {
+                                                                            alta = "checked";
+                                                                        }
+                                                                        else if (Model.Prioridade.Trim() == "Media")
+                                                                        {
+                                                                            media = "checked";
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            normal = "checked";
+                                                                        }
+                                                                    }
+                                                                    <div class="form-group">
+                                                                        <select asp-for="FkSetores" class="custom-select" required style="width: 100%; height: 44px; background-color: #222e35">
+                                                                            <option value="1">Suporte Interno</option>
+                                                                            <option value="2">Suporte Externo</option>
+                                                                            <option value="3">Suporte Vector</option>
+                                                                            <option value="4">Suporte Desenvolvimento</option>
+                                                                            <option value="5">Suporte Financeiro</option>
+                                                                            <option value="6">Suporte Treinamento</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-1 p-2">
+                                                                <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                                                                    <input type="radio" id="customRadio-11" name="Prioridade" value="Normal" class="custom-control-input bg-success" @normal>
+                                                                    <label class="custom-control-label text-primary" for="customRadio-11" style="color: black">Normal</label>
+                                                                </div>
+                                                                <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                                                                    <input type="radio" id="customRadio-21" name="Prioridade" value="Media" class="custom-control-input bg-warning" @media>
+                                                                    <label class="custom-control-label text-primary" for="customRadio-21" style="color: black">Média</label>
+                                                                </div>
+                                                                <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                                                                    <input type="radio" id="customRadio-31" name="Prioridade" value="Alta" class="custom-control-input bg-danger" @alta>
+                                                                    <label class="custom-control-label text-primary" for="customRadio-31" style="color: black">Alta</label>
+                                                                </div>
+                                                                <div class="custom-control custom-radio custom-radio-color-checked custom-control-inline">
+                                                                    <input type="radio" id="customRadio-41" name="Prioridade" value="Urgente" class="custom-control-input bg-dark" @urgente>
+                                                                    <label class="custom-control-label text-primary" for="customRadio-41" style="color: black">Urgente</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-sm-12">
+                                                                    <div class="custom-control custom-switch custom-switch-color custom-control-inline mb-2">
+                                                                        <input data-id="#tecnico1" type="checkbox" class="custom-control-input bg-success mostrarcaixa1" id="customSwitch30" style="background-color: #222e35">
+                                                                        <label class="custom-control-label text-primary" for="customSwitch30" style="color:black">Direcionar o Chamado</label>
+                                                                    </div>
+
+                                                                    <div id="tecnico1" style="display: none">
+                                                                        <div class="form-group">
+                                                                            <select id="tecnicoSelect" name="FkTecnicoId" class="FkPlataformaId tecnicoSelect" style="width: 100%; height: 44px; background-color: #222e35">
+                                                                                <option value="">Buscar Sistema</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-12">
+                                                                    <div class="row" id="agenda" style="display: block">
+                                                                        <div class="col-sm-12">
+                                                                            <div class="mb-3">
+                                                                                <input type="datetime-local" name="DataAgendamento" id="data" required class="form-control is-invalid text-white" placeholder="Data Agendamento" style="background-color: #222e35">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <textarea class="form-control is-invalid text-white" id="validationTextarea" name="DescricaoCompleta" placeholder="Descrição...." required="" style="min-height: 132px; max-height:132px; background-color: #222e35"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="submit" class="btn btn-primary btn-remarcar">Remarcar Chamado</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        const now = new Date();
+
+        const offset = -4 * 60;
+        const localTime = new Date(now.getTime() + offset * 60000);
+
+        const formattedDate = localTime.toISOString().slice(0, 16);
+
+        document.getElementById('data').setAttribute('min', formattedDate);
+
+        $(".mostrarcaixa12").click(function () {
+            var definido = $(this).data("id");
+            if ($(this).is(":checked")) {
+                $(definido).show();
+            } else {
+                $(definido).hide();
+            }
+        });
+
+        $(".mostrarcaixa1").click(function () {
+            var definido = $(this).data("id");
+            if ($(this).is(":checked")) {
+                $(definido).show();
+            } else {
+                $(definido).hide();
+            }
+        });
+
+        $('#tecnicoSelect').select2({
+            placeholder: 'Buscar Tecnico',
+            minimumInputLength: 4,
+            ajax: {
+                url: '/Contrato/GetSugestaoTecnico',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                delay: 250,
+                data: function (params) {
+                    return {
+                        query: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.map(function (item) {
+                            return {
+                                id: item.value,
+                                text: item.label
+                            };
+                        })
+                    };
+                },
+
+                cache: true
+            }
+        });
+    });
+</script>
+<script src="~/assets/js/imageBase64.js"></script>
