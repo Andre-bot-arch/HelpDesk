@@ -229,7 +229,7 @@ namespace AppSysoHelp.Controllers
         }
 
         [HttpPost]
-        public IActionResult FinalizarChamado(Chamados d, IFormFile imagem)
+        public IActionResult FinalizarChamado(Chamados d, IFormFile imagem, bool finalizar = false)
         {
             var chamado = _context.Chamados.FirstOrDefault(a => a.ChamadoId == d.ChamadoId);
             var userIdClaim = User.FindFirst("Id").Value;

@@ -109,7 +109,7 @@
                                                                 <div class="col-sm-12">
                                                                     <div class="form-group">
                                                                         <div class="row">
-                                                                            <div class="col-sm-6">
+                                                                            <div class="col-sm-4">
                                                                                 <div class="mb-3">
                                                                                     <div class="form-group">
                                                                                         <label class="text-primary">Hora Inicial:</label>
@@ -117,11 +117,19 @@
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="col-sm-6">
+                                                                            <div class="col-sm-4">
                                                                                 <div class="mb-3">
                                                                                     <div class="form-group">
                                                                                         <label class="text-primary">Hora Final:</label>
                                                                                         <input type="time" name="Fim" id="data" required class="form-control is-invalid text-white" placeholder="Hora Final" tyle="background-color: #222e35">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-sm-4">
+                                                                                <div class="mb-3">
+                                                                                    <div class="form-group">
+                                                                                        <label class="text-primary">Proximo Treinamento:</label>
+                                                                                        <input type="datetime-local" name="DataAgendamento" id="data" required class="form-control is-invalid text-white" placeholder="Hora Final" tyle="background-color: #222e35">
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -140,6 +148,10 @@
                                                             </div>
                                                             <div>
                                                                 <textarea class="form-control is-invalid" id="validationTextarea" name="DescricaoCompleta" placeholder="Descrição...." required="" style="min-height: 132px; max-height:132px; background-color: #222e35; color: seashell"></textarea>
+                                                            </div>
+                                                            <div class="custom-control custom-switch custom-switch-color custom-control-inline mt-2">
+                                                                <input type="checkbox" class="custom-control-input bg-success" name="finalizar" value="true" id="customSwitch02">
+                                                                <label class="custom-control-label" for="customSwitch02">Finalizar Chamado</label>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
