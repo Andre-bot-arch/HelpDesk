@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<AppSysoHelp.Models.Chamados>
 @{
+    string formattedTime = "";
 }
 <div class="tab-pane fade" id="treinamento-end" role="tabpanel" aria-labelledby="treinamento-tab-end">
     <ul class="nav nav-pills mb-3 nav-fill" id="pills-tab-1" role="tablist">
@@ -32,13 +33,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) 
-                    && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) == 0 
+                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2)
+                    && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) == 0
                     && a.DataAgendamento <= DateTime.UtcNow.AddHours(-4)))
                     {
                         <tr>
                             <td>
-                                 #@item.ChamadoId.ToString().PadLeft(8, '0')<i type ="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br/>
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
                             <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
@@ -52,15 +53,15 @@
                             }
                             @if (item.Prioridade.Trim() == "Urgente")
                             {
-                               <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
+                                <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
                             }
                             else if (item.Prioridade.Trim() == "Alta")
                             {
-                                 <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
                             }
                             else if (item.Prioridade.Trim() == "Media")
                             {
-                               <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
                             }
                             else
                             {
@@ -120,7 +121,7 @@
                     {
                         <tr>
                             <td>
-                                 #@item.ChamadoId.ToString().PadLeft(8, '0')<i type ="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br/>
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
                             <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
@@ -140,15 +141,15 @@
                             </td>
                             @if (item.Prioridade.Trim() == "Urgente")
                             {
-                               <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
+                                <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
                             }
                             else if (item.Prioridade.Trim() == "Alta")
                             {
-                                 <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
                             }
                             else if (item.Prioridade.Trim() == "Media")
                             {
-                               <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
                             }
                             else
                             {
@@ -194,7 +195,7 @@
                 <thead>
                     <tr sstyle="border-bottom: 1px solid #222e35;">
                         <th scope="col">Protocolo</th>
-                        <th scope="col">Abertura</th>
+                        <th scope="col" class="text-center">Abertura / Horas</th>
                         <th scope="col">Agendamento</th>
                         <th scope="col" class="text-center">Prioridade</th>
                         <th scope="col">Atendente</th>
@@ -205,12 +206,27 @@
                 <tbody>
                     @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento > DateTime.UtcNow.AddHours(-4)))
                     {
+                        {
+                            var totalMinutes = @item.Atendimentos.Sum(a =>
+                            ((a.Fim.HasValue ? DateTime.MinValue.Add(a.Fim.Value.ToTimeSpan()) : DateTime.MinValue)
+                            - (a.Inicio.HasValue ? DateTime.MinValue.Add(a.Inicio.Value.ToTimeSpan()) : DateTime.MinValue)).TotalMinutes);
+
+                            var hours = (int)(totalMinutes / 60); // Horas inteiras
+                            var minutes = (int)(totalMinutes % 60); // Minutos restantes
+
+                            // Formatar no formato "HH:mm"
+                            formattedTime = $"{hours:D2}:{minutes:D2}";
+                        }
                         <tr>
                             <td>
-                                 #@item.ChamadoId.ToString().PadLeft(8, '0')<i type ="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br/>
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
-                            <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-center">
+                                @Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")<br />
+                                @formattedTime
+                                <label style="font-weight: bold" class="text-primary bold"> / </label> @item.HorasContratada
+                            </td>
                             <td>
                                 @if (!String.IsNullOrEmpty(item.DataAgendamento.ToString()))
                                 {
@@ -225,17 +241,17 @@
                                     ;
                                 }
                             </td>
-                            @if (item.Prioridade.Trim() == "Urgente")
+                            @if (item.Prioridade!.Trim() == "Urgente")
                             {
-                               <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
+                                <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
                             }
-                            else if (item.Prioridade.Trim() == "Alta")
+                            else if (item.Prioridade!.Trim() == "Alta")
                             {
-                                 <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
                             }
-                            else if (item.Prioridade.Trim() == "Media")
+                            else if (item.Prioridade!.Trim() == "Media")
                             {
-                               <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
                             }
                             else
                             {
@@ -298,7 +314,7 @@
                         }
                         <tr class="@cancelado">
                             <td>
-                                 #@item.ChamadoId.ToString().PadLeft(8, '0')<i type ="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br/>
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
                             <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
@@ -318,15 +334,15 @@
                             </td>
                             @if (item.Prioridade.Trim() == "Urgente")
                             {
-                               <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
+                                <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
                             }
                             else if (item.Prioridade.Trim() == "Alta")
                             {
-                                 <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
                             }
                             else if (item.Prioridade.Trim() == "Media")
                             {
-                               <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
                             }
                             else
                             {

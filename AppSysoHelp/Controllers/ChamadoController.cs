@@ -229,8 +229,40 @@ namespace AppSysoHelp.Controllers
         }
 
         [HttpPost]
-        public IActionResult FinalizarChamado(Chamados d, IFormFile imagem, bool finalizar = false)
+        public IActionResult FinalizarChamado(Chamados d, IFormFile imagem, bool finalizar = false, TimeOnly? Inicio = null, TimeOnly? Fim = null)
         {
+            if (finalizar == false)
+            {
+                Inicio ??= TimeOnly.Parse("00:00:00");
+                Fim ??= TimeOnly.Parse("00:00:00");
+
+                var _chamado = _context.Chamados.Include(a => a.FkSituacaoChamado).FirstOrDefault(a => a.ChamadoId == d.ChamadoId);
+                var _userIdClaim = User.FindFirst("Id");
+                var _userId = _userIdClaim?.Value;
+                var _atendimentoExistente = _context.Atendimentos.Where(a => a.FkChamadoId == d.ChamadoId && a.AtendimentoEncerrado != true).ToList();
+                foreach (var item in _atendimentoExistente)
+                {
+                    item.ProcedimentosAplicados = (item.FkTecnicoId == Convert.ToInt64(_userId))? d.DescricaoCompleta : "FECHAMENTO FORÇADO!!!";
+                    item.FkTecnicoId = Convert.ToInt32(_userId);
+                    item.NovaDataAtendimento = d.DataAgendamento;
+                    item.DataFechamento = DateTime.UtcNow.AddHours(-4);
+                    item.AtendimentoEncerrado = true;
+                    item.Inicio = (item.FkTecnicoId == Convert.ToInt64(_userId)) ? Inicio :TimeOnly.Parse("00:00:00");
+                    item.Fim = (item.FkTecnicoId == Convert.ToInt64(_userId)) ? Fim : TimeOnly.Parse("00:00:00");
+                }
+
+                if (_chamado!.FkSituacaoChamado.SituacaoChamadoId != 3)
+                {
+                    _generico.UpdateGenericoRanger(_atendimentoExistente);
+
+                    _chamado.FkSituacaoChamadoId = 2;
+                    _chamado.DataAgendamento = d.DataAgendamento;
+
+                    _generico.UpdateGenerico(_chamado);
+                }
+                return RedirectToAction("Aberto");
+            }
+
             var chamado = _context.Chamados.FirstOrDefault(a => a.ChamadoId == d.ChamadoId);
             var userIdClaim = User.FindFirst("Id").Value;
             var caminhoImagem = "";

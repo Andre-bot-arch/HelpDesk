@@ -25,6 +25,13 @@ namespace AppSysoHelp.Service
             return true;
         }
 
+        internal bool UpdateGenericoRanger(IEnumerable<dynamic> obj)
+        {
+            _context.UpdateRange(obj);
+            _context.SaveChangesAsync();
+            return true;
+        }
+
         internal async Task<bool> GravarGenericoAsync(dynamic obj)
         {
             await _context.AddAsync(obj);
