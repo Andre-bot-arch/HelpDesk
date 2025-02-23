@@ -71,6 +71,7 @@
                                                 <small class="float-right mt-1 text-primary">@Convert.ToDateTime(item.DataAtendimento).ToString("dd/MM/yyyy hh:mm")</small>
                                                 <div class="d-inline-block w-100">
                                                     <p style="color: seashell">@item.ProcedimentosAplicados</p>
+                                                    <p style="color: seashell">@item.Inicio / @item.Fim</p>
                                                 </div>
                                             </li>
                                         }
@@ -101,7 +102,7 @@
                                             </ul>
                                             <div class="tab-content" id="myTabContent-5">
                                                 <div class="tab-pane fade show active" id="Finalizar-end" role="tabpanel" aria-labelledby="Finalizar-tab-end">
-                                                    <form class="was-validated" asp-action="FinalizarChamado" asp-controller="Chamado" method="post" enctype="multipart/form-data">
+                                                    <form class="was-validated" asp-action="FinalizarChamadoTreinamento" asp-controller="Chamado" method="post" enctype="multipart/form-data">
                                                         <input type="hidden" name="FkTipoChamadoId" value="1" />
                                                         <input type="hidden" id="ChamadoIdRemarcado" asp-for="ChamadoId" value="@Model.ChamadoId" />
                                                         <div class="modal-body">
@@ -156,7 +157,7 @@
                                                         </div>
                                                         <div class="modal-footer">
                                                             @* <button type="button" style="width: 180px" class="btn btn-danger" data-dismiss="modal">sair</button> *@
-                                                            <button type="submit" style="width: 180px" class="btn btn-primary btn-remarcar">Finalizar Chamado</button>
+                                                            <button type="submit" style="width: 180px" class="btn btn-primary">Finalizar Chamado</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -246,7 +247,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="submit" class="btn btn-primary btn-remarcar">Remarcar Chamado</button>
+                                                            <button type="submit" class="btn btn-primary">Remarcar Chamado</button>
                                                         </div>
                                                     </form>
                                                 </div>

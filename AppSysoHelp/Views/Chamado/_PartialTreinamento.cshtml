@@ -24,7 +24,7 @@
                 <thead>
                     <tr sstyle="border-bottom: 1px solid #222e35;">
                         <th scope="col">Protocolo</th>
-                        <th scope="col">Abertura</th>
+                        <th scope="col">Abertura / Horas</th>
                         <th scope="col">Atendimento</th>
                         <th scope="col" class="text-center">Prioridade</th>
                         <th scope="col">Atendente</th>
@@ -37,12 +37,27 @@
                     && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) == 0
                     && a.DataAgendamento <= DateTime.UtcNow.AddHours(-4)))
                     {
+                        {
+                            var totalMinutes = @item.Atendimentos.Sum(a =>
+                            ((a.Fim.HasValue ? DateTime.MinValue.Add(a.Fim.Value.ToTimeSpan()) : DateTime.MinValue)
+                            - (a.Inicio.HasValue ? DateTime.MinValue.Add(a.Inicio.Value.ToTimeSpan()) : DateTime.MinValue)).TotalMinutes);
+
+                            var hours = (int)(totalMinutes / 60); // Horas inteiras
+                            var minutes = (int)(totalMinutes % 60); // Minutos restantes
+
+                            // Formatar no formato "HH:mm"
+                            formattedTime = $"{hours:D2}:{minutes:D2}";
+                        }
                         <tr>
                             <td>
                                 #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
-                            <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")<br />
+                                @formattedTime
+                                <label style="font-weight: bold" class="text-primary bold"> / </label> @item.HorasContratada
+                            </td>
                             @if (item.Atendimentos.Count > 0)
                             {
                                 <td>@Convert.ToDateTime(item.Atendimentos.OrderByDescending(a => a.AtendimentoId).FirstOrDefault().DataAtendimento).ToString("dd/MM/yyyy HH:mm")</td>
@@ -108,7 +123,7 @@
                 <thead>
                     <tr sstyle="border-bottom: 1px solid #222e35;">
                         <th scope="col">Protocolo</th>
-                        <th scope="col">Abertura</th>
+                        <th scope="col" class="text-center">Abertura / Horas</th>
                         <th scope="col">Agendamento</th>
                         <th scope="col" class="text-center">Prioridade</th>
                         <th scope="col">Atendente</th>
@@ -119,12 +134,27 @@
                 <tbody>
                     @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) > 0 && a.DataAgendamento <= DateTime.UtcNow.AddHours(-4)))
                     {
+                        {
+                            var totalMinutes = @item.Atendimentos.Sum(a =>
+                            ((a.Fim.HasValue ? DateTime.MinValue.Add(a.Fim.Value.ToTimeSpan()) : DateTime.MinValue)
+                            - (a.Inicio.HasValue ? DateTime.MinValue.Add(a.Inicio.Value.ToTimeSpan()) : DateTime.MinValue)).TotalMinutes);
+
+                            var hours = (int)(totalMinutes / 60); // Horas inteiras
+                            var minutes = (int)(totalMinutes % 60); // Minutos restantes
+
+                            // Formatar no formato "HH:mm"
+                            formattedTime = $"{hours:D2}:{minutes:D2}";
+                        }
                         <tr>
                             <td>
                                 #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
-                            <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")<br />
+                                @formattedTime
+                                <label style="font-weight: bold" class="text-primary bold"> / </label> @item.HorasContratada
+                            </td>
                             <td>
                                 @if (!String.IsNullOrEmpty(item.DataAgendamento.ToString()))
                                 {
@@ -307,6 +337,17 @@
                 <tbody>
                     @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 3 || a.FkSituacaoChamadoId == 4)))
                     {
+                        {
+                            var totalMinutes = @item.Atendimentos.Sum(a =>
+                            ((a.Fim.HasValue ? DateTime.MinValue.Add(a.Fim.Value.ToTimeSpan()) : DateTime.MinValue)
+                            - (a.Inicio.HasValue ? DateTime.MinValue.Add(a.Inicio.Value.ToTimeSpan()) : DateTime.MinValue)).TotalMinutes);
+
+                            var hours = (int)(totalMinutes / 60); // Horas inteiras
+                            var minutes = (int)(totalMinutes % 60); // Minutos restantes
+
+                            // Formatar no formato "HH:mm"
+                            formattedTime = $"{hours:D2}:{minutes:D2}";
+                        }
                         var cancelado = "";
                         if (item.FkSituacaoChamadoId == 4)
                         {
@@ -317,7 +358,11 @@
                                 #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br />
                                 @item.FkCliente.NomeCliente
                             </td>
-                            <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")<br />
+                                @formattedTime
+                                <label style="font-weight: bold" class="text-primary bold"> / </label> @item.HorasContratada
+                            </td>
                             <td>
                                 @if (!String.IsNullOrEmpty(item.DataFechamento.ToString()))
                                 {

@@ -34,6 +34,7 @@
                 });
 
                 if (form.checkValidity() === false) {
+                    Swal.close();
                     $('#salvarChamado').addClass('was-validated');
                 } else {
                     const loadingTimeout = setTimeout(() => {
