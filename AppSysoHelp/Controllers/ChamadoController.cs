@@ -25,7 +25,7 @@ namespace AppSysoHelp.Controllers
         {
             var userIdClaim = User.FindFirst("Id");
             var userId = userIdClaim?.Value;
-            var atendimento = _context.Atendimentos.FirstOrDefault(a => a.FkChamadoId == id && a.AtendimentoEncerrado == false);
+            var atendimento = _context.Atendimentos.Include(a=> a.FkChamado).FirstOrDefault(a => a.FkChamadoId == id && a.AtendimentoEncerrado == false && a.FkChamado.FkSituacaoChamadoId != 3);
 
             if (atendimento == null)
             {
@@ -245,11 +245,10 @@ namespace AppSysoHelp.Controllers
                 }
                 caminhoImagem = $"imagens_chamado/{fileName}";
             }
-
-            // Carregar o chamado e atendimentos de uma vez (sem await para evitar concorrência)
+            
             var chamado = _context.Chamados
                 .Include(a => a.FkSituacaoChamado)
-                .Include(a => a.Atendimentos) // Sem filtro no Include para evitar problemas assíncronos
+                .Include(a => a.Atendimentos) 
                 .FirstOrDefault(a => a.ChamadoId == d.ChamadoId && a.FkSituacaoChamadoId != 3);
 
             if (chamado == null)
