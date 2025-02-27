@@ -54,7 +54,16 @@ namespace AppSysoHelp.Controllers
             var lista = _context.Chamados.Include(a=> a.FkAtendenteNavigation)
                                                  .Include(a=> a.Atendimentos)
                                                   .Where(a => a.DataCriacao!.Value.Date == DateTime.Now.Date)
-                                                  .ToList();                       
+                                                  .ToList();
+
+            ViewBag.chamados = _context.Chamados.Include(a => a.FkAtendenteNavigation)
+                                                .Include(a => a.Atendimentos)
+                                                 .Include(a => a.FkCliente)
+                                                 .Include(a=> a.FkSetoresNavigation)
+                                                 .Where(a => (a.Prioridade.Contains("Urgente") ||
+                                                              a.Prioridade.Contains("Alta")) &&
+                                                              (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2))
+                                                 .ToList();
 
 
             ViewBag.Atendentes = _context.TecnicosSupervisores.Include(a=> a.Time).OrderBy(a=> a.NomeCompleto).ToList();

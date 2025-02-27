@@ -1,314 +1,400 @@
 ﻿@{
-    Layout = null;
+	Layout = null;
 }
 <!doctype html>
 <html lang="pt-br">
 <head>
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>@ViewData["Title"] - Help Desk</title>
-    <link rel="shortcut icon" href="~/images/favicon.ico" />
-    <link rel="stylesheet" href="~/css/bootstrap.min.css">
-    <link rel="stylesheet" href="~/css/typography.css">
-    <link rel="stylesheet" href="~/css/style.css">
-    <link rel="stylesheet" href="~/css/responsive.css">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>@ViewData["Title"] - Help Desk</title>
+	<link rel="shortcut icon" href="~/images/favicon.ico" />
+	<link rel="stylesheet" href="~/css/bootstrap.min.css">
+	<link rel="stylesheet" href="~/css/typography.css">
+	<link rel="stylesheet" href="~/css/style.css">
+	<link rel="stylesheet" href="~/css/responsive.css">
 
-    <!-- Links e scripts para o Select2 e jQuery -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="//cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css" rel="stylesheet" />
-    <style>
-        /* Estilizando o select para ficar semelhante aos inputs */
+	<!-- Links e scripts para o Select2 e jQuery -->
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<!-- SweetAlert2 -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<link href="//cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css" rel="stylesheet" />
+	<style>
+		/* Estilizando o select para ficar semelhante aos inputs */
 
-        .iq-header-title {
-            line-height: 1.2em; /* Defina a altura da linha */
-            height: 2.4em; /* Duas linhas de altura */
-            overflow: hidden; /* Esconde qualquer conteúdo que ultrapasse a altura */
-            white-space: nowrap; /* Impede quebra de linha */
-            text-overflow: ellipsis; /* Adiciona reticências (...) ao conteúdo que ultrapassa a largura */
-        }
+		.iq-header-title {
+			line-height: 1.2em; /* Defina a altura da linha */
+			height: 2.4em; /* Duas linhas de altura */
+			overflow: hidden; /* Esconde qualquer conteúdo que ultrapasse a altura */
+			white-space: nowrap; /* Impede quebra de linha */
+			text-overflow: ellipsis; /* Adiciona reticências (...) ao conteúdo que ultrapassa a largura */
+		}
 
-        .custom-select,
-        .select2-container--default .select2-selection--single {
-            width: 100%;
-            height: calc(2.25rem + 2px);
-            padding: 0.375rem 0.75rem;
-            font-size: 1rem;
-            font-weight: 400;
-            line-height: 1.5;
-            color: #495057;
-            background-color: #fff;
-            background-clip: padding-box;
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
+		.custom-select,
+		.select2-container--default .select2-selection--single {
+			width: 100%;
+			height: calc(2.25rem + 2px);
+			padding: 0.375rem 0.75rem;
+			font-size: 1rem;
+			font-weight: 400;
+			line-height: 1.5;
+			color: #495057;
+			background-color: #fff;
+			background-clip: padding-box;
+			border: 1px solid #ced4da;
+			border-radius: 0.25rem;
+			transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+		}
 
-            .custom-select:focus,
-            .select2-container--default .select2-selection--single:focus {
-                border-color: #80bdff;
-                outline: 0;
-                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-            }
+			.custom-select:focus,
+			.select2-container--default .select2-selection--single:focus {
+				border-color: #80bdff;
+				outline: 0;
+				box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+			}
 
-            /* Removendo a seta padrão do select para manter o estilo */
-            .select2-container--default .select2-selection--single .select2-selection__arrow b {
-                display: none;
-            }
+			/* Removendo a seta padrão do select para manter o estilo */
+			.select2-container--default .select2-selection--single .select2-selection__arrow b {
+				display: none;
+			}
 
-    </style>
+	</style>
 
-    <style>
+	<style>
 
-        .fundo {
-            background-image: url("../images/helpdesk/_logo1.png");
-        }
+		.fundo {
+			background-image: url("../images/helpdesk/_logo1.png");
+		}
 
-        /* Cor de fundo das linhas ímpares */
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: #394247;
-        }
+		/* Cor de fundo das linhas ímpares */
+		.table-striped tbody tr:nth-of-type(odd) {
+			background-color: #394247;
+		}
 
-        /* Cor de fundo das linhas pares */
-        .table-striped tbody tr:nth-of-type(even) {
-            background-color: #222e35;
-        }
+		/* Cor de fundo das linhas pares */
+		.table-striped tbody tr:nth-of-type(even) {
+			background-color: #222e35;
+		}
 
-        /* Cor do texto para garantir legibilidade */
-        .table-striped tbody tr {
-            color: #ffffff; /* Muda a cor do texto para branco */
-        }
+		/* Cor do texto para garantir legibilidade */
+		.table-striped tbody tr {
+			color: #ffffff; /* Muda a cor do texto para branco */
+		}
 
-        /* Bordas arredondadas */
-        .table {
-            border-collapse: separate;
-            border-spacing: 0;
-        }
+		/* Bordas arredondadas */
+		.table {
+			border-collapse: separate;
+			border-spacing: 0;
+		}
 
-            .table thead th:first-child {
-                border-top-left-radius: 10px;
-            }
+			.table thead th:first-child {
+				border-top-left-radius: 10px;
+			}
 
-            .table thead th {
-                color: #A9A9A9;
-            }
+			.table thead th {
+				color: #A9A9A9;
+			}
 
-            .table thead tr {
-                background-color: #222e35;
-            }
+			.table thead tr {
+				background-color: #222e35;
+			}
 
-            .table thead th:last-child {
-                border-top-right-radius: 10px;
-            }
+			.table thead th:last-child {
+				border-top-right-radius: 10px;
+			}
 
-            .table tbody tr:last-child td:first-child {
-                border-bottom-left-radius: 10px;
-            }
+			.table tbody tr:last-child td:first-child {
+				border-bottom-left-radius: 10px;
+			}
 
-            .table tbody tr:last-child td:last-child {
-                border-bottom-right-radius: 10px;
-            }
-    </style>
+			.table tbody tr:last-child td:last-child {
+				border-bottom-right-radius: 10px;
+			}
+	</style>
 
 </head>
 <body class="fundo" style="background-color: #222e35">
-    <button id="button-iniciar-painel">Iniciar Painel</button>
+	<button id="button-iniciar-painel">Iniciar Painel</button>
 
-    <audio id="audio-ding">
-        <source src="~/audio/ding.wav" type="audio/mpeg">
-    </audio>
+	<audio id="audio-ding">
+		<source src="~/audio/ding.wav" type="audio/mpeg">
+	</audio>
 
-    <audio id="audio-senha">
-        <source type="audio/mpeg">
-    </audio>
+	<audio id="audio-senha">
+		<source type="audio/mpeg">
+	</audio>
 
-    <div id="loading">
-        <div id="loading-center">
-        </div>
-    </div>
+	<div id="loading">
+		<div id="loading-center">
+		</div>
+	</div>
 
-    <div class="wrapper">
-        <div class="container-fluid mt-2">
-            <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    <div class="row">
-                        <div class="col-sm-12 mt-1">
-                            <div class="iq-card text-center" style="background-color: #111b21">
-                                <div class="row">
-                                    <div class="col-sm-8">
-                                        <h5 class="text-white ms-3" style="width: 100%"> Atendimentos</h5>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <a href="~/Home/Index" style="width:100%" class="btn iq-bg-success">Entrar</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-12">
-                @model IEnumerable<AppSysoHelp.Models.Chamados>
-                @{
-                    ViewData["Title"] = "Painel";
-                    var lista = (ViewBag.Atendentes != null) ? (List<TecnicosSupervisores>)ViewBag.Atendentes : new List<TecnicosSupervisores>();
-                    var atendimento = (ViewBag.Atendimento != null) ? (List<Atendimentos>)ViewBag.Atendimento : new List<Atendimentos>();
-                    var finalizado = (ViewBag.Finalizado != null) ? (List<Atendimentos>)ViewBag.Finalizado : new List<Atendimentos>();
-                    var nomecliente = "";
-                    var dados = "";
-                }
+	<div class="wrapper">
+		<div class="container-fluid mt-2">
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-lg-12">
+					<div class="row">
+						<div class="col-sm-12 mt-1">
+							<div class="iq-card text-center" style="background-color: #111b21">
+								<div class="row">
+									<div class="col-sm-8">
+										<h5 class="text-white ms-3" style="width: 100%"> Atendimentos</h5>
+									</div>
+									<div class="col-sm-4">
+										<a href="~/Home/Index" style="width:100%" class="btn iq-bg-success">Entrar</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-12">
+				@model IEnumerable<AppSysoHelp.Models.Chamados>
+				@{
+					ViewData["Title"] = "Painel";
+					var lista = (ViewBag.Atendentes != null) ? (List<TecnicosSupervisores>)ViewBag.Atendentes : new List<TecnicosSupervisores>();
+					var atendimento = (ViewBag.Atendimento != null) ? (List<Atendimentos>)ViewBag.Atendimento : new List<Atendimentos>();
+					var finalizado = (ViewBag.Finalizado != null) ? (List<Atendimentos>)ViewBag.Finalizado : new List<Atendimentos>();
+					var chamados = (ViewBag.chamados != null) ? (List<Chamados>)ViewBag.chamados : new List<Chamados>();
+					var nomecliente = "";
+					var dados = "";
+				}
+				<div class="row">
+					@foreach (var tecnico in lista)
+					{
+						nomecliente = "";
+						dados = "";
+						var emAtendimento = @atendimento.Count(a => a.FkTecnicoId == tecnico.PkId);
+						var fechados = finalizado.Count(a => a.FkTecnicoId == tecnico.PkId);
+						var abertos = @Model.Count(a => a.FkAtendente == tecnico.PkId);
+						if (emAtendimento > 0 || fechados > 0 || abertos > 0)
+						{
+							<div class="col-sm-2 col-md-2 col-lg-2">
+								<div class="row">
+									<div class="col-sm-12 mt-3">
+										<div class="iq-card" style="background-color: #111b21">
+											<div class="iq-card-body profile-page p-0">
+												<div class="profile-header">
+													<div class="profile-info p-4">
+														<div class="row">
+															<div class="col-sm-12 col-md-12">
+																<div class="user-detail pl-5">
+																	<div class="d-flex flex-wrap align-items-center">
+																		<div class="profile-img pr-4">
+																			@if (tecnico.Time.Count() == 0)
+																			{
+																				<img src="/images/helpdesk/_logo.png" alt="profile-img" class="rounded-circle img-fluid">
+																			}
+																			else
+																			{
+																				<img src="@tecnico.Time.FirstOrDefault().CaminhoImagem" alt="profile-img" class="rounded-circle img-fluid">
+																			}
+																		</div>
+																		<div class="profile-detail">
+																			<h5 class="text-primary" style="font-size: 11px">@tecnico.PkId - @tecnico.NomeCompleto</h5>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="col-sm-12 col-md-12">
+																<ul class="nav nav-pills d-flex align-items-end float-right profile-feed-items p-0 m-0">
+																	<li style="width:100%" class="mt-2">
+																		<button style="width: 100%" type="button" class="btn mb-1 dark-icon btn-primary">
+																			Abertos <span class="badge badge-light ml-2">@abertos</span>
+																		</button>
+																	</li>
+																	<li style="width:100%" class="mt-2">
+																		<button style="width: 100%" type="button" class="btn mb-1 btn-success">
+																			Fechados <span class="badge badge-light ml-2">@fechados</span>
+																		</button>
+																	</li>
+																	<li style="width:100%" class="mt-2">
+																		<button style="width: 100%" type="button" class="btn mb-1 btn-danger">
+																			Atendendo <span class="badge badge-light ml-2">@emAtendimento</span>
+																		</button>
+																	</li>
+																</ul>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #222e35">
+												@{
+													var cliente = @atendimento.Where(a => a.FkTecnicoId == tecnico.PkId);
+													if (cliente != null && cliente.Count() > 0)
+													{
+														nomecliente = cliente.FirstOrDefault().FkChamado.FkCliente.Fantasia;
+														dados = cliente.FirstOrDefault().FkChamado.DescricaoCompleta;
+													}
+												}
+												<div class="iq-card-header d-flex justify-content-between">
+													<div class="iq-header-title">
+														<h6 class="text-white" style="font-size: 11px">@nomecliente <i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@dados" class="las la-info-circle text-warning"></i></h6>
+													</div>
+												</div>
+											</div>
 
-                <div class="row">
-                    @foreach (var tecnico in lista)
-                    {
-                        nomecliente = "";
-                        dados = "";
-                        var emAtendimento = @atendimento.Count(a => a.FkTecnicoId == tecnico.PkId);
-                        var fechados = finalizado.Count(a => a.FkTecnicoId == tecnico.PkId);
-                        var abertos = @Model.Count(a => a.FkAtendente == tecnico.PkId);
-                        if (emAtendimento > 0 || fechados > 0 || abertos > 0)
-                        {
-                            <div class="col-sm-2 col-md-2 col-lg-2">
-                                <div class="row">
-                                    <div class="col-sm-12 mt-3">
-                                        <div class="iq-card" style="background-color: #111b21">
-                                            <div class="iq-card-body profile-page p-0">
-                                                <div class="profile-header">
-                                                    <div class="profile-info p-4">
-                                                        <div class="row">
-                                                            <div class="col-sm-12 col-md-12">
-                                                                <div class="user-detail pl-5">
-                                                                    <div class="d-flex flex-wrap align-items-center">
-                                                                        <div class="profile-img pr-4">
-                                                                            @if (tecnico.Time.Count() == 0)
-                                                                            {
-                                                                                <img src="/images/helpdesk/_logo.png" alt="profile-img" class="rounded-circle img-fluid">
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <img src="@tecnico.Time.FirstOrDefault().CaminhoImagem" alt="profile-img" class="rounded-circle img-fluid">
-                                                                            }
-                                                                        </div>
-                                                                        <div class="profile-detail">
-                                                                            <h5 class="text-primary" style="font-size: 11px">@tecnico.PkId - @tecnico.NomeCompleto</h5>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-12 col-md-12">
-                                                                <ul class="nav nav-pills d-flex align-items-end float-right profile-feed-items p-0 m-0">
-                                                                    <li style="width:100%" class="mt-2">
-                                                                        <button style="width: 100%" type="button" class="btn mb-1 dark-icon btn-primary">
-                                                                            Abertos <span class="badge badge-light ml-2">@abertos</span>
-                                                                        </button>
-                                                                    </li>
-                                                                    <li style="width:100%" class="mt-2">
-                                                                        <button style="width: 100%" type="button" class="btn mb-1 btn-success">
-                                                                            Fechados <span class="badge badge-light ml-2">@fechados</span>
-                                                                        </button>
-                                                                    </li>
-                                                                    <li style="width:100%" class="mt-2">
-                                                                        <button style="width: 100%" type="button" class="btn mb-1 btn-danger">
-                                                                            Atendendo <span class="badge badge-light ml-2">@emAtendimento</span>
-                                                                        </button>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #222e35">
-                                                @{
-                                                    var cliente = @atendimento.Where(a => a.FkTecnicoId == tecnico.PkId);
-                                                    if (cliente != null && cliente.Count() > 0)
-                                                    {
-                                                        nomecliente = cliente.FirstOrDefault().FkChamado.FkCliente.Fantasia;
-                                                        dados = cliente.FirstOrDefault().FkChamado.DescricaoCompleta;
-                                                    }
-                                                }
-                                                <div class="iq-card-header d-flex justify-content-between">
-                                                    <div class="iq-header-title">
-                                                        <h6 class="text-white" style="font-size: 11px">@nomecliente <i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@dados" class="las la-info-circle text-warning"></i></h6>
-                                                    </div>
-                                                </div>
-                                            </div>
+										</div>
+									</div>
+								</div>
+							</div>
 
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+						}
+					}
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-lg-12">
+					<div class="row">
+						<div class="col-sm-12 mt-1">
+							<div class="iq-card text-center" style="background-color: #111b21">
+								<div class="row">
+									<div class="col-sm-8">
+										<h5 class="text-white ms-3" style="width: 100%"> Chamados Urgentes</h5>
+									</div>
+									<div class="col-sm-4">
+										<a href="#" style="width:100%" class="btn iq-bg-danger">Aguarde  - @chamados.Count()</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-                        }
-                    }
-                </div>
+			<div class="col-lg-12">
+				<div class="row">
+					<div class="col-sm-12 col-md-12 col-lg-12">
+						<div class="row">
+							<div class="col-sm-12 mt-1">
+								<div class="iq-card" style="background-color: #111b21">
+									<div class="iq-card-body profile-page p-0">
+										<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+											@{
+												var ativo = "active";
+												var contador = 0;
+											}
+											<ol class="carousel-indicators">
+												@foreach (var item in chamados.Where(a => a.Prioridade.Contains("Urgente") || a.Prioridade.Contains("Alta")))
+												{
 
-            </div>
-            <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    <div class="row">
-                        <div class="col-sm-12 mt-1">
-                            <div class="iq-card text-center" style="background-color: #111b21">
-                                <div class="row">
-                                    <div class="col-sm-8">
-                                        <h5 class="text-white ms-3" style="width: 100%"> Chamados Urgentes</h5>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <a href="#" style="width:100%" class="btn iq-bg-danger">Aguarde</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer style="background-color: #0B141A">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-6">
-                    <ul class="list-inline mb-0">
-                        <li class="list-inline-item"><a href="#">Privacy Policy</a></li>
-                        <li class="list-inline-item"><a href="#">Terms of Use</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-6 text-right">
-                    Copyright @DateTime.Now.Year <a href="#">Syso Tecnologia</a> All Rights Reserved.
-                </div>
-            </div>
-        </div>
-    </footer>
+													<li data-target="#carouselExampleIndicators" data-slide-to="@contador" class="@ativo"></li>
+													contador++;
+													ativo = "";
+												}
+											</ol>
+											@{
+												ativo = "active";
+												contador = 0;
+											}
+											<div class="carousel-inner">
+												@foreach (var item in chamados.Where(a => a.Prioridade.Contains("Urgente") || a.Prioridade.Contains("Alta")))
+												{
+													var sit = (item.FkSituacaoChamadoId == 1) ? "Aberto" : "Remarcado";
+													<div class="carousel-item @ativo">
 
 
-    <script src="~/js/jquery.min.js"></script>
-    <script src="~/js/rtl.js"></script>
-    <script src="~/js/customizer.js"></script>
-    <script src="~/js/popper.min.js"></script>
-    <script src="~/js/bootstrap.min.js"></script>
-    <script src="~/js/jquery.appear.js"></script>
-    <script src="~/js/countdown.min.js"></script>
-    <script src="~/js/waypoints.min.js"></script>
-    <script src="~/js/jquery.counterup.min.js"></script>
-    <script src="~/js/wow.min.js"></script>
-    <script src="~/js/slick.min.js"></script>
-    <script src="~/js/select2.min.js"></script>
-    <script src="~/js/owl.carousel.min.js"></script>
-    <script src="~/js/jquery.magnific-popup.min.js"></script>
-    <script src="~/js/smooth-scrollbar.js"></script>
-    <script src="~/js/lottie.js"></script>
-    <script src="~/js/chart-custom.js"></script>
-    <script src="~/js/custom.js"></script>
-    <script src="//cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
+														<div class="iq-card" style="background-color: #111b21">
+															<div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #222e35">
+																<div class="iq-card-header d-flex justify-content-between">
+																	<div class="iq-header-title">
+																		<h6 class="text-primary" style="font-size: 30px">#@item.ChamadoId - Aberto em: @item.DataCriacao </h6>
+																	</div>
+																</div>
+															</div>
+															<div class="iq-card-body profile-page p-0">
+																<div class="profile-header">
+																	<div class="profile-info p-4">
+																		<div class="row">																			
+																			<div class="col-sm-12 col-md-12">
+																				<h5 class="card-title text-white" style="font-size: 25px">Cliente: @item.FkCliente.NomeCliente</h5>
+																				<p class="card-text text-white" style="font-size: 20px">Descrição: @item.DescricaoCompleta</p>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #222e35">																
+																<div class="iq-card-header d-flex justify-content-between">
+																	<div class="iq-header-title">
+																		<h6 class="text-white" style="font-size: 14px">@item.Prioridade?.ToUpper() - Setor: @item.FkSetoresNavigation.NomeSetor <i type="button" data-toggle="tooltip" data-placement="top" title="" class="las la-info-circle text-warning"></i> - Situação: @sit</h6>
+																	</div>
+																</div>
+															</div>
 
-    <script src="~/assets/js/painel.js"></script>
+														</div>
 
-    @*  @await RenderSectionAsync("Scripts", required: false) *@
+
+													</div>
+													ativo = "";
+												}
+											</div>
+
+											<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+												<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+												<span class="sr-only">Previous</span>
+											</a>
+											<a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+												<span class="carousel-control-next-icon" aria-hidden="true"></span>
+												<span class="sr-only">Next</span>
+											</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+	<footer style="background-color: #0B141A">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-6">
+					<ul class="list-inline mb-0">
+						<li class="list-inline-item"><a href="#">Privacy Policy</a></li>
+						<li class="list-inline-item"><a href="#">Terms of Use</a></li>
+					</ul>
+				</div>
+				<div class="col-lg-6 text-right">
+					Copyright @DateTime.Now.Year <a href="#">Syso Tecnologia</a> All Rights Reserved.
+				</div>
+			</div>
+		</div>
+	</footer>
+
+
+	<script src="~/js/jquery.min.js"></script>
+	<script src="~/js/rtl.js"></script>
+	<script src="~/js/customizer.js"></script>
+	<script src="~/js/popper.min.js"></script>
+	<script src="~/js/bootstrap.min.js"></script>
+	<script src="~/js/jquery.appear.js"></script>
+	<script src="~/js/countdown.min.js"></script>
+	<script src="~/js/waypoints.min.js"></script>
+	<script src="~/js/jquery.counterup.min.js"></script>
+	<script src="~/js/wow.min.js"></script>
+	<script src="~/js/slick.min.js"></script>
+	<script src="~/js/select2.min.js"></script>
+	<script src="~/js/owl.carousel.min.js"></script>
+	<script src="~/js/jquery.magnific-popup.min.js"></script>
+	<script src="~/js/smooth-scrollbar.js"></script>
+	<script src="~/js/lottie.js"></script>
+	<script src="~/js/chart-custom.js"></script>
+	<script src="~/js/custom.js"></script>
+	<script src="//cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
+
+	<script src="~/assets/js/painel.js"></script>
+
+	@*  @await RenderSectionAsync("Scripts", required: false) *@
 </body>
 </html>
 
