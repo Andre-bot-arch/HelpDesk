@@ -40,7 +40,7 @@ namespace AppSysoHelp.Controllers
                 {
                     IsPersistent = true, // Faz com que o cookie de autenticação seja persistente
                     ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1), // Define a expiração do cookie para uma hora a partir de agora
-                    RedirectUri = "/Home/Painel" // Redireciona o usuário para a página inicial após o login
+                    RedirectUri = "/Home/Index" // Redireciona o usuário para a página inicial após o login
                 };
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);

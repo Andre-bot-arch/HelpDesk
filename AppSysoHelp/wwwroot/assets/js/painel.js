@@ -86,27 +86,43 @@ $(function () {
 
     // Função para tocar a senha (sintetizar áudio)
     function PlayAudioSenha(dados) {
-        var setor = dados[0].nomesetor;
-        setor = setor.replace(/nutricao/gi, "NUTRIÇÃO").replace(/servico/gi, "SERVIÇO").replace(/consultorio/gi, "CONSULTORÍO").replace(/ambulatorio/gi, "AMBULATORÍO");
+        if (speechSynthesis.speaking) {
+            console.log('Já está falando, aguardando...');
+            return;
+        }
 
-        var text = "Paciente: " + "  . . .   " + dados[0].paciente + " . . . . . " + "Comparecer a:  " + setor;
+        var cliente = dados.cliente;
+        var data = dados.data;
+        var prioridade = dados.prioridade;
+        var tecnico = (dados.tecnico.length > 1) ? `T\u00e9cnico: ${dados.tecnico}.` : "";
+      
+        var text = `Aten\u00e7\u00e3o! ${tecnico} Chamado com a prioridade: ${prioridade}. Para o cliente: ${cliente}. Aberto \u00e0s: ${data}.`;
 
         var utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'pt-BR';
-        utterance.voice = speechSynthesis.getVoices().find(function (voice) {
-            return voice.name === 'Google português do Brasil';
-        });
+        utterance.rate = 0.9; // Velocidade natural
+        utterance.pitch = 1.0; // Tom neutro
+
+        
+        speechSynthesis.onvoiceschanged = function () {
+            var voices = speechSynthesis.getVoices();
+            var voice = voices.find(v => v.name.includes("Google português do Brasil"));
+            if (voice) {
+                utterance.voice = voice;
+            }
+            speechSynthesis.speak(utterance);
+        };
 
         utterance.onend = function () {
             _senhaChamado = false;
             UltimasChamadas(_PainelSelecionado);
+            console.log('Vocalização concluída.');
         };
-
-        speechSynthesis.speak(utterance);
 
         _senhaChamado = true;
         console.log('Chamando a Senha via Áudio');
     }
+
 
     // Chamar a função a cada meio segundo
     function intervalo() {

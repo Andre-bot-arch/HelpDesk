@@ -136,11 +136,18 @@ namespace AppSysoHelp.Controllers
                                                .Include(a => a.Atendimentos)
                                                .Include(a => a.FkCliente)
                                                .Include(a => a.FkSetoresNavigation)
-                                               .FirstOrDefaultAsync(a => (a.Prioridade.Contains("Urgente") ||
+                                               .Where(a => (a.Prioridade.Contains("Urgente") ||
                                                              a.Prioridade.Contains("Alta")) &&
                                                              (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) &&
-                                                             a.ChamadoPainel == false);
-            return Ok(chamado);
+                                                             a.ChamadoPainel == false)
+                                               .Select(x => new
+                                               {
+                                                   cliente= x.FkCliente.NomeCliente,
+                                                   prioridade= x.Prioridade.Trim(),
+                                                   data = Convert.ToDateTime(x.DataCriacao).ToString("dd/MM/yyyy"),
+                                                   tecnico = x.FkTecnico.NomeCompleto
+                                               }).FirstOrDefaultAsync();              ;
+            return Json(chamado);
         }
 
     }
