@@ -44,20 +44,17 @@ $(function () {
         _senhaChamado = true;
 
         $.ajax({
-            url: '/Home/GetSenhaPainel',
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
+            url: '/Home/BuscarChamadosAberto',
             type: "POST",
-            data: JSON.stringify({ id_painel: 1 }),
             success: function (data) {
                 if (data.length !== 0) {
                     _senhaChamado = true;
 
-                    _AudioSenha.src = `/Senhas/${data[0].id}/Audio`;
+                   // _AudioSenha.src = `/Senhas/${data[0].id}/Audio`;
 
                     // Template para a senha atual chamando
-                    var template = Handlebars.compile($("#senha-atual-chamando").html());
-                    $('#chamada-atual').html(template(data));
+                    //var template = Handlebars.compile($("#senha-atual-chamando").html());
+                    //$('#chamada-atual').html(template(data));
 
                     // Tocar o som de "ding"
                     tocarAudio(_AudioDing, function () {
@@ -68,7 +65,7 @@ $(function () {
                 }
             },
             error: function (error) {
-                console.error('Erro ao buscar a senha:', error);
+                console.log('Erro ao buscar a senha:', error);
             }
         });
     }
@@ -76,17 +73,13 @@ $(function () {
     // Função para Buscar as 3 Últimas Chamadas
     function UltimasChamadas(id_painel) {
         $.ajax({
-            url: '/Home/UltimasSenhasChamadas',
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
+            url: '/Home/BuscarChamadosPainel',
             type: "POST",
-            data: JSON.stringify({ id_painel: id_painel }),
             success: function (data) {
-                var template = Handlebars.compile($("#template-ultimas-chamadas").html());
-                $('#ultimas-senhas-chamadas').html(template(data));
+                $('.corpoChamados').html(data);
             },
             error: function (error) {
-                console.error('Erro ao buscar últimas chamadas:', error);
+                console.log('Erro ao buscar últimas chamadas:', error);
             }
         });
     }

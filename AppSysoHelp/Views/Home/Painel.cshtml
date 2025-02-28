@@ -158,7 +158,6 @@
 					var lista = (ViewBag.Atendentes != null) ? (List<TecnicosSupervisores>)ViewBag.Atendentes : new List<TecnicosSupervisores>();
 					var atendimento = (ViewBag.Atendimento != null) ? (List<Atendimentos>)ViewBag.Atendimento : new List<Atendimentos>();
 					var finalizado = (ViewBag.Finalizado != null) ? (List<Atendimentos>)ViewBag.Finalizado : new List<Atendimentos>();
-					var chamados = (ViewBag.chamados != null) ? (List<Chamados>)ViewBag.chamados : new List<Chamados>();
 					var nomecliente = "";
 					var dados = "";
 				}
@@ -247,111 +246,9 @@
 					}
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-sm-12 col-md-12 col-lg-12">
-					<div class="row">
-						<div class="col-sm-12 mt-1">
-							<div class="iq-card text-center" style="background-color: #111b21">
-								<div class="row">
-									<div class="col-sm-8">
-										<h5 class="text-white ms-3" style="width: 100%"> Chamados Urgentes</h5>
-									</div>
-									<div class="col-sm-4">
-										<a href="#" style="width:100%" class="btn iq-bg-danger">Aguarde  - @chamados.Count()</a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="col-lg-12">
-				<div class="row">
-					<div class="col-sm-12 col-md-12 col-lg-12">
-						<div class="row">
-							<div class="col-sm-12 mt-1">
-								<div class="iq-card" style="background-color: #111b21">
-									<div class="iq-card-body profile-page p-0">
-										<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-											@{
-												var ativo = "active";
-												var contador = 0;
-											}
-											<ol class="carousel-indicators">
-												@foreach (var item in chamados.Where(a => a.Prioridade.Contains("Urgente") || a.Prioridade.Contains("Alta")))
-												{
-
-													<li data-target="#carouselExampleIndicators" data-slide-to="@contador" class="@ativo"></li>
-													contador++;
-													ativo = "";
-												}
-											</ol>
-											@{
-												ativo = "active";
-												contador = 0;
-											}
-											<div class="carousel-inner">
-												@foreach (var item in chamados.Where(a => a.Prioridade.Contains("Urgente") || a.Prioridade.Contains("Alta")))
-												{
-													var sit = (item.FkSituacaoChamadoId == 1) ? "Aberto" : "Remarcado";
-													<div class="carousel-item @ativo">
-
-
-														<div class="iq-card" style="background-color: #111b21">
-															<div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #222e35">
-																<div class="iq-card-header d-flex justify-content-between">
-																	<div class="iq-header-title">
-																		<h6 class="text-primary" style="font-size: 30px">#@item.ChamadoId - Aberto em: @item.DataCriacao </h6>
-																	</div>
-																</div>
-															</div>
-															<div class="iq-card-body profile-page p-0">
-																<div class="profile-header">
-																	<div class="profile-info p-4">
-																		<div class="row">																			
-																			<div class="col-sm-12 col-md-12">
-																				<h5 class="card-title text-white" style="font-size: 25px">Cliente: @item.FkCliente.NomeCliente</h5>
-																				<p class="card-text text-white" style="font-size: 20px">Descrição: @item.DescricaoCompleta</p>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-															<div class="iq-card iq-card-block iq-card-stretch iq-card-height" style="background-color: #222e35">																
-																<div class="iq-card-header d-flex justify-content-between">
-																	<div class="iq-header-title">
-																		<h6 class="text-white" style="font-size: 14px">@item.Prioridade?.ToUpper() - Setor: @item.FkSetoresNavigation.NomeSetor <i type="button" data-toggle="tooltip" data-placement="top" title="" class="las la-info-circle text-warning"></i> - Situação: @sit</h6>
-																	</div>
-																</div>
-															</div>
-
-														</div>
-
-
-													</div>
-													ativo = "";
-												}
-											</div>
-
-											<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-												<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-												<span class="sr-only">Previous</span>
-											</a>
-											<a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-												<span class="carousel-control-next-icon" aria-hidden="true"></span>
-												<span class="sr-only">Next</span>
-											</a>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+			<div class="corpoChamados">
 
 			</div>
-
 		</div>
 	</div>
 

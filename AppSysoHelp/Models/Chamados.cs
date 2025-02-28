@@ -41,6 +41,8 @@ public partial class Chamados
 
     public TimeOnly? HorasSaldo { get; set; }
 
+    public bool? ChamadoPainel { get; set; }
+
     public virtual ICollection<Atendimentos> Atendimentos { get; set; } = new List<Atendimentos>();
 
     public virtual TecnicosSupervisores? FkAtendenteNavigation { get; set; }

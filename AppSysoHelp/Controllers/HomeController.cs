@@ -56,16 +56,6 @@ namespace AppSysoHelp.Controllers
                                                   .Where(a => a.DataCriacao!.Value.Date == DateTime.Now.Date)
                                                   .ToList();
 
-            ViewBag.chamados = _context.Chamados.Include(a => a.FkAtendenteNavigation)
-                                                .Include(a => a.Atendimentos)
-                                                 .Include(a => a.FkCliente)
-                                                 .Include(a=> a.FkSetoresNavigation)
-                                                 .Where(a => (a.Prioridade.Contains("Urgente") ||
-                                                              a.Prioridade.Contains("Alta")) &&
-                                                              (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2))
-                                                 .ToList();
-
-
             ViewBag.Atendentes = _context.TecnicosSupervisores.Include(a=> a.Time).OrderBy(a=> a.NomeCompleto).ToList();
 
             ViewBag.Atendimento = _context.Atendimentos.Include(a=> a.FkChamado).ThenInclude(a=> a.FkCliente).Where(a => a.AtendimentoEncerrado == false).ToList();
@@ -124,6 +114,34 @@ namespace AppSysoHelp.Controllers
             return Json(ranking);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> BuscarChamadosPainel()
+        {
+            var lista = await _context.Chamados.Include(a => a.FkAtendenteNavigation)
+                                               .Include(a => a.Atendimentos)
+                                               .Include(a => a.FkCliente)
+                                               .Include(a => a.FkSetoresNavigation)
+                                               .Where(a => (a.Prioridade.Contains("Urgente") ||
+                                                             a.Prioridade.Contains("Alta")) &&
+                                                             (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2))
+                                               .ToListAsync();
+            return PartialView("_chamados", lista);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> BuscarChamadosAberto()
+        {
+            var chamado = await _context.Chamados.Include(a => a.FkAtendenteNavigation)
+                                               .Include(a => a.Atendimentos)
+                                               .Include(a => a.FkCliente)
+                                               .Include(a => a.FkSetoresNavigation)
+                                               .FirstOrDefaultAsync(a => (a.Prioridade.Contains("Urgente") ||
+                                                             a.Prioridade.Contains("Alta")) &&
+                                                             (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) &&
+                                                             a.ChamadoPainel == false);
+            return Ok(chamado);
+        }
 
     }
 }
