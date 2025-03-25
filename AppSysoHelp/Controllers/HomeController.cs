@@ -48,7 +48,7 @@ namespace AppSysoHelp.Controllers
 
         }
 
-
+        [AllowAnonymous]
         public IActionResult Painel()
         {
             var lista = _context.Chamados.Include(a=> a.FkAtendenteNavigation)
@@ -113,7 +113,8 @@ namespace AppSysoHelp.Controllers
 
             return Json(ranking);
         }
-
+        
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> BuscarChamadosPainel()
         {
@@ -124,30 +125,48 @@ namespace AppSysoHelp.Controllers
                                                .Where(a => (a.Prioridade.Contains("Urgente") ||
                                                              a.Prioridade.Contains("Alta")) &&
                                                              (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2))
+                                               .OrderByDescending(a => a.ChamadoId)
                                                .ToListAsync();
             return PartialView("_chamados", lista);
         }
 
-
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> BuscarChamadosAberto()
         {
             var chamado = await _context.Chamados.Include(a => a.FkAtendenteNavigation)
-                                               .Include(a => a.Atendimentos)
-                                               .Include(a => a.FkCliente)
-                                               .Include(a => a.FkSetoresNavigation)
-                                               .Where(a => (a.Prioridade.Contains("Urgente") ||
-                                                             a.Prioridade.Contains("Alta")) &&
-                                                             (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) &&
-                                                             a.ChamadoPainel == false)
-                                               .Select(x => new
-                                               {
-                                                   cliente= x.FkCliente.NomeCliente,
-                                                   prioridade= x.Prioridade.Trim(),
-                                                   data = Convert.ToDateTime(x.DataCriacao).ToString("dd/MM/yyyy"),
-                                                   tecnico = x.FkTecnico.NomeCompleto
-                                               }).FirstOrDefaultAsync();              ;
+                                                   .Include(a => a.Atendimentos)
+                                                   .Include(a => a.FkCliente)
+                                                   .Include(a => a.FkSetoresNavigation)
+                                                   .Where(a => (a.Prioridade.Contains("Urgente") ||
+                                                                a.Prioridade.Contains("Alta")) &&
+                                                                (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) &&
+                                                                (a.ChamadoPainel == false || a.ChamadoPainel == null))
+                                                   .OrderByDescending(a => a.ChamadoId)
+                                                   .Select(x => new
+                                                   {
+                                                       id = x.ChamadoId,
+                                                       cliente = x.FkCliente.NomeCliente,
+                                                       prioridade = x.Prioridade.Trim(),
+                                                       data = Convert.ToDateTime(x.DataCriacao).ToString("dd/MM/yyyy"),
+                                                       tecnico = x.FkTecnico.NomeCompleto
+                                                   }).FirstOrDefaultAsync();
+
             return Json(chamado);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> UpdateChamadosAberto(long id)
+        {
+            var chamado = await _context.Chamados.FirstOrDefaultAsync(a => a.ChamadoId == id);
+            if (chamado != null)
+            {
+                chamado.ChamadoPainel = true;
+                _context.Update(chamado);
+                await _context.SaveChangesAsync();  // Save changes asynchronously
+            }
+            return Ok();
         }
 
     }

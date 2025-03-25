@@ -45,7 +45,7 @@ namespace AppSysoHelp.Controllers
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
-                return RedirectToAction("Painel", "Home");
+                return RedirectToAction("Index", "Home");
             }
 
             return View();

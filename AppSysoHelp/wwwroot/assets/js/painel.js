@@ -16,7 +16,7 @@ $(function () {
 
         // Garantir que o áudio seja tocado
         tocarAudio(_AudioDing, function () {
-            intervalo();
+            intervalo(); // Iniciar o intervalo para chamadas contínuas
             UltimasChamadas(_PainelSelecionado);
         });
     });
@@ -47,25 +47,19 @@ $(function () {
             url: '/Home/BuscarChamadosAberto',
             type: "POST",
             success: function (data) {
-                if (data.length !== 0) {
-                    _senhaChamado = true;
-
-                   // _AudioSenha.src = `/Senhas/${data[0].id}/Audio`;
-
-                    // Template para a senha atual chamando
-                    //var template = Handlebars.compile($("#senha-atual-chamando").html());
-                    //$('#chamada-atual').html(template(data));
-
-                    // Tocar o som de "ding"
+                if (data !== null) {
+                    // Tocar o som de "ding" e continuar o processo
                     tocarAudio(_AudioDing, function () {
                         PlayAudioSenha(data);
                     });
                 } else {
-                    _senhaChamado = false;
+                    UltimasChamadas(_PainelSelecionado);
+                    _senhaChamado = false; // Se não houver dados, permitir nova chamada
                 }
             },
             error: function (error) {
                 console.log('Erro ao buscar a senha:', error);
+                _senhaChamado = false; // Permitir nova tentativa em caso de erro
             }
         });
     }
@@ -95,7 +89,7 @@ $(function () {
         var data = dados.data;
         var prioridade = dados.prioridade;
         var tecnico = (dados.tecnico.length > 1) ? `T\u00e9cnico: ${dados.tecnico}.` : "";
-      
+
         var text = `Aten\u00e7\u00e3o! ${tecnico} Chamado com a prioridade: ${prioridade}. Para o cliente: ${cliente}. Aberto \u00e0s: ${data}.`;
 
         var utterance = new SpeechSynthesisUtterance(text);
@@ -103,7 +97,6 @@ $(function () {
         utterance.rate = 0.9; // Velocidade natural
         utterance.pitch = 1.0; // Tom neutro
 
-        
         speechSynthesis.onvoiceschanged = function () {
             var voices = speechSynthesis.getVoices();
             var voice = voices.find(v => v.name.includes("Google português do Brasil"));
@@ -114,15 +107,29 @@ $(function () {
         };
 
         utterance.onend = function () {
-            _senhaChamado = false;
+            _senhaChamado = false; // Permitir nova chamada após falar
             UltimasChamadas(_PainelSelecionado);
             console.log('Vocalização concluída.');
         };
-
-        _senhaChamado = true;
+        updateChamado(dados.id);
         console.log('Chamando a Senha via Áudio');
     }
 
+    function updateChamado(idChamado) {
+        $.ajax({
+            url: '/Home/UpdateChamadosAberto',
+            type: "POST",
+            data: { id: idChamado },
+            success: function (data) {
+                $('.corpoChamados').html(data);
+                _senhaChamado = false; // Permitir nova chamada após falar
+            },
+            error: function (error) {
+                console.log('Erro ao atualizar chamados:', error);
+                _senhaChamado = false; // Permitir nova chamada após falar
+            }
+        });
+    }
 
     // Chamar a função a cada meio segundo
     function intervalo() {
@@ -130,7 +137,6 @@ $(function () {
             if (_senhaChamado === false) {
                 GetSenhaChamar(_PainelSelecionado);
             }
-        }, 500);
+        }, 60000); // Chamadas contínuas a cada 500ms
     }
-
 });
