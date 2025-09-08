@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="~/css/responsive.css">
 
     <!-- Links e scripts para o Select2 e jQuery -->
+    <!-- No <head> do _Layout.cshtml -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -160,6 +162,31 @@
     <script src="~/js/custom.js"></script>
     <script src="//cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            // Aguarda o SweetAlert2 carregar
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('TempData existe:', '@TempData["ErrorMessage"]');
+
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Acesso Negado!',
+                        text: '@TempData["ErrorMessage"]',
+                        icon: 'error',
+                        confirmButtonColor: '#dc3545',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    alert('Acesso Negado! @TempData["ErrorMessage"]');
+                }
+            });
+        </script>
+    }
+
+
 </body>
 </html>
 

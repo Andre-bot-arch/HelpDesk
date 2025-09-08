@@ -1,0 +1,235 @@
+﻿<!-- Views/Shared/Components/Chamado/Default.cshtml -->
+@using AppSysoHelp.Models.Dto
+@model List<AtendimentoDto>
+
+
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome para ícones -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list-alt me-2"></i>
+                        Atendimentos Em Aberto
+                    </h5>
+                    <small class="text-light">Total: @Model.Count() registros</small>
+                </div>
+
+                <div class="card-body p-0">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="width: 80px;">ID</th>
+                                        <th style="width: 100px;">Chamado</th>
+                                        <th style="width: 200px;">Técnico</th>
+                                        <th>Procedimentos</th>
+                                        <th style="width: 130px;">Data Atend.</th>
+                                       
+                                        
+                                        <th style="width: 100px;">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var atendimento in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-secondary">#@atendimento.AtendimentoId</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info text-dark">#@atendimento.FkChamadoId</span>
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(atendimento.TecnicoNome))
+                                                {
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-user-tie text-primary me-1"></i>
+                                                        <span class="fw-medium">@atendimento.TecnicoNome</span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted fst-italic">
+                                                        <i class="fas fa-user-slash me-1"></i>
+                                                        Sem técnico
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div style="max-width: 250px;">
+                                                    @if (!string.IsNullOrEmpty(atendimento.ProcedimentosAplicados))
+                                                    {
+                                                        <span class="text-truncate d-inline-block"
+                                                              style="max-width: 100%;"
+                                                              title="@atendimento.ProcedimentosAplicados">
+                                                            @atendimento.ProcedimentosAplicados
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted fst-italic">Não informado</span>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if (atendimento.DataAtendimento.HasValue)
+                                                {
+                                                    <small class="text-dark">
+                                                        <i class="fas fa-calendar me-1"></i>
+                                                        @atendimento.DataAtendimento.Value.ToString("dd/MM/yyyy")
+                                                    </small>
+                                                }
+                                                else if (atendimento.NovaDataAtendimento.HasValue)
+                                                {
+                                                    <small class="text-warning">
+                                                        <i class="fas fa-calendar-alt me-1"></i>
+                                                        @atendimento.NovaDataAtendimento.Value.ToString("dd/MM/yyyy")
+                                                    </small>
+                                                }
+                                                else
+                                                {
+                                                    <small class="text-muted">Não agendado</small>
+                                                }
+                                            </td>
+                                          
+                                           
+                                            <td>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <button type="button" class="btn btn-outline-success btn-sm"
+                                                            onclick="finalizarAtendimento(@atendimento.AtendimentoId)"
+                                                            title="Finalizar">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Nenhum atendimento em aberto</h5>
+                            <p class="text-muted">Todos os atendimentos foram finalizados!</p>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.Any())
+                {
+                    <div class="card-footer bg-light">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Atualizado em: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                                </small>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="atualizarLista()">
+                                    <i class="fas fa-sync-alt me-1"></i>
+                                    Atualizar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript para ações -->
+<script>
+        function finalizarAtendimento(atendimentoId) {
+       Swal.fire({
+           title: 'Finalizar Atendimento',
+           text: 'Deseja realmente finalizar este atendimento?',
+           icon: 'question',
+           showCancelButton: true,
+           confirmButtonColor: '#28a745',
+           cancelButtonColor: '#dc3545',
+           confirmButtonText: 'Sim, finalizar!',
+           cancelButtonText: 'Cancelar'
+       }).then((result) => {
+           if (result.isConfirmed) {
+               fetch(`/Chamado/Finalizar/${atendimentoId}`, {
+                   method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/json',
+                       'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                   }
+               })
+               .then(response => {
+                   if (response.ok) {
+                       Swal.fire({
+                           title: 'Sucesso!',
+                           text: 'Atendimento finalizado com sucesso!',
+                           icon: 'success',
+                           confirmButtonColor: '#28a745'
+                       }).then(() => {
+                           location.reload();
+                       });
+                   } else {
+                       Swal.fire({
+                           title: 'Erro!',
+                           text: 'Erro ao finalizar atendimento',
+                           icon: 'error',
+                           confirmButtonColor: '#dc3545'
+                       });
+                   }
+               })
+               .catch(error => {
+                   console.error('Erro:', error);
+                   Swal.fire({
+                       title: 'Erro!',
+                       text: 'Erro ao finalizar atendimento',
+                       icon: 'error',
+                       confirmButtonColor: '#dc3545'
+                   });
+               });
+           }
+       });
+    }
+    
+
+    function atualizarLista() {
+        // Atualizar a página ou fazer reload do componente
+        location.reload();
+    }
+</script>
+
+<!-- CSS adicional se necessário -->
+<style>
+    .table-responsive {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    .text-truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .btn-group-sm > .btn {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.75rem;
+    }
+
+    .card-header .card-title {
+        margin-bottom: 0.25rem;
+    }
+</style>

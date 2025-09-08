@@ -364,5 +364,48 @@ namespace AppSysoHelp.Controllers
                 item.Fim = Fim;
             }
         }
+
+        public async Task<IActionResult> AdminChamados()
+        {
+            var userIdClaim = User.FindFirst("Id");
+            var userId = userIdClaim?.Value;
+
+            var usuario = _context.TecnicosSupervisores.Find(Convert.ToInt64(userId));
+          
+
+
+            if (usuario.CargoResponsabilidade != "Admin")
+            {
+                TempData["ErrorMessage"] = "Acesso negado! Apenas administradores podem acessar.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.usuario = usuario;
+
+
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Finalizar(long id)
+        {
+
+            var userIdClaim = User.FindFirst("Id");
+            var userId = userIdClaim?.Value;
+            var usuarioTecnico = _context.TecnicosSupervisores.Find(Convert.ToInt64(userId));
+
+            var Atendimento = _context.Atendimentos.Find(id);
+
+            if (Atendimento != null)
+            {
+                Atendimento.AtendimentoEncerrado = true;
+                Atendimento.ProcedimentosAplicados = $"FINALIZADO PELO ADMINISTRADOR {usuarioTecnico.NomeCompleto}";
+                Atendimento.DataFechamento = DateTime.Now;
+                _context.SaveChanges();
+            }
+
+            return Ok();
+        }
     }
 }

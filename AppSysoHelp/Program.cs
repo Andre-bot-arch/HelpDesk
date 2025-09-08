@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<ServiceContato>();
+builder.Services.AddScoped<ServiceGenerico>();
 // Configurar os serviços
 builder.Services.AddDbContext<HelpdesksysoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -23,6 +24,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOrManager", policy =>
         policy.RequireClaim("Role", "Admin", "Suporte"));
 });
+
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

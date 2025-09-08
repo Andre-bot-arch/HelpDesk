@@ -1,4 +1,6 @@
 ﻿using AppSysoHelp.Models;
+using AppSysoHelp.Models.Dto;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace AppSysoHelp.Service
@@ -84,6 +86,43 @@ namespace AppSysoHelp.Service
             await _context.AddRangeAsync(listacontrato);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        internal async Task<List<AtendimentoDto>> BuscarChamadosPreso()
+        {
+            try
+            {
+                var resultado = await (
+                    from atendimento in _context.Atendimentos
+                    join tecnico in _context.TecnicosSupervisores
+                        on atendimento.FkTecnicoId equals tecnico.PkId into tecnicoJoin
+                    from t in tecnicoJoin.DefaultIfEmpty() // LEFT JOIN - inclui atendimentos sem técnico
+                    where atendimento.AtendimentoEncerrado == false
+                    select new AtendimentoDto
+                    {
+                        AtendimentoId = atendimento.AtendimentoId,
+                        FkChamadoId = atendimento.FkChamadoId,
+                        ProcedimentosAplicados = atendimento.ProcedimentosAplicados,
+                        DataAtendimento = atendimento.DataAtendimento,
+                        NovaDataAtendimento = atendimento.NovaDataAtendimento,
+                        DataFechamento = atendimento.DataFechamento,
+                        SatisfacaoCliente = atendimento.SatisfacaoCliente,
+                        CaminhoDaImagem = atendimento.CaminhoDaImagem,
+                        Inicio = atendimento.Inicio,
+                        Fim = atendimento.Fim,
+                        FkTecnicoId = atendimento.FkTecnicoId,
+                        TecnicoNome = t != null ? t.NomeCompleto : "Sem técnico" // AQUI pega o NomeCompleto
+                    }
+                )
+                .OrderByDescending(x => x.DataAtendimento)
+                .ToListAsync();
+
+                return resultado;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao buscar atendimentos não encerrados", ex);
+            }
         }
     }
 }
