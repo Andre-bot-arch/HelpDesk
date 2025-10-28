@@ -1,128 +1,21 @@
 ﻿@model RankingTecnicoViewModel
 @{
     ViewData["Title"] = "Ranking de Técnicos";
+    Layout = null;
 }
 
-<div class="ranking-container">
-    <div class="ranking-header">
-        <div class="header-content">
-            <h2>Ranking de Técnicos - @Model.PeriodoAtual</h2>
-            <p class="subtitle">Acompanhe o desempenho da equipe técnica</p>
-        </div>
-        <div class="periodo-filtros">
-            <div class="filtro-grupo">
-                <input type="month" id="anoMes" class="form-control" />
-                <button onclick="aplicarFiltro()" class="btn btn-primary">
-                    <span>Filtrar</span>
-                </button>
-            </div>
-            <div class="botoes-periodo">
-              @*   <button onclick="carregarHoje()" class="btn btn-info">Hoje</button>  *@
-                <button onclick="carregarMesAtual()" class="btn btn-secondary">
-                    <span>Mês Atual</span>
-                </button>
-            </div>
-        </div>
-    </div>
+<!doctype html>
+<html lang="pt-br">
+<head>
 
-    <div class="ranking-stats">
-        <div class="stat-card">
-            <div class="stat-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                    <path d="M2 17l10 5 10-5"/>
-                    <path d="M2 12l10 5 10-5"/>
-                </svg>
-            </div>
-            <div class="stat-content">
-                <h4>Pontuação Total</h4>
-                <p class="stat-value">@Model.TotalMes</p>
-                <span class="stat-label">do mês</span>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                    <path d="M9 3v18"/>
-                    <path d="M15 3v18"/>
-                </svg>
-            </div>
-            <div class="stat-content">
-                <h4>Total de Chamados</h4>
-                <p class="stat-value">@Model.TotalChamadoMes</p>
-                <span class="stat-label">do mês</span>
-            </div>
-        </div>
-    </div>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>@ViewData["Title"] - Ranking Técnicos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+  
 
-    <div class="dashboard-layout">
-        <div class="chart-section">
-            <div class="chart-header">
-                <h3>Desempenho Geral</h3>
-                <p>Pontuação e chamados atendidos</p>
-            </div>
-            <div class="chart-container">
-                <canvas id="rankingChart"></canvas>
-            </div>
-        </div>
-        
-        <div class="podium-section">
-            <div class="podium-header">
-                <div class="trophy-icon">🏆</div>
-                <h3>Top 3 do Mês</h3>
-                <p>Melhores desempenhos</p>
-            </div>
-            <div id="podiumContent" class="podium-cards">
-                @if (Model.Ranking != null && Model.Ranking.Any())
-                {
-                    var top3 = Model.Ranking.OrderByDescending(t => t.TotalComplexidadeMes).Take(3).ToList();
-                    for (int i = 0; i < top3.Count; i++)
-                    {
-                        var tecnico = top3[i];
-                        var posicao = i + 1;
-                        var medalha = posicao == 1 ? "🥇" : posicao == 2 ? "🥈" : "🥉";
-                        var corCard = posicao == 1 ? "gold" : posicao == 2 ? "silver" : "bronze";
-                        
-                        <div class="podium-card @corCard">
-                            <div class="podium-position">
-                                <span class="medal">@medalha</span>
-                                <span class="rank">#@posicao</span>
-                            </div>
-                            <div class="tecnico-podium-info">
-                                <div class="tecnico-avatar-podium">
-                                    @if (!string.IsNullOrEmpty(tecnico.Imagem))
-                                    {
-                                        <img src="@tecnico.Imagem" alt="@tecnico.NomeTecnico" />
-                                    }
-                                    else
-                                    {
-                                        <div class="avatar-placeholder-podium">
-                                            @tecnico.NomeTecnico[0]
-                                        </div>
-                                    }
-                                </div>
-                                <h4>@tecnico.NomeTecnico</h4>
-                            </div>
-                            <div class="metricas-podium">
-                                <div class="metrica-podium">
-                                    <span class="label">Pontos</span>
-                                    <span class="valor">@tecnico.TotalComplexidadeMes</span>
-                                </div>
-                                <div class="metrica-podium">
-                                    <span class="label">Chamados</span>
-                                    <span class="valor">@tecnico.QtdChamadosMes</span>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                }
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
+    <style>
     * {
         box-sizing: border-box;
     }
@@ -837,10 +730,128 @@
     }
 </style>
 
-@section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
-    <script>
+ </head>
+<body>
+<div class="ranking-container">
+    <div class="ranking-header">
+        <div class="header-content">
+            <h2>Ranking de Técnicos - @Model.PeriodoAtual</h2>
+            <p class="subtitle">Acompanhe o desempenho da equipe técnica</p>
+        </div>
+        <div class="periodo-filtros">
+            <div class="filtro-grupo">
+                <input type="month" id="anoMes" class="form-control" />
+                <button onclick="aplicarFiltro()" class="btn btn-primary">
+                    <span>Filtrar</span>
+                </button>
+            </div>
+            <div class="botoes-periodo">
+              @*   <button onclick="carregarHoje()" class="btn btn-info">Hoje</button>  *@
+                <button onclick="carregarMesAtual()" class="btn btn-secondary">
+                    <span>Mês Atual</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="ranking-stats">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+            <div class="stat-content">
+                <h4>Pontuação Total</h4>
+                <p class="stat-value">@Model.TotalMes</p>
+                <span class="stat-label">do mês</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <path d="M9 3v18"/>
+                    <path d="M15 3v18"/>
+                </svg>
+            </div>
+            <div class="stat-content">
+                <h4>Total de Chamados</h4>
+                <p class="stat-value">@Model.TotalChamadoMes</p>
+                <span class="stat-label">do mês</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-layout">
+        <div class="chart-section">
+            <div class="chart-header">
+                <h3>Desempenho Geral</h3>
+                <p>Pontuação e chamados atendidos</p>
+            </div>
+            <div class="chart-container">
+                <canvas id="rankingChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="podium-section">
+            <div class="podium-header">
+                <div class="trophy-icon">🏆</div>
+                <h3>Top 3 do Mês</h3>
+                <p>Melhores desempenhos</p>
+            </div>
+            <div id="podiumContent" class="podium-cards">
+                @if (Model.Ranking != null && Model.Ranking.Any())
+                {
+                    var top3 = Model.Ranking.OrderByDescending(t => t.TotalComplexidadeMes).Take(3).ToList();
+                    for (int i = 0; i < top3.Count; i++)
+                    {
+                        var tecnico = top3[i];
+                        var posicao = i + 1;
+                        var medalha = posicao == 1 ? "🥇" : posicao == 2 ? "🥈" : "🥉";
+                        var corCard = posicao == 1 ? "gold" : posicao == 2 ? "silver" : "bronze";
+                        
+                        <div class="podium-card @corCard">
+                            <div class="podium-position">
+                                <span class="medal">@medalha</span>
+                                <span class="rank">#@posicao</span>
+                            </div>
+                            <div class="tecnico-podium-info">
+                                <div class="tecnico-avatar-podium">
+                                    @if (!string.IsNullOrEmpty(tecnico.Imagem))
+                                    {
+                                        <img src="@tecnico.Imagem" alt="@tecnico.NomeTecnico" />
+                                    }
+                                    else
+                                    {
+                                        <div class="avatar-placeholder-podium">
+                                            @tecnico.NomeTecnico[0]
+                                        </div>
+                                    }
+                                </div>
+                                <h4>@tecnico.NomeTecnico</h4>
+                            </div>
+                            <div class="metricas-podium">
+                                <div class="metrica-podium">
+                                    <span class="label">Pontos</span>
+                                    <span class="valor">@tecnico.TotalComplexidadeMes</span>
+                                </div>
+                                <div class="metrica-podium">
+                                    <span class="label">Chamados</span>
+                                    <span class="valor">@tecnico.QtdChamadosMes</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
         // Função para carregar ranking de hoje
         async function carregarHoje() {
             try {
@@ -1088,9 +1099,22 @@
         } catch (error) {
             console.warn('Falha ao atualizar automaticamente o gráfico:', error);
         }
-    }, 300000);
+    }, 10000);
     //10 segundo = 10000
     //5minitos = 300000
     //10 minutois = 600000
     </script>
-}
+
+
+
+</body>
+
+
+
+</html>
+
+
+@* @section Scripts {
+   
+    
+} *@
