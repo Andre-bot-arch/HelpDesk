@@ -1,0 +1,1 @@
+Scaffold-DbContext "Data Source=mssql2017.hostingzone.com.br,1433;Initial Catalog=helpdesksyso;Persist Security Info=True;User ID=helpdesk;Password=syso@3680;Encrypt=True;TrustServerCertificate=True; "Microsoft.EntityFrameworkCore.SqlServer -o Models -f -NoPluralize

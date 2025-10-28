@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\Scaffold\" />
     <Folder Include="wwwroot\imagens_chamado\" />
     <Folder Include="wwwroot\landing-page\time\" />
   </ItemGroup>

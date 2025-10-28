@@ -64,6 +64,10 @@ namespace AppSysoHelp.Controllers
                                                            true && a.NovaDataAtendimento.Value == null &&
                                                            a.DataFechamento! > DateTime.Now.Date).ToList();
 
+
+            
+
+
             return View(lista);
         }
 
@@ -168,6 +172,13 @@ namespace AppSysoHelp.Controllers
             }
             return Ok();
         }
+
+
+
+
+        
+
+
 
     }
 }

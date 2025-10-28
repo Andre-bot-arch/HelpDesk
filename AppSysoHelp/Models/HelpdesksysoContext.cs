@@ -53,6 +53,8 @@ public partial class HelpdesksysoContext : DbContext
 
     public virtual DbSet<VwAtendimentos> VwAtendimentos { get; set; }
 
+    public DbSet<RankingTecnico> RankingTecnicos { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=mssql2017.hostingzone.com.br,1433;Initial Catalog=helpdesksyso;Persist Security Info=True;User ID=helpdesk;Password=syso@3680;Encrypt=True;TrustServerCertificate=True;");
@@ -452,6 +454,12 @@ public partial class HelpdesksysoContext : DbContext
             entity.Property(e => e.Situacao).HasMaxLength(100);
             entity.Property(e => e.SubCategoria).HasMaxLength(150);
             entity.Property(e => e.Tecnico).HasMaxLength(150);
+        });
+
+        modelBuilder.Entity<RankingTecnico>(entity =>
+        {
+            entity.HasNoKey(); // Não tem chave primária
+            entity.ToTable("fn_RankingTecnicos", t => t.ExcludeFromMigrations());
         });
 
         OnModelCreatingPartial(modelBuilder);

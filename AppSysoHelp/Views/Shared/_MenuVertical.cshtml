@@ -32,20 +32,20 @@
             <ul id="iq-sidebar-toggle" class="iq-menu">
                 <li class="iq-menu-title"><i class="ri-subtract-line"></i><span>Home</span></li>
                 <li>
-                    <a href="~/Home/Index" class="iq-waves-effect"><i class="ri-home-4-line"></i><span>Dashboard</span></a>
+                    <a href="~/Home/Index" class="iq-waves-effect"><i class="ri-dashboard-2-fill"></i><span>Dashboard</span></a>
                 </li>
                 <li>
-                    <a href="~/Home/Painel" class="iq-waves-effect"><i class="ri-home-4-line"></i><span>Painel</span></a>
+                    <a href="~/Ranking/Index" class="iq-waves-effect"><i class="ri-trophy-fill"></i><span>Ranking Técnicos</span></a>
                 </li>
 
                 <li class="iq-menu-title"><i class="ri-subtract-line"></i><span>Chamados</span></li>               
-                <li><a asp-controller="Chamado" asp-action="Aberto" class="iq-waves-effect"><i class="ri-message-line"></i><span>Atendimento</span></a></li>
+                <li><a asp-controller="Chamado" asp-action="Aberto" class="iq-waves-effect"><i class="ri-customer-service-fill"></i><span>Atendimento</span></a></li>
               @*   <li><a href="#" class="iq-waves-effect"><i class="ri-message-line"></i><span>Remarcados</span></a></li>
                 <li><a href="#" class="iq-waves-effect"><i class="ri-message-line"></i><span>Finalizados</span></a></li> *@
 
                 <li class="iq-menu-title"><i class="ri-subtract-line"></i><span>Administrador</span></li>
                 <li>
-                    <a href="#ui-elements" class="iq-waves-effect collapsed" data-toggle="collapse" aria-expanded="false"><i class="ri-pencil-ruler-line"></i><span>Contratos</span><i class="ri-arrow-right-s-line iq-arrow-right"></i></a>
+                    <a href="#ui-elements" class="iq-waves-effect collapsed" data-toggle="collapse" aria-expanded="false"><i class="ri-contract-fill"></i><span>Contratos</span><i class="ri-arrow-right-s-line iq-arrow-right"></i></a>
                     <ul id="ui-elements" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
                         <li><a asp-controller="Contrato" asp-action="Index" ><i class="ri-file-list-3-line"></i>Contratos Ativos</a></li>
                         <li><a asp-controller="Contrato" asp-action="Cancelados"><i class="ri-alert-line"></i>Contratos Cancelados</a></li>
@@ -72,6 +72,9 @@
                 <li>
                     <a href="~/Chamado/AdminChamados" class="iq-waves-effect"><i class="ri-game-fill"></i><span>Administrador</span></a>
                  </li>
+                @* <li>
+                    <a href="~/Ranking/Index" class="iq-waves-effect"><i class="ri-game-fill"></i><span>Ranking</span></a>
+                </li> *@
             </ul>
         </nav>
         <div class="p-3"></div>
