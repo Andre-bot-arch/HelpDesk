@@ -15,6 +15,21 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Index()
         {
+            var userIdClaim = User.FindFirst("Id");
+            var userId = userIdClaim?.Value;
+
+            var usuario = _context.TecnicosSupervisores.Find(Convert.ToInt64(userId));
+
+
+
+            if (usuario.CargoResponsabilidade != "Admin")
+            {
+                TempData["ErrorMessage"] = "Acesso negado! Apenas administradores podem acessar.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.usuario = usuario;
+
             ViewBag.categorias = new SelectList(_context.ChamadosCategoria.OrderBy(a => a.Descricao).ToList(), "CategoriaId", "Descricao");
             return View();
         }

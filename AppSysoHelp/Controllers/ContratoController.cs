@@ -26,6 +26,23 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Index(string query)
         {
+
+            var userIdClaim = User.FindFirst("Id");
+            var userId = userIdClaim?.Value;
+
+            var usuario = _context.TecnicosSupervisores.Find(Convert.ToInt64(userId));
+
+
+
+            if (usuario.CargoResponsabilidade != "Admin")
+            {
+                TempData["ErrorMessage"] = "Acesso negado! Apenas administradores podem acessar.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.usuario = usuario;
+
+
             if (!string.IsNullOrEmpty(query))
             {
                 var lista = _contrato.BuscarContratos().Where(a => (a.FkCliente.Fantasia.Contains(query.ToUpper()) ||
@@ -47,6 +64,23 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Cancelados(string query)
         {
+
+            var userIdClaim = User.FindFirst("Id");
+            var userId = userIdClaim?.Value;
+
+            var usuario = _context.TecnicosSupervisores.Find(Convert.ToInt64(userId));
+
+
+
+            if (usuario.CargoResponsabilidade != "Admin")
+            {
+                TempData["ErrorMessage"] = "Acesso negado! Apenas administradores podem acessar.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.usuario = usuario;
+
+
             if (!string.IsNullOrEmpty(query))
             {
                 var lista = _contrato.BuscarContratosCancelados().Where(a => a.FkCliente.Fantasia.Contains(query.ToUpper()) ||

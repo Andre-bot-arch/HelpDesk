@@ -25,6 +25,21 @@ namespace AppSysoHelp.Controllers
 
         public IActionResult Index(int? page, string? query)
         {
+            var userIdClaim = User.FindFirst("Id");
+            var userId = userIdClaim?.Value;
+
+            var usuario = _context.TecnicosSupervisores.Find(Convert.ToInt64(userId));
+
+
+
+            if (usuario.CargoResponsabilidade != "Admin")
+            {
+                TempData["ErrorMessage"] = "Acesso negado! Apenas administradores podem acessar.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.usuario = usuario;
+
             int pageSize = 10;
             int pageNumber = (page ?? 1);
 
