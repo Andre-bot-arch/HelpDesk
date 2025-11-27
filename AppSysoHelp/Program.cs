@@ -1,9 +1,26 @@
 using AppSysoHelp.Models;
 using AppSysoHelp.Service;
+using AppSysoHelp.Service.WhatsService;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+builder.Services.AddHttpClient();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+builder.Services.AddScoped<WhatsAppService>();
+builder.Services.AddScoped<MessageProcessorService>();
+builder.Services.AddScoped<SessionManager>();
 
 builder.Services.AddTransient<ServiceContato>();
 builder.Services.AddScoped<ServiceGenerico>();
@@ -24,6 +41,12 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOrManager", policy =>
         policy.RequireClaim("Role", "Admin", "Suporte"));
 });
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 
 
 

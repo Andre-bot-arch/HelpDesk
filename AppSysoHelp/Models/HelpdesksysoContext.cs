@@ -27,9 +27,13 @@ public partial class HelpdesksysoContext : DbContext
 
     public virtual DbSet<Contratos> Contratos { get; set; }
 
+    public virtual DbSet<CustomerSessions> CustomerSessions { get; set; }
+
     public virtual DbSet<Dispositivos> Dispositivos { get; set; }
 
     public virtual DbSet<Licencas> Licencas { get; set; }
+
+    public virtual DbSet<MessageHistories> MessageHistories { get; set; }
 
     public virtual DbSet<PlataformasContratos> PlataformasContratos { get; set; }
 
@@ -210,6 +214,22 @@ public partial class HelpdesksysoContext : DbContext
                 .HasConstraintName("FK__Contratos__Plata__7D439ABD");
         });
 
+        modelBuilder.Entity<CustomerSessions>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Customer__3214EC0716CE09DB");
+
+            entity.HasIndex(e => e.PhoneNumber, "IX_CustomerSessions_PhoneNumber");
+
+            entity.HasIndex(e => e.State, "IX_CustomerSessions_State");
+
+            entity.HasIndex(e => e.PhoneNumber, "UQ__Customer__85FB4E382FD12F3C").IsUnique();
+
+            entity.Property(e => e.AssignedAgent).HasMaxLength(100);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.LastInteraction).HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.PhoneNumber).HasMaxLength(20);
+        });
+
         modelBuilder.Entity<Dispositivos>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Disposit__3214EC07B93AECCD");
@@ -248,6 +268,20 @@ public partial class HelpdesksysoContext : DbContext
             entity.HasOne(d => d.FkContrato).WithMany(p => p.Licencas)
                 .HasForeignKey(d => d.FkContratoId)
                 .HasConstraintName("FK_Licencas_Contratos");
+        });
+
+        modelBuilder.Entity<MessageHistories>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__MessageH__3214EC0722274259");
+
+            entity.HasIndex(e => e.PhoneNumber, "IX_MessageHistories_PhoneNumber");
+
+            entity.HasIndex(e => e.Timestamp, "IX_MessageHistories_Timestamp");
+
+            entity.Property(e => e.Direction).HasMaxLength(50);
+            entity.Property(e => e.PhoneNumber).HasMaxLength(20);
+            entity.Property(e => e.SentBy).HasMaxLength(100);
+            entity.Property(e => e.Timestamp).HasDefaultValueSql("(getutcdate())");
         });
 
         modelBuilder.Entity<PlataformasContratos>(entity =>
