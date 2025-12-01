@@ -59,6 +59,19 @@ namespace AppSysoHelp.Service.WhatsService
                 phoneNumber, oldState, newState, agentName ?? "N/A");
         }
 
+        /// <summary>
+        /// Atualiza sessão completa (sem mudar State)
+        /// </summary>
+        public async Task UpdateSessionAsync(CustomerSessions session)
+        {
+            session.LastInteraction = DateTime.UtcNow;
+            _context.CustomerSessions.Update(session);
+            await _context.SaveChangesAsync();
+
+            _logger.LogDebug("Sessão {Phone} atualizada.  Flow: {Flow}",
+                session.PhoneNumber, session.CurrentFlow ?? "nenhum");
+        }
+
         // Verificar se bot deve responder
         public async Task<bool> ShouldBotRespondAsync(string phoneNumber)
         {
@@ -132,6 +145,34 @@ namespace AppSysoHelp.Service.WhatsService
                 .OrderByDescending(m => m.Timestamp)
                 .Take(limit)
                 .ToListAsync();
+        }
+
+        /// <summary>
+        /// Marca sessão como em atendimento humano (bot para de responder)
+        /// </summary>
+        public async Task SetHumanAttendanceAsync(string phoneNumber, bool isHumanAttendance)
+        {
+            try
+            {
+                var session = await GetOrCreateSessionAsync(phoneNumber);
+                session.IsHumanAttendance = isHumanAttendance;
+
+                if (isHumanAttendance)
+                {
+                    // Limpar fluxo do bot
+                    session.CurrentFlow = null;
+                    session.FlowData = null;
+                }
+
+                await UpdateSessionAsync(session);
+
+                _logger.LogInformation("✅ Sessão {Phone} marcada como atendimento humano: {IsHuman}",
+                    phoneNumber, isHumanAttendance);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao marcar sessão {Phone} como atendimento humano", phoneNumber);
+            }
         }
     }
 }

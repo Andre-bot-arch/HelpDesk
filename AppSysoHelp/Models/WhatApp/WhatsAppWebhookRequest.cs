@@ -48,12 +48,25 @@ namespace AppSysoHelp.Models.WhatApp
 
     public class WhatsAppMessage
     {
+        [JsonPropertyName("from")]
         public string From { get; set; } = string.Empty;
+
+        [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
+
+        [JsonPropertyName("timestamp")]
         public string Timestamp { get; set; } = string.Empty;
+
+        [JsonPropertyName("type")]
         public string Type { get; set; } = string.Empty;
+
+        [JsonPropertyName("text")]
         public WhatsAppTextMessage? Text { get; set; }
+
+        [JsonPropertyName("interactive")]
         public WhatsAppInteractiveMessage? Interactive { get; set; }
+
+        [JsonPropertyName("button")]
         public WhatsAppButtonMessage? Button { get; set; }
     }
 
@@ -64,9 +77,13 @@ namespace AppSysoHelp.Models.WhatApp
 
     public class WhatsAppInteractiveMessage
     {
+        [JsonPropertyName("type")]
         public string Type { get; set; } = string.Empty;
+
         [JsonPropertyName("button_reply")]
         public WhatsAppButtonReply? ButtonReply { get; set; }
+
+        [JsonPropertyName("list_reply")]
         public WhatsAppListReply? ListReply { get; set; }
     }
 
@@ -80,8 +97,13 @@ namespace AppSysoHelp.Models.WhatApp
 
     public class WhatsAppListReply
     {
+        [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
+
+        [JsonPropertyName("title")]
         public string Title { get; set; } = string.Empty;
+
+        [JsonPropertyName("description")]
         public string Description { get; set; } = string.Empty;
     }
 

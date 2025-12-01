@@ -1,61 +1,76 @@
-﻿using AppSysoHelp.Models.WhatApp;
+﻿using AppSysoHelp.Models;
+using AppSysoHelp.Models.WhatApp;
+using System.Text.Json;
 
 namespace AppSysoHelp.Service.WhatsService
 {
-    public class MessageProcessorService(
-        WhatsAppService whatsAppService,
-        ILogger<MessageProcessorService> logger,
-        SessionManager sessionManager)
+    public class MessageProcessorService
     {
-        private readonly WhatsAppService _whatsAppService = whatsAppService;
-        private readonly ILogger<MessageProcessorService> _logger = logger;
-        private readonly SessionManager _sessionManager = sessionManager;
+        private readonly WhatsAppService _whatsAppService;
+        private readonly ILogger<MessageProcessorService> _logger;
+        private readonly SessionManager _sessionManager;
+        private readonly HelpDeskIntegrationService _helpDeskService;
 
-        // Método principal para processar mensagem recebida
+        public MessageProcessorService(
+            WhatsAppService whatsAppService,
+            ILogger<MessageProcessorService> logger,
+            SessionManager sessionManager,
+            HelpDeskIntegrationService helpDeskService)
+        {
+            _whatsAppService = whatsAppService;
+            _logger = logger;
+            _sessionManager = sessionManager;
+            _helpDeskService = helpDeskService;
+        }
+
+        #region Processamento Principal
+
+        /// <summary>
+        /// Método principal para processar mensagem recebida
+        /// </summary>
         public async Task ProcessMessageAsync(WhatsAppMessage message, string senderName)
         {
             try
             {
                 var from = message.From;
                 var messageType = message.Type;
+
+                // Correção de número brasileiro (adiciona o 9)
                 if (from.StartsWith("55") && from.Length == 12)
                 {
-                    // Número brasileiro com código do país (55), DDD (2 dígitos) e 8 dígitos
-                    // Formato atual: 55DDNNNNNNNN (12 caracteres)
-                    // Formato correto: 55DD9NNNNNNNN (13 caracteres)
+                    var ddd = from.Substring(2, 2);
+                    var numero = from.Substring(4);
+                    from = $"55{ddd}9{numero}";
 
-                    var ddd = from.Substring(2, 2); // Extrai o DDD
-                    var numero = from.Substring(4); // Extrai o número
-
-                    // Celulares brasileiros devem ter 9 dígitos (começando com 9)
-                    if (numero.Length == 8)
-                    {
-                        from = $"55{ddd}9{numero}";
-
-                        _logger.LogWarning("Número corrigido de {Original} para {Corrected}",
-                            message.From, from);
-                    }
+                    _logger.LogWarning("Número corrigido de {Original} para {Corrected}",
+                        message.From, from);
                 }
 
                 // Obter sessão
                 var session = await _sessionManager.GetOrCreateSessionAsync(from);
 
-                _logger.LogInformation("Mensagem de {From} ({Name}) - Estado: {State}",
-                    from, senderName, session.State);
+                _logger.LogInformation("Mensagem de {From} ({Name}) - Estado: {State}, Fluxo: {Flow}",
+                    from, senderName, session.State, session.CurrentFlow ?? "nenhum");
 
-                // Se atendente está ativo, NÃO processar automaticamente
+                if (messageType == "interactive" && message.Interactive != null)
+                {
+                    _logger.LogWarning("🔍 DEBUG Interactive - ButtonReply: {Button}, ListReply: {List}",
+                        message.Interactive.ButtonReply?.Id ?? "null",
+                        message.Interactive.ListReply?.Id ?? "null");
+                }
+
+                // SE ATENDENTE ESTÁ ATIVO → NÃO PROCESSAR
                 if (session.State == 2) // AgentActive
                 {
-                    _logger.LogInformation("⚠️ Atendente ativo para {From}. Bot não irá responder.", from);
+                    _logger.LogInformation("⚠️ Atendente ativo para {From}.  Bot não irá responder.", from);
 
-                    // Salvar mensagem recebida no histórico
                     await _sessionManager.SaveMessageAsync(from, "incoming", message.Type ?? "unknown",
                         message.Text?.Body ?? message.Interactive?.ButtonReply?.Id, "customer", message.Id);
 
                     return;
                 }
 
-                // Se está aguardando atendente, apenas confirmar
+                // SE ESTÁ AGUARDANDO ATENDENTE → APENAS CONFIRMAR
                 if (session.State == 1) // WaitingForAgent
                 {
                     _logger.LogInformation("⏳ Cliente {From} aguardando atendente", from);
@@ -66,17 +81,18 @@ namespace AppSysoHelp.Service.WhatsService
                     return;
                 }
 
-                // Bot ativo - continua processando normalmente
+                // BOT ATIVO - PROCESSAR MENSAGEM
                 _logger.LogInformation("🤖 Bot ativo para {From}. Processando mensagem...", from);
 
-                _logger.LogInformation("Processando mensagem de {From} ({Name}), Tipo: {Type}",
-                    from, senderName, messageType);
+                // Salvar mensagem recebida
+                await _sessionManager.SaveMessageAsync(from, "incoming", message.Type ?? "unknown",
+                    message.Text?.Body ?? message.Interactive?.ButtonReply?.Id, "customer", message.Id);
 
                 // Processar mensagem de texto
                 if (messageType == "text" && message.Text != null)
                 {
-                    var userMessage = message.Text.Body.Trim().ToLower();
-                    await ProcessTextMessageAsync(from, userMessage, senderName);
+                    var userMessage = message.Text.Body.Trim();
+                    await ProcessTextMessageAsync(from, userMessage, senderName, session);
                 }
                 // Processar resposta de botão
                 else if (messageType == "interactive" && message.Interactive != null)
@@ -84,12 +100,12 @@ namespace AppSysoHelp.Service.WhatsService
                     if (message.Interactive.ButtonReply != null)
                     {
                         var buttonId = message.Interactive.ButtonReply.Id;
-                        await ProcessButtonResponseAsync(from, buttonId);
+                        await ProcessButtonResponseAsync(from, buttonId, session);
                     }
                     else if (message.Interactive.ListReply != null)
                     {
                         var listId = message.Interactive.ListReply.Id;
-                        await ProcessListResponseAsync(from, listId);
+                        await ProcessListResponseAsync(from, listId, session);
                     }
                 }
                 else
@@ -103,21 +119,40 @@ namespace AppSysoHelp.Service.WhatsService
             }
         }
 
-        // Processar mensagem de texto do usuário
-        private async Task ProcessTextMessageAsync(string from, string message, string senderName)
+        #endregion
+
+        #region Processamento de Texto
+
+        /// <summary>
+        /// Processa mensagem de texto do usuário
+        /// Verifica se está em algum fluxo ou se é comando geral
+        /// </summary>
+        private async Task ProcessTextMessageAsync(string from, string message, string senderName, CustomerSessions session)
         {
-            // Saudações iniciais
-            if (message.Contains("oi") || message.Contains("olá") || message.Contains("ola") ||
-                message.Contains("bom dia") || message.Contains("boa tarde") || message.Contains("boa noite"))
+            var messageLower = message.ToLower();
+
+            // COMANDOS GLOBAIS (funcionam em qualquer fluxo)
+            if (messageLower.Contains("menu") || messageLower.Contains("voltar") || messageLower.Contains("cancelar"))
+            {
+                await CancelCurrentFlowAsync(from, session);
+                await SendMainMenuAsync(from, senderName);
+                return;
+            }
+
+            // SE ESTÁ EM UM FLUXO, PROCESSAR CONFORME O ESTADO
+            if (!string.IsNullOrEmpty(session.CurrentFlow))
+            {
+                await ProcessFlowMessageAsync(from, message, session);
+                return;
+            }
+
+            // SAUDAÇÕES INICIAIS (apenas se não estiver em fluxo)
+            if (messageLower.Contains("oi") || messageLower.Contains("olá") || messageLower.Contains("ola") ||
+                messageLower.Contains("bom dia") || messageLower.Contains("boa tarde") || messageLower.Contains("boa noite"))
             {
                 await SendMainMenuAsync(from, senderName);
             }
-            // Menu ou ajuda
-            else if (message.Contains("menu") || message.Contains("ajuda") || message.Contains("opções") || message.Contains("opcoes"))
-            {
-                await SendMainMenuAsync(from, senderName);
-            }
-            // Mensagem não reconhecida
+            // MENSAGEM NÃO RECONHECIDA
             else
             {
                 await _whatsAppService.SendTextMessageAsync(from,
@@ -125,51 +160,280 @@ namespace AppSysoHelp.Service.WhatsService
             }
         }
 
-        // Enviar menu principal
-        private async Task SendMainMenuAsync(string to, string senderName)
-        {
-            var buttons = new List<(string id, string title)>
-            {
-               ("btn_financeiro", "💰 Financeiro"),
-               ("btn_suporte", "💬 Suporte"),
-               ("btn_info", "ℹ️ Informações")
-            };
+        #endregion
 
-            await _whatsAppService.SendButtonMessageAsync(
-                to: to,
-                bodyText: $"Olá *{senderName}*! 👋\n\nBem-vindo ao *ZapSyso*!\n\nComo posso ajudar você hoje?",
-                buttons: buttons,
-                headerText: "Menu Principal",
-                footerText: "Selecione uma opção abaixo"
+        #region Fluxo de Criação de Chamado
+
+        /// <summary>
+        /// Processa mensagem quando usuário está em um fluxo específico
+        /// </summary>
+        private async Task ProcessFlowMessageAsync(string from, string message, CustomerSessions session)
+        {
+            switch (session.CurrentFlow)
+            {
+                case "awaiting_contact_name":  // ✨ NOVO
+                    await HandleContactNameInputAsync(from, message, session);
+                    break;
+
+                case "awaiting_document":  // ✨ NOVO
+                    await HandleDocumentInputAsync(from, message, session);
+                    break;
+
+                case "awaiting_description":
+                    await HandleDescriptionInputAsync(from, message, session);
+                    break;
+
+                default:
+                    _logger.LogWarning("Fluxo desconhecido: {Flow}", session.CurrentFlow);
+                    await CancelCurrentFlowAsync(from, session);
+                    await SendMainMenuAsync(from, "");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Inicia o fluxo de criação de chamado
+        /// Primeiro pede NOME da pessoa, depois CPF/CNPJ
+        /// </summary>
+        private async Task StartTicketCreationFlowAsync(string from, CustomerSessions session)
+        {
+            _logger.LogInformation("🎫 Iniciando fluxo de criação de chamado para {Phone}", from);
+
+            // Começar pedindo o NOME da pessoa
+            session.CurrentFlow = "awaiting_contact_name";
+            session.FlowData = "{}";
+            await _sessionManager.UpdateSessionAsync(session);
+
+            await _whatsAppService.SendTextMessageAsync(from,
+                "📋 *Abertura de Chamado*\n\n" +
+                "Para começar, informe seu *nome completo*:\n\n" +
+                "_Exemplo: João da Silva_");
+        }
+
+
+        /// <summary>
+        /// Mostra lista de categorias
+        /// </summary>
+        private async Task ShowCategoriasAsync(string from)
+        {
+            var categorias = await _helpDeskService.GetCategoriasAsync();
+
+            if (!categorias.Any())
+            {
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "❌ Desculpe, não consegui carregar as categorias.\n\nTente novamente mais tarde.");
+                return;
+            }
+
+            var listItems = categorias.Take(10).Select(c => (
+                id: $"cat_{c.CategoriaId}",
+                title: c.Descricao.Length > 24 ? c.Descricao.Substring(0, 21) + "..." : c.Descricao,
+                description: "Categoria de atendimento"
+            )).ToList();
+
+            await _whatsAppService.SendListMessageAsync(
+                to: from,
+                bodyText: "Selecione a *categoria* do seu problema:",
+                buttonText: "📋 Ver Categorias",
+                listItems: listItems,
+                headerText: "Categorias Disponíveis",
+                footerText: "Digite 'menu' para voltar"
             );
         }
 
-        // Processar resposta de botão
-        private async Task ProcessButtonResponseAsync(string from, string buttonId)
+        /// <summary>
+        /// Mostra lista de subcategorias
+        /// </summary>
+        private async Task ShowSubCategoriasAsync(string from, long categoriaId)
+        {
+            var subCategorias = await _helpDeskService.GetSubCategoriasByCategoriaAsync(categoriaId);
+
+            if (!subCategorias.Any())
+            {
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "❌ Não há subcategorias disponíveis para esta categoria.\n\nDigite *menu* para voltar.");
+                return;
+            }
+
+            var listItems = subCategorias.Take(10).Select(sc => (
+                id: $"sub_{sc.SubCategoriaId}",
+                title: sc.Descricao.Length > 24 ? sc.Descricao.Substring(0, 21) + "..." : sc.Descricao,
+                description: sc.Prioridade ?? "Normal"
+            )).ToList();
+
+            await _whatsAppService.SendListMessageAsync(
+                to: from,
+                bodyText: "Agora escolha o *tipo específico* do problema:",
+                buttonText: "🔧 Ver Problemas",
+                listItems: listItems,
+                headerText: "Tipos de Problema",
+                footerText: "Digite 'menu' para cancelar"
+            );
+        }
+
+        /// <summary>
+        /// Processa descrição do problema e CRIA o chamado
+        /// </summary>
+        private async Task HandleDescriptionInputAsync(string from, string description, CustomerSessions session)
+        {
+            if (description.Length < 10)
+            {
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "⚠️ Por favor, descreva o problema com mais detalhes (mínimo 10 caracteres):");
+                return;
+            }
+
+            try
+            {
+                // Recuperar dados do fluxo
+                var flowData = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(session.FlowData ?? "{}");
+
+                var contactName = flowData.ContainsKey("contactName")
+                    ? flowData["contactName"].GetString()
+                    : "Cliente";
+
+                var subCategoriaId = flowData.ContainsKey("subCategoriaId")
+                    ? flowData["subCategoriaId"].GetInt64()
+                    : 0;
+
+                var clienteId = flowData.ContainsKey("clienteId") && flowData["clienteId"].ValueKind != JsonValueKind.Null
+                    ? (long?)flowData["clienteId"].GetInt64()
+                    : null;
+
+                var companyName = flowData.ContainsKey("companyName") && flowData["companyName"].ValueKind != JsonValueKind.Null
+                    ? flowData["companyName"].GetString()
+                    : null;
+
+                var document = flowData.ContainsKey("document") && flowData["document"].ValueKind != JsonValueKind.Null
+                    ? flowData["document"].GetString()
+                    : null;
+
+                if (subCategoriaId == 0)
+                {
+                    _logger.LogError("SubCategoriaId não encontrado no FlowData para {Phone}", from);
+                    await CancelCurrentFlowAsync(from, session);
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "❌ Ocorreu um erro.  Por favor, tente novamente.");
+                    return;
+                }
+
+                // Mostrar loading
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "⏳ Criando seu chamado...");
+
+                // CRIAR CHAMADO
+                var chamado = await _helpDeskService.CreateTicketFromWhatsAppAsync(
+                    phoneNumber: from,
+                    contactName: contactName,
+                    subCategoriaId: subCategoriaId,
+                    description: description,
+                    clienteId: clienteId,
+                    companyName: companyName,
+                    document: document,
+                    setorId: 1 // Suporte Interno
+                );
+
+                if (chamado != null)
+                {
+                    // Vincular chamado à sessão
+                    session.LinkedTicketId = chamado.ChamadoId;
+                    session.CurrentFlow = null;
+                    session.FlowData = null;
+                    await _sessionManager.UpdateSessionAsync(session);
+
+                    // Sincronizar mensagens do WhatsApp com o chamado
+                    //await _helpDeskService.SyncWhatsAppMessagesToTicketAsync(chamado.ChamadoId, from);
+
+                    // Notificar cliente
+                    await _helpDeskService.NotifyTicketCreatedAsync(chamado.ChamadoId, from);
+
+                    await Task.Delay(1500);
+
+                    // Oferecer opções
+                    var buttons = new List<(string id, string title)>
+            {
+                ("btn_my_tickets", "📋 Meus Chamados"),
+                ("btn_agent", "👤 Falar com Atendente"),
+                ("btn_menu", "⬅️ Menu Principal")
+            };
+
+                    await _whatsAppService.SendButtonMessageAsync(
+                        to: from,
+                        bodyText: "O que deseja fazer agora?",
+                        buttons: buttons,
+                        footerText: "Estamos à disposição!"
+                    );
+
+                    _logger.LogInformation("✅ Chamado #{ChamadoId} criado com sucesso via WhatsApp para {Phone} - Requisitante: {ContactName}",
+                        chamado.ChamadoId, from, contactName);
+                }
+                else
+                {
+                    await CancelCurrentFlowAsync(from, session);
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "❌ Não foi possível criar o chamado.\n\nPor favor, tente novamente ou fale com um atendente.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao criar chamado para {Phone}", from);
+                await CancelCurrentFlowAsync(from, session);
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "❌ Ocorreu um erro ao criar o chamado.\n\nPor favor, tente novamente.");
+            }
+        }
+
+        /// <summary>
+        /// Cancela o fluxo atual e limpa dados temporários
+        /// </summary>
+        private async Task CancelCurrentFlowAsync(string from, CustomerSessions session)
+        {
+            if (!string.IsNullOrEmpty(session.CurrentFlow))
+            {
+                _logger.LogInformation("❌ Cancelando fluxo {Flow} para {Phone}", session.CurrentFlow, from);
+
+                session.CurrentFlow = null;
+                session.FlowData = null;
+                await _sessionManager.UpdateSessionAsync(session);
+            }
+        }
+
+        #endregion
+
+        #region Processamento de Botões
+
+        /// <summary>
+        /// Processa clique em botão
+        /// </summary>
+        private async Task ProcessButtonResponseAsync(string from, string buttonId, CustomerSessions session)
         {
             _logger.LogInformation("Botão clicado: {ButtonId}", buttonId);
 
             switch (buttonId)
             {
-                case "btn_financeiro":
-                    await SendFinanceiroMenuAsync(from);
+                case "btn_open_ticket":
+                    await StartTicketCreationFlowAsync(from, session);
                     break;
 
-                case "btn_suporte":
-                    await _sessionManager.UpdateStateAsync(from, 1); // 1 = WaitingForAgent
+                case "btn_my_tickets":
+                    await ShowMyTicketsAsync(from);
+                    break;
 
-                    await SendSupportOptionsAsync(from);
+                case "btn_agent":
+                    await RequestAgentAsync(from, session);
+                    break;
 
-                    await _sessionManager.SaveMessageAsync(from, "outgoing", "text", "Cliente solicitou atendimento humano", "bot");
-
-                    _logger.LogWarning("🔔 Cliente {From} aguardando atendente!", from);
+                case "btn_financeiro":
+                    await SendFinanceiroMenuAsync(from);
                     break;
 
                 case "btn_info":
                     await SendInfoAsync(from);
                     break;
 
+                case "btn_menu":
                 case "btn_voltar":
+                    await CancelCurrentFlowAsync(from, session);
                     await SendMainMenuAsync(from, "");
                     break;
 
@@ -180,11 +444,34 @@ namespace AppSysoHelp.Service.WhatsService
             }
         }
 
-        // Processar resposta de lista
-        private async Task ProcessListResponseAsync(string from, string listId)
+        #endregion
+
+        #region Processamento de Listas
+
+        /// <summary>
+        /// Processa seleção de item de lista
+        /// </summary>
+        private async Task ProcessListResponseAsync(string from, string listId, CustomerSessions session)
         {
             _logger.LogInformation("Item da lista selecionado: {ListId}", listId);
 
+            // CATEGORIA SELECIONADA
+            if (listId.StartsWith("cat_"))
+            {
+                var categoriaId = long.Parse(listId.Replace("cat_", ""));
+                await HandleCategorySelectionAsync(from, categoriaId, session);
+                return;
+            }
+
+            // SUBCATEGORIA SELECIONADA
+            if (listId.StartsWith("sub_"))
+            {
+                var subCategoriaId = long.Parse(listId.Replace("sub_", ""));
+                await HandleSubCategorySelectionAsync(from, subCategoriaId, session);
+                return;
+            }
+
+            // OUTROS (menu de serviços)
             switch (listId)
             {
                 case "srv_consultoria":
@@ -194,7 +481,7 @@ namespace AppSysoHelp.Service.WhatsService
                         "• Desenvolvimento de Sistemas\n" +
                         "• Integração de APIs\n" +
                         "• Automação de Processos\n\n" +
-                        "Entre em contato: contato@zapsyso.com");
+                        "Entre em contato: contato@sysotecnologia.com");
                     break;
 
                 case "srv_desenvolvimento":
@@ -223,18 +510,186 @@ namespace AppSysoHelp.Service.WhatsService
                     break;
             }
 
-            // Após mostrar info, oferecer voltar ao menu
             await Task.Delay(1000);
             var backButton = new List<(string id, string title)>
             {
                 ("btn_voltar", "⬅️ Voltar ao Menu")
             };
             await _whatsAppService.SendButtonMessageAsync(from,
-                "Precisa de mais alguma coisa?",
+                "Precisa de mais alguma coisa? ",
                 backButton);
         }
 
-        // Menu de serviços (com lista)
+        /// <summary>
+        /// Processa seleção de categoria
+        /// </summary>
+        private async Task HandleCategorySelectionAsync(string from, long categoriaId, CustomerSessions session)
+        {
+            if (session.CurrentFlow != "awaiting_category")
+            {
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "⚠️ Por favor, inicie um novo chamado digitando *menu*");
+                return;
+            }
+
+            // Atualizar FlowData com categoria
+            var flowData = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(session.FlowData ?? "{}");
+            flowData["categoriaId"] = JsonSerializer.SerializeToElement(categoriaId);
+
+            session.CurrentFlow = "awaiting_subcategory";
+            session.FlowData = JsonSerializer.Serialize(flowData);
+            await _sessionManager.UpdateSessionAsync(session);
+
+            await ShowSubCategoriasAsync(from, categoriaId);
+        }
+
+        /// <summary>
+        /// Processa seleção de subcategoria
+        /// </summary>
+        private async Task HandleSubCategorySelectionAsync(string from, long subCategoriaId, CustomerSessions session)
+        {
+            if (session.CurrentFlow != "awaiting_subcategory")
+            {
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "⚠️ Por favor, inicie um novo chamado digitando *menu*");
+                return;
+            }
+
+            // Buscar subcategoria para mostrar prioridade
+            var subCategoria = await _helpDeskService.GetSubCategoriaByIdAsync(subCategoriaId);
+
+            if (subCategoria == null)
+            {
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "❌ Subcategoria não encontrada.  Digite *menu* para tentar novamente.");
+                await CancelCurrentFlowAsync(from, session);
+                return;
+            }
+
+            var prioridadeIcon = subCategoria.Prioridade switch
+            {
+                "Urgente" => "🔴",
+                "Alta" => "🟠",
+                "Media" => "🟡",
+                _ => "🟢"
+            };
+
+            // Atualizar FlowData com subcategoria
+            var flowData = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(session.FlowData ?? "{}");
+            flowData["subCategoriaId"] = JsonSerializer.SerializeToElement(subCategoriaId);
+
+            session.CurrentFlow = "awaiting_description";
+            session.FlowData = JsonSerializer.Serialize(flowData);
+            await _sessionManager.UpdateSessionAsync(session);
+
+            await _whatsAppService.SendTextMessageAsync(from,
+                $"✅ Categoria selecionada: *{subCategoria.Descricao}*\n" +
+                $"{prioridadeIcon} Prioridade: *{subCategoria.Prioridade ?? "Normal"}*\n\n" +
+                $"📝 Agora descreva o problema com o máximo de detalhes possível:");
+        }
+
+        #endregion
+
+        #region Menus e Mensagens
+
+        /// <summary>
+        /// Envia menu principal
+        /// </summary>
+        private async Task SendMainMenuAsync(string to, string senderName)
+        {
+            var greeting = string.IsNullOrEmpty(senderName) ? "Olá" : $"Olá *{senderName}*";
+
+            var buttons = new List<(string id, string title)>
+            {
+                ("btn_open_ticket", "🎫 Abrir Chamado"),
+                ("btn_my_tickets", "📋 Meus Chamados"),
+                ("btn_agent", "👤 Atendente")
+            };
+
+            await _whatsAppService.SendButtonMessageAsync(
+                to: to,
+                bodyText: $"{greeting}!  👋\n\nBem-vindo ao *HelpDesk SysoTecnologia*!\n\nComo posso ajudar você hoje?",
+                buttons: buttons,
+                headerText: "Menu Principal",
+                footerText: "Selecione uma opção abaixo"
+            );
+        }
+
+        /// <summary>
+        /// Mostra chamados ativos do cliente
+        /// </summary>
+        private async Task ShowMyTicketsAsync(string from)
+        {
+            var chamados = await _helpDeskService.GetActiveTicketsByPhoneAsync(from);
+
+            if (!chamados.Any())
+            {
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "📋 *Meus Chamados*\n\n" +
+                    "Você não possui chamados em aberto no momento.\n\n" +
+                    "Digite *menu* para voltar.");
+                return;
+            }
+
+            var message = "📋 *Seus Chamados em Aberto*\n\n";
+
+            foreach (var chamado in chamados.Take(5))
+            {
+                var prioridadeIcon = chamado.Prioridade switch
+                {
+                    "Urgente" => "🔴",
+                    "Alta" => "🟠",
+                    "Media" => "🟡",
+                    _ => "🟢"
+                };
+
+                var statusIcon = chamado.FkSituacaoChamadoId switch
+                {
+                    1 => "🆕",
+                    2 => "🔄",
+                    _ => "✅"
+                };
+
+                message += $"{statusIcon} *Chamado #{chamado.ChamadoId}*\n";
+                message += $"{prioridadeIcon} Prioridade: {chamado.Prioridade}\n";
+                message += $"📅 Aberto em: {chamado.DataCriacao?.ToString("dd/MM/yyyy HH:mm")}\n";
+
+                if (chamado.FkTecnico != null)
+                {
+                    message += $"👨‍💻 Técnico: {chamado.FkTecnico.NomeCompleto}\n";
+                }
+
+                message += "\n";
+            }
+
+            message += "_Digite *menu* para voltar_";
+
+            await _whatsAppService.SendTextMessageAsync(from, message);
+        }
+
+        /// <summary>
+        /// Solicita atendimento humano
+        /// </summary>
+        private async Task RequestAgentAsync(string from, CustomerSessions session)
+        {
+            await CancelCurrentFlowAsync(from, session);
+            await _sessionManager.UpdateStateAsync(from, 1); // WaitingForAgent
+
+            await _whatsAppService.SendTextMessageAsync(from,
+                "👤 *Atendimento Humano Solicitado*\n\n" +
+                "Você foi colocado na fila de atendimento.\n\n" +
+                "Em breve um de nossos atendentes irá responder!  ⏳\n\n" +
+                "_Aguarde, por favor.. ._");
+
+            await _sessionManager.SaveMessageAsync(from, "outgoing", "text",
+                "Cliente solicitou atendimento humano", "bot");
+
+            _logger.LogWarning("🔔 Cliente {From} aguardando atendente!", from);
+        }
+
+        /// <summary>
+        /// Menu de serviços (financeiro)
+        /// </summary>
         private async Task SendFinanceiroMenuAsync(string to)
         {
             var services = new List<(string id, string title, string description)>
@@ -254,37 +709,18 @@ namespace AppSysoHelp.Service.WhatsService
             );
         }
 
-        // Opções de suporte
-        private async Task SendSupportOptionsAsync(string to)
-        {
-            await _whatsAppService.SendTextMessageAsync(to,
-                "💬 *Suporte*\n\n" +
-                "Entre em contato:\n\n" +
-                "📧 Email: sysotecnologia@zapsyso.com\n" +
-                "📞 Telefone: (11) 9999-9999\n" +
-                "⏰ Horário: Seg-Sex 9h às 18h\n\n" +
-                "Ou aguarde que um atendente entrará em contato em breve!");
-
-            await Task.Delay(1000);
-            var backButton = new List<(string id, string title)>
-            {
-                ("btn_voltar", "⬅️ Voltar ao Menu")
-            };
-            await _whatsAppService.SendButtonMessageAsync(to,
-                "Precisa de mais alguma coisa?",
-                backButton);
-        }
-
-        // Informações sobre a empresa
+        /// <summary>
+        /// Informações sobre a empresa
+        /// </summary>
         private async Task SendInfoAsync(string to)
         {
             await _whatsAppService.SendTextMessageAsync(to,
-                "ℹ️ *Sobre o ZapSyso*\n\n" +
+                "ℹ️ *Sobre a SysoTecnologia*\n\n" +
                 "Somos especialistas em desenvolvimento de sistemas e automação com WhatsApp!\n\n" +
                 "🚀 Soluções inovadoras\n" +
                 "💡 Tecnologia de ponta\n" +
                 "🤝 Atendimento personalizado\n\n" +
-                "Visite: www.sysotecnologia.com.br");
+                "Visite: www.sysotecnologia. com. br");
 
             await Task.Delay(1000);
             var backButton = new List<(string id, string title)>
@@ -296,20 +732,109 @@ namespace AppSysoHelp.Service.WhatsService
                 backButton);
         }
 
-        private async Task SendAtendenteAsync(string to)
+        #endregion
+        /// <summary>
+        /// Processa nome da pessoa (requisitante do chamado)
+        /// </summary>
+        private async Task HandleContactNameInputAsync(string from, string name, CustomerSessions session)
         {
-            await _whatsAppService.SendTextMessageAsync(to,
-                "🤝 Solicitação recebida em alguns segundos um técnico entrara em contato\n\n" +
-                "Visite: www.sysotecnologia.com.br");
-
-            await Task.Delay(1000);
-            var backButton = new List<(string id, string title)>
+            if (name.Length < 3)
             {
-                ("btn_voltar", "⬅️ Voltar ao Menu")
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "⚠️ Por favor, informe seu nome completo (mínimo 3 caracteres):");
+                return;
+            }
+
+            // Salvar nome no FlowData
+            var flowData = new
+            {
+                contactName = name
             };
-            await _whatsAppService.SendButtonMessageAsync(to,
-                "Precisa de mais alguma coisa?",
-                backButton);
+
+            session.CurrentFlow = "awaiting_document";
+            session.FlowData = JsonSerializer.Serialize(flowData);
+            await _sessionManager.UpdateSessionAsync(session);
+
+            await _whatsAppService.SendTextMessageAsync(from,
+                $"✅ Obrigado, *{name}*!\n\n" +
+                $"Agora informe o *CPF* ou *CNPJ* da empresa:\n\n" +
+                $"_Exemplo: 123.456.789-00 ou 12.345.678/0001-90_");
         }
+
+        /// <summary>
+        /// Processa CPF/CNPJ informado pelo cliente
+        /// </summary>
+        private async Task HandleDocumentInputAsync(string from, string document, CustomerSessions session)
+        {
+            // Validar formato básico
+            if (!_helpDeskService.IsValidDocument(document))
+            {
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "⚠️ CPF/CNPJ inválido.\n\n" +
+                    "Por favor, informe um *CPF* (11 dígitos) ou *CNPJ* (14 dígitos):\n\n" +
+                    "_Exemplo: 123.456. 789-00 ou 12. 345.678/0001-90_");
+                return;
+            }
+
+            // Recuperar nome da pessoa do FlowData
+            var currentFlowData = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(session.FlowData ?? "{}");
+            var contactName = currentFlowData.ContainsKey("contactName")
+                ? currentFlowData["contactName"].GetString()
+                : "Cliente";
+
+            // Buscar cliente no banco pelo documento
+            var cliente = await _helpDeskService.FindClientByDocumentAsync(document);
+
+            if (cliente != null)
+            {
+                // ✅ CLIENTE ENCONTRADO
+                var companyName = cliente.Fantasia ?? cliente.NomeCliente;
+
+                var flowData = new
+                {
+                    contactName = contactName,      // Nome da PESSOA
+                    document = document,             // CPF/CNPJ informado
+                    clienteId = cliente.ClienteId,  // ID do cliente
+                    companyName = companyName        // Nome da empresa
+                };
+
+                session.CurrentFlow = "awaiting_category";
+                session.FlowData = JsonSerializer.Serialize(flowData);
+                await _sessionManager.UpdateSessionAsync(session);
+
+                await _whatsAppService.SendTextMessageAsync(from,
+                    $"✅ *Empresa identificada!*\n\n" +
+                    $"📌 {companyName}\n" +
+                    $"📄 {document}\n\n" +
+                    $"Vamos abrir um chamado para você!");
+
+                await Task.Delay(1500);
+                await ShowCategoriasAsync(from);
+            }
+            else
+            {
+                // ❌ CLIENTE NÃO ENCONTRADO - Continua mesmo assim
+                var flowData = new
+                {
+                    contactName = contactName,  // Nome da PESSOA
+                    document = document,         // CPF/CNPJ informado (mas não cadastrado)
+                    clienteId = (long?)null,    // SEM vínculo
+                    companyName = (string?)null // SEM empresa
+                };
+
+                session.CurrentFlow = "awaiting_category";
+                session.FlowData = JsonSerializer.Serialize(flowData);
+                await _sessionManager.UpdateSessionAsync(session);
+
+                await _whatsAppService.SendTextMessageAsync(from,
+                    $"⚠️ *CPF/CNPJ não encontrado em nosso sistema.*\n\n" +
+                    $"Sem problemas! Vou abrir o chamado mesmo assim.\n\n" +
+                    $"📄 Documento informado: {document}");
+
+                await Task.Delay(1500);
+                await ShowCategoriasAsync(from);
+            }
+        }
+
     }
 }

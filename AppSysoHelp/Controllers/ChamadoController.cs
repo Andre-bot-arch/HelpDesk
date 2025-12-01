@@ -1,5 +1,6 @@
 ﻿using AppSysoHelp.Models;
 using AppSysoHelp.Service;
+using AppSysoHelp.Service.WhatsService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,19 +14,27 @@ namespace AppSysoHelp.Controllers
         private readonly ServiceGenerico _generico;
         private readonly IConfiguration _configuration;
         private readonly HelpdesksysoContext _context;
+        private readonly HelpDeskIntegrationService _helpDeskService;
+        private readonly ILogger<ChamadoController> _logger;
 
-        public ChamadoController(IConfiguration configuration, HelpdesksysoContext context)
+        public ChamadoController(IConfiguration configuration, HelpdesksysoContext context, HelpDeskIntegrationService helpDeskService, ILogger<ChamadoController> logger)
         {
             _configuration = configuration;
             _context = context;
             _generico = new ServiceGenerico(context);
+            _helpDeskService = helpDeskService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Atendimento(int id)
         {
             var userIdClaim = User.FindFirst("Id");
             var userId = userIdClaim?.Value;
-            var atendimento = _context.Atendimentos.Include(a=> a.FkChamado).FirstOrDefault(a => a.FkChamadoId == id && a.AtendimentoEncerrado == false && a.FkChamado.FkSituacaoChamadoId != 3);
+            var atendimento = _context.Atendimentos
+                .Include(a => a.FkChamado)
+                .FirstOrDefault(a => a.FkChamadoId == id &&
+                                     a.AtendimentoEncerrado == false &&
+                                     a.FkChamado.FkSituacaoChamadoId != 3);
 
             if (atendimento == null)
             {
@@ -39,6 +48,29 @@ namespace AppSysoHelp.Controllers
                     AtendimentoEncerrado = false,
                 };
                 await _generico.GravarGenericoAsync(atendimento);
+
+                // 🔔 NOTIFICAR CLIENTE VIA WHATSAPP
+                var idChamado = Convert.ToInt64(id);
+                var chamado = _context.Chamados.Find(idChamado);
+                var tecnico = _context.TecnicosSupervisores.Find(Convert.ToInt64(userId));
+
+                if (chamado != null && tecnico != null)
+                {
+                    _logger.LogInformation("Tentando notificar cliente do chamado #{ChamadoId}", idChamado);
+
+                    await _helpDeskService.NotifyTicketInProgressAsync(
+                        chamadoId: idChamado,
+                        tecnicoNome: tecnico.NomeCompleto,
+                        telefoneContato: chamado.TelefoneContato
+                    );
+
+                    // 🤖 MUDAR STATE PARA AgentActive (bot para de responder)
+                    if (!string.IsNullOrEmpty(chamado.TelefoneContato))
+                    {
+                        await _helpDeskService.SetAgentActiveAsync(chamado.TelefoneContato);
+                    }
+
+                }
             }
             else if (atendimento != null && atendimento.FkTecnicoId == Convert.ToInt32(userId))
             {
@@ -48,16 +80,20 @@ namespace AppSysoHelp.Controllers
             {
                 ViewBag.atendimento = true;
             }
-            var chamado = _context.Chamados.Include(a => a.FkAtendenteNavigation)
-                                         .Include(a => a.FkCliente)
-                                         .Include(a => a.FkTecnico)
-                                         .Include(a => a.Atendimentos)
-                                         .ThenInclude(a => a.FkTecnico)
-                                         .FirstOrDefault(a => a.ChamadoId == id);
-            chamado.DataAgendamento = DateTime.UtcNow.AddHours(-4);
-            _context.Update(chamado);
+
+            var chamadoCompleto = _context.Chamados
+                .Include(a => a.FkAtendenteNavigation)
+                .Include(a => a.FkCliente)
+                .Include(a => a.FkTecnico)
+                .Include(a => a.Atendimentos)
+                .ThenInclude(a => a.FkTecnico)
+                .FirstOrDefault(a => a.ChamadoId == id);
+
+            chamadoCompleto.DataAgendamento = DateTime.UtcNow.AddHours(-4);
+            _context.Update(chamadoCompleto);
             _context.SaveChanges();
-            return View(chamado);
+
+            return View(chamadoCompleto);
         }
 
         public async Task<IActionResult> AtendimentoTreinamento(int id)
@@ -369,10 +405,7 @@ namespace AppSysoHelp.Controllers
         {
             var userIdClaim = User.FindFirst("Id");
             var userId = userIdClaim?.Value;
-
             var usuario = _context.TecnicosSupervisores.Find(Convert.ToInt64(userId));
-          
-
 
             if (usuario.CargoResponsabilidade != "Admin")
             {
@@ -381,8 +414,6 @@ namespace AppSysoHelp.Controllers
             }
 
             ViewBag.usuario = usuario;
-
-
 
             return View();
         }

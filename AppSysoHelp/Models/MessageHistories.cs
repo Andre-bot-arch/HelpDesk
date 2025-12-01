@@ -17,5 +17,13 @@
         public string? SentBy { get; set; }
 
         public string? WhatsAppMessageId { get; set; }
+
+        public long? ChamadoId { get; set; }
+        public long? AtendimentoId { get; set; }
+
+        public virtual Chamados? Chamado { get; set; }
+        public virtual Atendimentos? Atendimento { get; set; }
+
+
     }
 }

@@ -15,5 +15,27 @@
         public string? AssignedAgent { get; set; }
 
         public string? AdditionalData { get; set; }
+
+        /// <summary>
+        /// Fluxo atual: "creating_ticket", "waiting_category", etc
+        /// </summary>
+        public string? CurrentFlow { get; set; }
+
+        /// <summary>
+        /// Dados temporários do fluxo em JSON
+        /// Ex: {"customerName":"João", "categoriaId":5}
+        /// </summary>
+        public string? FlowData { get; set; }
+
+        /// <summary>
+        /// ID do chamado vinculado (quando criado via WhatsApp)
+        /// </summary>
+        public long? LinkedTicketId { get; set; }
+
+        //verificacao se é atendimento humano
+        public bool IsHumanAttendance { get; set; }
+
+        // Navegação
+        public virtual Chamados? LinkedTicket { get; set; }
     }
 }

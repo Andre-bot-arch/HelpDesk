@@ -18,9 +18,10 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
-builder.Services.AddScoped<WhatsAppService>();
+builder.Services.AddScoped<HelpDeskIntegrationService>();
 builder.Services.AddScoped<MessageProcessorService>();
 builder.Services.AddScoped<SessionManager>();
+builder.Services.AddScoped<WhatsAppService>(); ;
 
 builder.Services.AddTransient<ServiceContato>();
 builder.Services.AddScoped<ServiceGenerico>();

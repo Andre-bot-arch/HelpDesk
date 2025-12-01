@@ -1,6 +1,8 @@
-﻿using AppSysoHelp.Service.WhatsService;
+﻿using AppSysoHelp.Models;
+using AppSysoHelp.Service.WhatsService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppSysoHelp.Controllers.Whats
 {
@@ -11,12 +13,15 @@ namespace AppSysoHelp.Controllers.Whats
         private readonly SessionManager _sessionManager;
         private readonly WhatsAppService _whatsAppService;
         private readonly ILogger<AgentController> _logger;
+        private readonly HelpdesksysoContext _context;
 
         public AgentController(
+            HelpdesksysoContext context,
             SessionManager sessionManager,
             WhatsAppService whatsAppService,
             ILogger<AgentController> logger)
         {
+            _context = context;
             _sessionManager = sessionManager;
             _whatsAppService = whatsAppService;
             _logger = logger;
@@ -117,7 +122,33 @@ namespace AppSysoHelp.Controllers.Whats
                 })
             });
         }
+
+        [HttpGet("test-customer-session")]
+        public async Task<IActionResult> TestCustomerSession()
+        {
+            var session = await _context.CustomerSessions.FirstOrDefaultAsync();
+
+            if (session != null)
+            {
+                // Testar novos campos
+                session.CurrentFlow = "creating_ticket";
+                session.FlowData = "{\"test\":\"ok\"}";
+                session.LinkedTicketId = null;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    message = "✅ Campos funcionando!",
+                    session
+                });
+            }
+
+            return NotFound("Nenhuma sessão encontrada");
+        }
     }
+
+    
 
     // Modelo para enviar mensagem manual
     public class AgentMessageRequest
