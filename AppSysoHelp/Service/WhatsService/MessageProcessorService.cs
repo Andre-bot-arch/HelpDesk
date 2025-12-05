@@ -535,13 +535,13 @@ namespace AppSysoHelp.Service.WhatsService
                     var buttons = new List<(string id, string title)>
             {
                 ("btn_my_tickets", "📋 Meus Chamados"),
-                ("btn_agent", "👤 Falar com Atendente"),
+                //("btn_agent", "👤 Falar com Atendente"),
                 ("btn_menu", "⬅️ Menu Principal")
             };
 
                     await _whatsAppService.SendButtonMessageAsync(
                         to: from,
-                        bodyText: "O que deseja fazer agora?",
+                        bodyText: "O fazer agora?",
                         buttons: buttons,
                         footerText: "Estamos à disposição!"
                     );
@@ -1011,8 +1011,8 @@ namespace AppSysoHelp.Service.WhatsService
             var buttons = new List<(string id, string title)>
             {
                 ("btn_open_ticket", "🎫 Abrir Chamado"),
-                ("btn_my_tickets", "📋 Meus Chamados"),
-                ("btn_agent", "👤 Atendente")
+                ("btn_my_tickets", "📋 Meus Chamados")
+                //("btn_agent", "👤 Atendente")
             };
 
             await _whatsAppService.SendButtonMessageAsync(
