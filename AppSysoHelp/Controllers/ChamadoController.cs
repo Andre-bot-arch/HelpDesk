@@ -264,7 +264,8 @@ namespace AppSysoHelp.Controllers
         }
 
         [HttpPost]
-        public IActionResult FinalizarChamado(Chamados d, IFormFile imagem, bool finalizar = true, TimeOnly? Inicio = null, TimeOnly? Fim = null)
+        [HttpPost]
+        public async Task<IActionResult> FinalizarChamado(Chamados d, IFormFile imagem, bool finalizar = true, TimeOnly? Inicio = null, TimeOnly? Fim = null)
         {
             var caminhoImagem = string.Empty;
             if (imagem is { Length: > 0 })
@@ -281,10 +282,10 @@ namespace AppSysoHelp.Controllers
                 }
                 caminhoImagem = $"imagens_chamado/{fileName}";
             }
-            
+
             var chamado = _context.Chamados
                 .Include(a => a.FkSituacaoChamado)
-                .Include(a => a.Atendimentos) 
+                .Include(a => a.Atendimentos)
                 .FirstOrDefault(a => a.ChamadoId == d.ChamadoId && a.FkSituacaoChamadoId != 3);
 
             if (chamado == null)
@@ -299,7 +300,7 @@ namespace AppSysoHelp.Controllers
             {
                 atendimento.ProcedimentosAplicados = (atendimento.FkTecnicoId == userId)
                     ? d.DescricaoCompleta
-                    : d.DescricaoCompleta + "  ATENÇÃO!! FECHAMENTO FORÇADO!!!";
+                    : d.DescricaoCompleta + "  ATENÇÃO!!  FECHAMENTO FORÇADO!!! ";
                 atendimento.FkTecnicoId = userId;
                 atendimento.NovaDataAtendimento = d.DataAgendamento;
                 atendimento.DataFechamento = DateTime.UtcNow.AddHours(-4);
@@ -308,6 +309,11 @@ namespace AppSysoHelp.Controllers
                 atendimento.Inicio = Inicio;
                 atendimento.Fim = Fim;
             }
+
+            // ========================================
+            // 🆕 VARIÁVEL PARA ARMAZENAR ID DO ÚLTIMO ATENDIMENTO
+            // ========================================
+            long? ultimoAtendimentoId = null;
 
             // Atualizando em uma única transação
             using (var transaction = _context.Database.BeginTransaction())
@@ -320,6 +326,14 @@ namespace AppSysoHelp.Controllers
                     _context.Chamados.Update(chamado);
                     _context.SaveChanges();
                     transaction.Commit();
+
+                    // ========================================
+                    // 🆕 PEGAR ID DO ÚLTIMO ATENDIMENTO ENCERRADO
+                    // ========================================
+                    ultimoAtendimentoId = atendimentos.LastOrDefault()?.AtendimentoId;
+
+                    _logger.LogInformation("✅ Chamado #{ChamadoId} finalizado com sucesso.  Último atendimento: #{AtendimentoId}",
+                        chamado.ChamadoId, ultimoAtendimentoId);
                 }
                 catch
                 {
@@ -328,11 +342,55 @@ namespace AppSysoHelp.Controllers
                 }
             }
 
+            // ========================================
+            // 🆕 NOTIFICAR CLIENTE VIA WHATSAPP
+            // ========================================
+            if (ultimoAtendimentoId.HasValue && !string.IsNullOrEmpty(chamado.TelefoneContato))
+            {
+                try
+                {
+                    _logger.LogInformation("🔔 Enviando notificação de finalização para chamado #{ChamadoId}", chamado.ChamadoId);
+
+                    // Enviar notificação com pedido de avaliação
+                    await _helpDeskService.NotifyTicketClosedWithFeedbackAsync(
+                        chamadoId: chamado.ChamadoId,
+                        atendimentoId: ultimoAtendimentoId.Value,
+                        telefoneContato: chamado.TelefoneContato
+                    );
+
+                    // Reativar bot (volta State para 0 - BotActive)
+                    var session = await _context.CustomerSessions
+                        .FirstOrDefaultAsync(s => s.PhoneNumber == chamado.TelefoneContato);
+
+                    if (session != null)
+                    {
+                        session.State = 0; // BotActive
+                        session.CurrentFlow = null; // Limpa fluxo
+                        session.FlowData = null; // Limpa dados temporários
+                        session.LinkedTicketId = null; // Desvincula chamado
+                        session.LastInteraction = DateTime.UtcNow;
+
+                        _context.CustomerSessions.Update(session);
+                        await _context.SaveChangesAsync();
+
+                        _logger.LogInformation("✅ Bot reativado para {Phone}. State = 0 (BotActive)", chamado.TelefoneContato);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Mesmo se falhar a notificação, chamado já foi finalizado
+                    _logger.LogError(ex, "❌ Erro ao notificar cliente do chamado #{ChamadoId}.  Chamado finalizado, mas notificação falhou.",
+                        chamado.ChamadoId);
+                }
+            }
+            else
+            {
+                _logger.LogInformation("ℹ️ Chamado #{ChamadoId} finalizado, mas não enviará notificação WhatsApp (sem telefone ou atendimento)",
+                    chamado.ChamadoId);
+            }
+
             return RedirectToAction("Aberto");
-
-
         }
-
         public IActionResult FinalizarChamadoTreinamento(Chamados d, IFormFile imagem, bool finalizar = false, TimeOnly? Inicio = null, TimeOnly? Fim = null)
         {
             string caminhoImagem = SalvarImagem(imagem, d.ChamadoId);

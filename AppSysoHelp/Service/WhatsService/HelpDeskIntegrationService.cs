@@ -164,7 +164,7 @@ namespace AppSysoHelp.Service.WhatsService
             try
             {
                 return await _context.ChamadosSubCategoria
-                    .Where(sc => sc.FkCategoria == categoriaId)
+                    .Where(sc => sc.FkCategoria == categoriaId && sc.Situacao == true)
                     .OrderBy(sc => sc.Descricao)
                     .ToListAsync();
             }
@@ -183,7 +183,7 @@ namespace AppSysoHelp.Service.WhatsService
             try
             {
                 return await _context.ChamadosSubCategoria
-                    .FirstOrDefaultAsync(sc => sc.SubCategoriaId == subCategoriaId);
+                    .FirstOrDefaultAsync(sc => sc.SubCategoriaId == subCategoriaId && sc.Situacao == true);
             }
             catch (Exception ex)
             {
@@ -743,6 +743,265 @@ namespace AppSysoHelp.Service.WhatsService
                 _logger.LogError(ex, "Erro ao ativar modo atendente para {Phone}", phoneNumber);
             }
         }
+
+        /// <summary>
+        /// Notifica cliente via WhatsApp que chamado foi FINALIZADO
+        /// Envia mensagem com informações + botões de avaliação
+        /// </summary>
+        public async Task NotifyTicketClosedWithFeedbackAsync(long chamadoId, long atendimentoId, string? telefoneContato)
+        {
+            try
+            {
+                _logger.LogInformation("🔔 Iniciando notificação de FINALIZAÇÃO para chamado #{ChamadoId}", chamadoId);
+
+                // Verificar se é chamado do WhatsApp
+                if (!await IsWhatsAppTicketAsync(chamadoId, telefoneContato))
+                {
+                    _logger.LogInformation("Chamado #{ChamadoId} não é do WhatsApp.  Notificação não enviada.", chamadoId);
+                    return;
+                }
+
+                // Buscar dados do chamado e técnico
+                var chamado = await _context.Chamados
+                    .Include(c => c.FkTecnico)
+                    .FirstOrDefaultAsync(c => c.ChamadoId == chamadoId);
+
+                if (chamado == null)
+                {
+                    _logger.LogWarning("Chamado #{ChamadoId} não encontrado ao tentar notificar finalização", chamadoId);
+                    return;
+                }
+
+                // Buscar atendimento para pegar informações
+                var atendimento = await _context.Atendimentos
+                    .Include(a => a.FkTecnico)
+                    .FirstOrDefaultAsync(a => a.AtendimentoId == atendimentoId);
+
+                if (atendimento == null)
+                {
+                    _logger.LogWarning("Atendimento #{AtendimentoId} não encontrado", atendimentoId);
+                    return;
+                }
+
+                // Calcular tempo de atendimento
+                var tempoAtendimento = "";
+                if (atendimento.DataAtendimento.HasValue && atendimento.DataFechamento.HasValue)
+                {
+                    var duracao = atendimento.DataFechamento.Value - atendimento.DataAtendimento.Value;
+
+                    if (duracao.TotalDays >= 1)
+                    {
+                        tempoAtendimento = $"{(int)duracao.TotalDays}d {duracao.Hours}h";
+                    }
+                    else if (duracao.TotalHours >= 1)
+                    {
+                        tempoAtendimento = $"{(int)duracao.TotalHours}h {duracao.Minutes}min";
+                    }
+                    else
+                    {
+                        tempoAtendimento = $"{duracao.Minutes}min";
+                    }
+                }
+
+                var tecnicoNome = atendimento.FkTecnico?.NomeCompleto ?? "Equipe de Suporte";
+                var dataFechamento = chamado.DataFechamento?.ToString("dd/MM/yyyy HH:mm") ?? DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+
+                // Montar mensagem
+                var mensagem = $"✅ *Chamado #{chamadoId} Finalizado! *\n\n";
+                mensagem += $"Seu problema foi resolvido com sucesso!\n\n";
+                mensagem += $"👨‍💻 *Técnico:* {tecnicoNome}\n";
+                mensagem += $"📅 *Fechamento:* {dataFechamento}\n";
+
+                if (!string.IsNullOrEmpty(tempoAtendimento))
+                {
+                    mensagem += $"⏱️ *Tempo:* {tempoAtendimento}\n";
+                }
+
+                mensagem += $"\n━━━━━━━━━━━━━━━━━━━━\n";
+                mensagem += $"⭐ *Avalie nosso atendimento:*\n\n";
+                mensagem += $"Sua opinião nos ajuda a melhorar! 😊";
+
+                // Criar botões de avaliação (1 a 5 estrelas)
+                var buttons = new List<(string id, string title)>
+        {
+            ($"rating_{atendimentoId}_1", "⭐ 1"),
+            ($"rating_{atendimentoId}_2", "⭐⭐ 2"),
+            ($"rating_{atendimentoId}_3", "⭐⭐⭐ 3")
+        };
+
+                // Enviar mensagem com primeiros 3 botões
+                await _whatsAppService.SendButtonMessageAsync(
+                    to: telefoneContato,
+                    bodyText: mensagem,
+                    buttons: buttons,
+                    footerText: "HelpDesk SysoTecnologia"
+                );
+
+                // WhatsApp só permite 3 botões por mensagem, então enviamos os outros 2 separadamente
+                await Task.Delay(500); // Pequeno delay entre mensagens
+
+                var buttonsExtra = new List<(string id, string title)>
+        {
+            ($"rating_{atendimentoId}_4", "⭐⭐⭐⭐ 4"),
+            ($"rating_{atendimentoId}_5", "⭐⭐⭐⭐⭐ 5")
+        };
+
+                await _whatsAppService.SendButtonMessageAsync(
+                    to: telefoneContato,
+                    bodyText: "Ou escolha uma dessas opções:",
+                    buttons: buttonsExtra,
+                    footerText: "Clique em uma das opções acima"
+                );
+
+                // Salvar mensagem no histórico
+                await _sessionManager.SaveMessageAsync(
+                    phoneNumber: telefoneContato,
+                    direction: "outgoing",
+                    messageType: "interactive",
+                    content: $"Notificação de finalização do chamado #{chamadoId} com pedido de avaliação",
+                    sentBy: "bot"
+                );
+
+                _logger.LogInformation("✅ Notificação de FINALIZAÇÃO enviada para {Phone} - Chamado #{ChamadoId}",
+                    telefoneContato, chamadoId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ Erro ao notificar cliente sobre finalização do chamado #{ChamadoId}", chamadoId);
+            }
+        }
+
+        #region Avaliação de Atendimento
+
+        /// <summary>
+        /// Busca um atendimento específico por ID
+        /// </summary>
+        public async Task<Atendimentos?> GetAtendimentoByIdAsync(long atendimentoId)
+        {
+            try
+            {
+                var atendimento = await _context.Atendimentos
+                    .Include(a => a.FkTecnico)
+                    .Include(a => a.FkChamado)
+                    .FirstOrDefaultAsync(a => a.AtendimentoId == atendimentoId);
+
+                if (atendimento == null)
+                {
+                    _logger.LogWarning("Atendimento #{AtendimentoId} não encontrado", atendimentoId);
+                }
+
+                return atendimento;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao buscar atendimento #{AtendimentoId}", atendimentoId);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Salva avaliação (nota) no atendimento
+        /// </summary>
+        public async Task<bool> SaveRatingAsync(long atendimentoId, int nota)
+        {
+            try
+            {
+                if (nota < 1 || nota > 5)
+                {
+                    _logger.LogError("Nota inválida: {Nota}. Deve ser entre 1 e 5", nota);
+                    return false;
+                }
+
+                var atendimento = await _context.Atendimentos
+                    .FirstOrDefaultAsync(a => a.AtendimentoId == atendimentoId);
+
+                if (atendimento == null)
+                {
+                    _logger.LogWarning("Atendimento #{AtendimentoId} não encontrado para salvar avaliação", atendimentoId);
+                    return false;
+                }
+
+                // Verificar se já foi avaliado
+                if (atendimento.AvaliacaoNota.HasValue)
+                {
+                    _logger.LogWarning("Atendimento #{AtendimentoId} já possui avaliação: {NotaExistente}",
+                        atendimentoId, atendimento.AvaliacaoNota.Value);
+                    return false;
+                }
+
+                // Salvar nota e data
+                atendimento.AvaliacaoNota = nota;
+                atendimento.AvaliacaoData = DateTime.UtcNow.AddHours(-4);
+
+                _context.Atendimentos.Update(atendimento);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("✅ Avaliação salva com sucesso - Atendimento #{AtendimentoId}, Nota: {Nota}",
+                    atendimentoId, nota);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao salvar avaliação do atendimento #{AtendimentoId}", atendimentoId);
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// Salva comentário da avaliação no atendimento
+        /// </summary>
+        public async Task<bool> SaveRatingCommentAsync(long atendimentoId, string comentario)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(comentario))
+                {
+                    _logger.LogWarning("Comentário vazio para atendimento #{AtendimentoId}", atendimentoId);
+                    return false;
+                }
+
+                var atendimento = await _context.Atendimentos
+                    .FirstOrDefaultAsync(a => a.AtendimentoId == atendimentoId);
+
+                if (atendimento == null)
+                {
+                    _logger.LogWarning("Atendimento #{AtendimentoId} não encontrado para salvar comentário", atendimentoId);
+                    return false;
+                }
+
+                // Limitar tamanho do comentário (máximo 500 caracteres)
+                var comentarioLimitado = comentario.Length > 500
+                    ? comentario.Substring(0, 500)
+                    : comentario;
+
+                // Salvar comentário
+                atendimento.AvaliacaoComentario = comentarioLimitado;
+
+                // Se ainda não tem data de avaliação, adiciona agora
+                if (!atendimento.AvaliacaoData.HasValue)
+                {
+                    atendimento.AvaliacaoData = DateTime.UtcNow.AddHours(-4);
+                }
+
+                _context.Atendimentos.Update(atendimento);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("✅ Comentário da avaliação salvo - Atendimento #{AtendimentoId}, Tamanho: {Tamanho} caracteres",
+                    atendimentoId, comentarioLimitado.Length);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao salvar comentário da avaliação #{AtendimentoId}", atendimentoId);
+                return false;
+            }
+        }
+
+        #endregion
+
 
     }
 }

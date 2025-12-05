@@ -119,7 +119,7 @@ namespace AppSysoHelp.Service.WhatsService
             string to,
             string bodyText,
             string buttonText,
-            List<(string id, string title, string description)> listItems,
+            List<(string id, string title)> listItems,
             string? headerText = null,
             string? footerText = null,
             string sectionTitle = "Opções")
@@ -163,8 +163,8 @@ namespace AppSysoHelp.Service.WhatsService
                                     Rows = listItems.Select(item => new SectionRow
                                     {
                                         Id = item.id,
-                                        Title = item.title,
-                                        Description = item.description
+                                        Title = item.title
+                                        //Description = item.description
                                     }).ToList()
                                 }
                             }
@@ -180,6 +180,106 @@ namespace AppSysoHelp.Service.WhatsService
                 return false;
             }
         }
+
+        /// <summary>
+        /// Enviar mensagem com lista de múltiplas seções (até 10 seções de 10 itens cada)
+        /// </summary>
+        public async Task<bool> SendMultiSectionListMessageAsync(
+            string to,
+            string bodyText,
+            string buttonText,
+            List<(string sectionTitle, List<(string id, string title)> items)> sections,
+            string? headerText = null,
+            string? footerText = null)
+        {
+            try
+            {
+                // Validações
+                if (sections == null || !sections.Any())
+                {
+                    _logger.LogWarning("Nenhuma seção fornecida para lista");
+                    return false;
+                }
+
+                if (sections.Count > 10)
+                {
+                    _logger.LogWarning("WhatsApp aceita no máximo 10 seções.  Enviando apenas as 10 primeiras.");
+                    sections = sections.Take(10).ToList();
+                }
+
+                // 🔍 LOG DE DEBUG - Ver quantos itens cada seção tem
+                _logger.LogInformation("📋 Preparando lista com {Count} seções:", sections.Count);
+                foreach (var section in sections)
+                {
+                    _logger.LogInformation("  - Seção '{Title}': {ItemCount} itens",
+                        section.sectionTitle, section.items.Count);
+                }
+
+                var request = new WhatsAppSendMessageRequest
+                {
+                    To = to,
+                    Type = "interactive",
+                    Interactive = new InteractiveMessage
+                    {
+                        Type = "list",
+                        Header = string.IsNullOrEmpty(headerText) ? null : new InteractiveHeader
+                        {
+                            Type = "text",
+                            Text = headerText
+                        },
+                        Body = new InteractiveBody
+                        {
+                            Text = bodyText
+                        },
+                        Footer = string.IsNullOrEmpty(footerText) ? null : new InteractiveFooter
+                        {
+                            Text = footerText
+                        },
+                        Action = new InteractiveAction
+                        {
+                            Button = buttonText,
+                            Sections = sections.Select(section =>
+                            {
+                                var limitedItems = section.items.Take(10).ToList();
+
+                                // 🔥 GARANTIR QUE TÍTULO TEM MAX 24 CARACTERES
+                                var sectionTitle = section.sectionTitle.Length > 24
+                                    ? section.sectionTitle.Substring(0, 24)
+                                    : section.sectionTitle;
+
+                                _logger.LogDebug("  → Seção '{Title}' ({Length} chars) enviando {Count} itens",
+                                    sectionTitle, sectionTitle.Length, limitedItems.Count);
+
+                                return new ActionSection
+                                {
+                                    Title = sectionTitle,
+                                    Rows = limitedItems.Select(item => new SectionRow
+                                    {
+                                        Id = item.id,
+                                        Title = item.title.Length > 24
+                                            ? item.title.Substring(0, 24)
+                                            : item.title
+                                    }).ToList()
+                                };
+                            }).ToList()
+                        }
+                    }
+                };
+
+                var totalItems = sections.Sum(s => Math.Min(s.items.Count, 10));
+                _logger.LogInformation("✅ Enviando lista com {SectionCount} seções e {ItemCount} itens total para {To}",
+                    sections.Count, totalItems, to);
+
+                return await SendMessageAsync(request);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao enviar mensagem com múltiplas seções para {To}", to);
+                return false;
+            }
+        }
+
+
 
         // Método principal que faz o POST para a API da Meta
         private async Task<bool> SendMessageAsync(WhatsAppSendMessageRequest request)

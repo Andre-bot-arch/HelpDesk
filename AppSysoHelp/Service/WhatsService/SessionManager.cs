@@ -18,9 +18,9 @@ namespace AppSysoHelp.Service.WhatsService
         public async Task<CustomerSessions> GetOrCreateSessionAsync(string phoneNumber)
         {
             var session = await _context.CustomerSessions
-                .FirstOrDefaultAsync(s => s.PhoneNumber == phoneNumber);
+                .FirstOrDefaultAsync(s => s.PhoneNumber == phoneNumber );
 
-            if (session == null)
+            if (session == null )
             {
                 session = new CustomerSessions
                 {
@@ -119,6 +119,22 @@ namespace AppSysoHelp.Service.WhatsService
         public async Task SaveMessageAsync(string phoneNumber, string direction, string messageType,
             string? content, string? sentBy = null, string? whatsappMessageId = null)
         {
+
+            var session =  await GetOrCreateSessionAsync(phoneNumber);
+            long? AtendimentoId = null;
+
+            if (session.LinkedTicketId.HasValue)
+            {
+                // Buscar último atendimento NÃO encerrado do chamado
+                var atendimentoAtivo = await _context.Atendimentos
+                    .Where(a => a.FkChamadoId == session.LinkedTicketId.Value)
+                    .Where(a => !a.AtendimentoEncerrado)
+                    .OrderByDescending(a => a.DataAtendimento)
+                    .FirstOrDefaultAsync();
+
+                AtendimentoId = atendimentoAtivo?.AtendimentoId;
+            }
+
             var message = new MessageHistories
             {
                 PhoneNumber = phoneNumber,
@@ -127,14 +143,20 @@ namespace AppSysoHelp.Service.WhatsService
                 MessageContent = content,
                 SentBy = sentBy ?? (direction == "incoming" ? "customer" : "bot"),
                 WhatsAppMessageId = whatsappMessageId,
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.UtcNow,
+                ChamadoId = session.LinkedTicketId,
+                AtendimentoId = AtendimentoId
             };
 
             _context.MessageHistories.Add(message);
             await _context.SaveChangesAsync();
 
-            _logger.LogDebug("Mensagem salva: {Phone} - {Direction} - {Type}",
-                phoneNumber, direction, messageType);
+            // Log para debug (opcional, mas recomendado)
+            if (session.LinkedTicketId.HasValue)
+            {
+                _logger.LogDebug("💾 Mensagem salva: {Phone} - {Direction} - Chamado: #{ChamadoId} - Atendimento: #{AtendimentoId}",
+                    phoneNumber, direction, session.LinkedTicketId, AtendimentoId ?? 0);
+            }
         }
 
         // Obter histórico de mensagens

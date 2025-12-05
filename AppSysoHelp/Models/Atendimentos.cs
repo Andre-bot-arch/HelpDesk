@@ -29,6 +29,12 @@ public partial class Atendimentos
 
     public TimeOnly? Fim { get; set; }
 
+    public int? AvaliacaoNota { get; set; }
+
+    public string? AvaliacaoComentario { get; set; }
+
+    public DateTime? AvaliacaoData { get; set; }
+
     public virtual Chamados FkChamado { get; set; } = null!;
 
     public virtual TecnicosSupervisores? FkTecnico { get; set; }

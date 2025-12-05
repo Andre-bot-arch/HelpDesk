@@ -183,6 +183,14 @@ namespace AppSysoHelp.Service.WhatsService
                     await HandleDescriptionInputAsync(from, message, session);
                     break;
 
+                // ========================================
+                // 🆕 PROCESSAR COMENTÁRIO DA AVALIAÇÃO
+                // ========================================
+                case "awaiting_rating_comment":
+                    await HandleRatingCommentInputAsync(from, message, session);
+                    break;
+
+
                 default:
                     _logger.LogWarning("Fluxo desconhecido: {Flow}", session.CurrentFlow);
                     await CancelCurrentFlowAsync(from, session);
@@ -214,7 +222,34 @@ namespace AppSysoHelp.Service.WhatsService
         /// <summary>
         /// Mostra lista de categorias
         /// </summary>
-        private async Task ShowCategoriasAsync(string from)
+        //private async Task ShowCategoriasAsync(string from)
+        //{
+        //    var categorias = await _helpDeskService.GetCategoriasAsync();
+
+        //    if (!categorias.Any())
+        //    {
+        //        await _whatsAppService.SendTextMessageAsync(from,
+        //            "❌ Desculpe, não consegui carregar as categorias.\n\nTente novamente mais tarde.");
+        //        return;
+        //    }
+
+        //    var listItems = categorias.Select(c => (
+        //        id: $"cat_{c.CategoriaId}",
+        //        title: c.Descricao.Length > 24 ? c.Descricao.Substring(0, 21) + "..." : c.Descricao
+        //        //description: "Categoria de atendimento"
+        //    )).ToList();
+
+        //    await _whatsAppService.SendListMessageAsync(
+        //        to: from,
+        //        bodyText: "Selecione a *categoria* do seu problema:",
+        //        buttonText: "📋 Ver Categorias",
+        //        listItems: listItems,
+        //        headerText: "Categorias Disponíveis",
+        //        footerText: "Digite 'menu' para voltar"
+        //    );
+        //}
+
+        private async Task ShowCategoriasAsync(string from, int pagina = 1)
         {
             var categorias = await _helpDeskService.GetCategoriasAsync();
 
@@ -225,26 +260,113 @@ namespace AppSysoHelp.Service.WhatsService
                 return;
             }
 
-            var listItems = categorias.Take(10).Select(c => (
-                id: $"cat_{c.CategoriaId}",
-                title: c.Descricao.Length > 24 ? c.Descricao.Substring(0, 21) + "..." : c.Descricao,
-                description: "Categoria de atendimento"
-            )).ToList();
+            var categoriasList = categorias.ToList();
+            var totalCategorias = categoriasList.Count;
 
-            await _whatsAppService.SendListMessageAsync(
+            const int itensPorPagina = 10;
+            var totalPaginas = (int)Math.Ceiling(totalCategorias / (double)itensPorPagina);
+
+            // Validar página
+            if (pagina < 1) pagina = 1;
+            if (pagina > totalPaginas) pagina = totalPaginas;
+
+            // Calcular índices
+            var inicio = (pagina - 1) * itensPorPagina;
+            var fim = Math.Min(inicio + itensPorPagina, totalCategorias);
+
+            _logger.LogInformation("Exibindo categorias {Inicio}-{Fim} de {Total} (página {Pagina}/{TotalPag}) para {Phone}",
+                inicio + 1, fim, totalCategorias, pagina, totalPaginas, from);
+
+            // Pegar categorias da página atual
+            var categoriasPage = categoriasList
+                .Skip(inicio)
+                .Take(itensPorPagina)
+                .ToList();
+
+            // Criar seção com categorias da página
+            var sections = new List<(string sectionTitle, List<(string id, string title)> items)>
+    {
+        (
+            sectionTitle: $"📂 Itens {inicio + 1}-{fim}",
+            items: categoriasPage. Select(c => (
+                id: $"cat_{c.CategoriaId}",
+                title: c. Descricao. Length > 24 ? c.Descricao.Substring(0, 21) + "..." : c. Descricao
+            )).ToList()
+        )
+    };
+
+            // Enviar lista
+            await _whatsAppService.SendMultiSectionListMessageAsync(
                 to: from,
-                bodyText: "Selecione a *categoria* do seu problema:",
+                headerText: $"📂 Categorias (Pág {pagina}/{totalPaginas})",
+                bodyText: $"Mostrando {inicio + 1}-{fim} de {totalCategorias} categorias.\n\nSelecione a categoria:",
+                footerText: "Use os botões para navegar",
                 buttonText: "📋 Ver Categorias",
-                listItems: listItems,
-                headerText: "Categorias Disponíveis",
-                footerText: "Digite 'menu' para voltar"
+                sections: sections
             );
+
+            // Aguardar um pouco antes de enviar botões
+            await Task.Delay(500);
+
+            // Criar botões de navegação
+            var buttons = new List<(string id, string text)>();
+
+            if (pagina > 1)
+            {
+                buttons.Add(($"cat_page_{pagina - 1}", "⬅️ Anterior"));
+            }
+
+            if (pagina < totalPaginas)
+            {
+                buttons.Add(($"cat_page_{pagina + 1}", "⏭️ Próxima"));
+            }
+
+            buttons.Add(("menu_principal", "🏠 Menu"));
+
+            // Enviar botões de navegação
+            if (buttons.Count <= 3)
+            {
+                await _whatsAppService.SendButtonMessageAsync(
+                    to: from,
+                    bodyText: $"📄 Página {pagina} de {totalPaginas}",
+                    buttons: buttons
+                );
+            }
+
+            _logger.LogInformation("✅ Lista de categorias (página {Pagina}) enviada com {Count} itens", pagina, categoriasPage.Count);
         }
 
         /// <summary>
         /// Mostra lista de subcategorias
         /// </summary>
-        private async Task ShowSubCategoriasAsync(string from, long categoriaId)
+        //private async Task ShowSubCategoriasAsync(string from, long categoriaId)
+        //{
+        //    var subCategorias = await _helpDeskService.GetSubCategoriasByCategoriaAsync(categoriaId);
+
+        //    if (!subCategorias.Any())
+        //    {
+        //        await _whatsAppService.SendTextMessageAsync(from,
+        //            "❌ Não há subcategorias disponíveis para esta categoria.\n\nDigite *menu* para voltar.");
+        //        return;
+        //    }
+
+        //    var listItems = subCategorias.Select(sc => (
+        //        id: $"sub_{sc.SubCategoriaId}",
+        //        title: sc.Descricao.Length > 24 ? sc.Descricao.Substring(0, 21) + "..." : sc.Descricao
+        //        //description: sc.Prioridade ?? "Normal"
+        //    )).ToList();
+
+        //    await _whatsAppService.SendListMessageAsync(
+        //        to: from,
+        //        bodyText: "Agora escolha o *tipo específico* do problema:",
+        //        buttonText: "🔧 Ver Problemas",
+        //        listItems: listItems,
+        //        headerText: "Tipos de Problema",
+        //        footerText: "Digite 'menu' para cancelar"
+        //    );
+        //}
+
+        private async Task ShowSubCategoriasAsync(string from, long categoriaId, int pagina = 1)
         {
             var subCategorias = await _helpDeskService.GetSubCategoriasByCategoriaAsync(categoriaId);
 
@@ -255,20 +377,80 @@ namespace AppSysoHelp.Service.WhatsService
                 return;
             }
 
-            var listItems = subCategorias.Take(10).Select(sc => (
-                id: $"sub_{sc.SubCategoriaId}",
-                title: sc.Descricao.Length > 24 ? sc.Descricao.Substring(0, 21) + "..." : sc.Descricao,
-                description: sc.Prioridade ?? "Normal"
-            )).ToList();
+            var subCategoriasList = subCategorias.ToList();
+            var totalSubCategorias = subCategoriasList.Count;
 
-            await _whatsAppService.SendListMessageAsync(
+            const int itensPorPagina = 10;
+            var totalPaginas = (int)Math.Ceiling(totalSubCategorias / (double)itensPorPagina);
+
+            // Validar página
+            if (pagina < 1) pagina = 1;
+            if (pagina > totalPaginas) pagina = totalPaginas;
+
+            // Calcular índices
+            var inicio = (pagina - 1) * itensPorPagina;
+            var fim = Math.Min(inicio + itensPorPagina, totalSubCategorias);
+
+            _logger.LogInformation("Exibindo subcategorias {Inicio}-{Fim} de {Total} da categoria {CatId} (página {Pagina}/{TotalPag}) para {Phone}",
+                inicio + 1, fim, totalSubCategorias, categoriaId, pagina, totalPaginas, from);
+
+            // Pegar subcategorias da página atual
+            var subCategoriasPage = subCategoriasList
+                .Skip(inicio)
+                .Take(itensPorPagina)
+                .ToList();
+
+            // Criar seção com subcategorias da página
+            var sections = new List<(string sectionTitle, List<(string id, string title)> items)>
+    {
+        (
+            sectionTitle: $"🔧 Itens {inicio + 1}-{fim}",
+            items: subCategoriasPage. Select(sc => (
+                id: $"sub_{sc.SubCategoriaId}",
+                title: sc.Descricao.Length > 24 ? sc.Descricao.Substring(0, 21) + "..." : sc.Descricao
+            )).ToList()
+        )
+    };
+
+            // Enviar lista
+            await _whatsAppService.SendMultiSectionListMessageAsync(
                 to: from,
-                bodyText: "Agora escolha o *tipo específico* do problema:",
+                headerText: $"🔧 Subcategorias (Pág {pagina}/{totalPaginas})",
+                bodyText: $"Mostrando {inicio + 1}-{fim} de {totalSubCategorias} tipos de problema.\n\nSelecione o tipo específico:",
+                footerText: "Use os botões para navegar",
                 buttonText: "🔧 Ver Problemas",
-                listItems: listItems,
-                headerText: "Tipos de Problema",
-                footerText: "Digite 'menu' para cancelar"
+                sections: sections
             );
+
+            // Aguardar um pouco antes de enviar botões
+            await Task.Delay(500);
+
+            // Criar botões de navegação
+            var buttons = new List<(string id, string text)>();
+
+            if (pagina > 1)
+            {
+                buttons.Add(($"sub_page_{categoriaId}_{pagina - 1}", "⬅️ Anterior"));
+            }
+
+            if (pagina < totalPaginas)
+            {
+                buttons.Add(($"sub_page_{categoriaId}_{pagina + 1}", "⏭️ Próxima"));
+            }
+
+            buttons.Add(("btn_voltar", "🔙 Voltar"));
+
+            // Enviar botões de navegação
+            if (buttons.Count <= 3)
+            {
+                await _whatsAppService.SendButtonMessageAsync(
+                    to: from,
+                    bodyText: $"📄 Página {pagina} de {totalPaginas}",
+                    buttons: buttons
+                );
+            }
+
+            _logger.LogInformation("✅ Lista de subcategorias (página {Pagina}) enviada com {Count} itens", pagina, subCategoriasPage.Count);
         }
 
         /// <summary>
@@ -409,6 +591,63 @@ namespace AppSysoHelp.Service.WhatsService
         {
             _logger.LogInformation("Botão clicado: {ButtonId}", buttonId);
 
+            // ========================================
+            // 🆕 PROCESSAR AVALIAÇÃO (rating_123_5)
+            // ========================================
+            if (buttonId.StartsWith("rating_"))
+            {
+                await HandleRatingButtonAsync(from, buttonId, session);
+                return;
+            }
+
+            if (buttonId.StartsWith("comment_"))
+            {
+                await HandleCommentButtonAsync(from, buttonId, session);
+                return;
+            }
+
+            if (buttonId.StartsWith("cat_page_"))
+            {
+                var paginaStr = buttonId.Replace("cat_page_", "");
+
+                if (int.TryParse(paginaStr, out int numeroPagina))
+                {
+                    _logger.LogInformation("Cliente {Phone} navegou para página {Pagina} de categorias", from, numeroPagina);
+
+                    await ShowCategoriasAsync(from, numeroPagina);
+                    return;
+                }
+                else
+                {
+                    _logger.LogWarning("Página inválida no botão: {ButtonId}", buttonId);
+                    await _whatsAppService.SendTextMessageAsync(from, "❌ Erro ao navegar.  Tente novamente.");
+                    return;
+                }
+            }
+
+            if (buttonId.StartsWith("sub_page_"))
+            {
+                var parts = buttonId.Replace("sub_page_", "").Split('_');
+
+                if (parts.Length == 2 &&
+                    long.TryParse(parts[0], out long categoriaId) &&
+                    int.TryParse(parts[1], out int numeroPagina))
+                {
+                    _logger.LogInformation("Cliente {Phone} navegou para página {Pagina} de subcategorias da categoria {CatId}",
+                        from, numeroPagina, categoriaId);
+
+                    await ShowSubCategoriasAsync(from, categoriaId, numeroPagina);
+                    return;
+                }
+                else
+                {
+                    _logger.LogWarning("Página de subcategoria inválida no botão: {ButtonId}", buttonId);
+                    await _whatsAppService.SendTextMessageAsync(from, "❌ Erro ao navegar. Tente novamente.");
+                    return;
+                }
+            }
+
+
             switch (buttonId)
             {
                 case "btn_open_ticket":
@@ -443,8 +682,141 @@ namespace AppSysoHelp.Service.WhatsService
                     break;
             }
         }
-
         #endregion
+
+        /// <summary>
+        /// Processa clique em botão de avaliação (rating_123_5)
+        /// Extrai atendimentoId e nota, salva no banco
+        /// </summary>
+        private async Task HandleRatingButtonAsync(string from, string buttonId, CustomerSessions session)
+        {
+            try
+            {
+                // Formato esperado: rating_123_5
+                // rating = prefixo
+                // 123 = atendimentoId
+                // 5 = nota (1 a 5)
+
+                var parts = buttonId.Split('_');
+
+                if (parts.Length != 3)
+                {
+                    _logger.LogWarning("Formato inválido de buttonId de avaliação: {ButtonId}", buttonId);
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "Desculpe, ocorreu um erro ao processar sua avaliação. 😕");
+                    return;
+                }
+
+                // Extrair dados
+                var atendimentoIdStr = parts[1];
+                var notaStr = parts[2];
+
+                if (!long.TryParse(atendimentoIdStr, out long atendimentoId))
+                {
+                    _logger.LogError("AtendimentoId inválido: {AtendimentoId}", atendimentoIdStr);
+                    return;
+                }
+
+                if (!int.TryParse(notaStr, out int nota) || nota < 1 || nota > 5)
+                {
+                    _logger.LogError("Nota inválida: {Nota}", notaStr);
+                    return;
+                }
+
+                _logger.LogInformation("📊 Cliente {Phone} avaliou atendimento #{AtendimentoId} com nota {Nota}",
+                    from, atendimentoId, nota);
+
+                // Buscar atendimento no banco
+                var atendimento = await _helpDeskService.GetAtendimentoByIdAsync(atendimentoId);
+
+                if (atendimento == null)
+                {
+                    _logger.LogWarning("Atendimento #{AtendimentoId} não encontrado", atendimentoId);
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "Desculpe, não consegui localizar este atendimento. 😕");
+                    return;
+                }
+
+                // Verificar se já foi avaliado
+                if (atendimento.AvaliacaoNota.HasValue)
+                {
+                    _logger.LogWarning("Atendimento #{AtendimentoId} já foi avaliado anteriormente com nota {NotaAnterior}",
+                        atendimentoId, atendimento.AvaliacaoNota.Value);
+
+                    var estrelas = new string('⭐', atendimento.AvaliacaoNota.Value);
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        $"Você já avaliou este atendimento anteriormente!\n\n" +
+                        $"Nota: {estrelas} {atendimento.AvaliacaoNota.Value}/5\n\n" +
+                        $"Obrigado pelo feedback! 😊");
+                    return;
+                }
+
+                // Salvar avaliação
+                await _helpDeskService.SaveRatingAsync(atendimentoId, nota);
+
+                // Montar resposta com estrelas
+                var estrelasResposta = new string('⭐', nota);
+
+                await _whatsAppService.SendTextMessageAsync(from,
+                    $"{estrelasResposta}\n\n*Obrigado pela avaliação!*");
+
+                // Se nota for BAIXA (1 a 3), pedir comentário
+                if (nota <= 3)
+                {
+                    await Task.Delay(800); // Delay para parecer mais natural
+
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "Sentimos muito que sua experiência não tenha sido ideal. 😔\n\n" +
+                        "Poderia nos dizer o que podemos melhorar? 💬");
+
+                    // Criar botões de opção
+                    var buttons = new List<(string id, string title)>
+            {
+                ($"comment_{atendimentoId}_yes", "✍️ Deixar comentário"),
+                ($"comment_{atendimentoId}_no", "❌ Não, obrigado")
+            };
+
+                    await _whatsAppService.SendButtonMessageAsync(
+                        to: from,
+                        bodyText: "Escolha uma opção:",
+                        buttons: buttons,
+                        footerText: "Sua opinião é importante!"
+                    );
+
+                    // Salvar no FlowData que está aguardando resposta de comentário
+                    var flowData = new
+                    {
+                        atendimentoId = atendimentoId,
+                        nota = nota
+                    };
+
+                    session.CurrentFlow = "awaiting_comment_choice";
+                    session.FlowData = System.Text.Json.JsonSerializer.Serialize(flowData);
+                    await _sessionManager.UpdateSessionAsync(session);
+                }
+                else
+                {
+                    // Nota alta (4-5) - apenas agradecer
+                    await Task.Delay(500);
+
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "Ficamos felizes em ajudar! 😊\n\n" +
+                        "Se precisar de algo mais, estamos à disposição!\n\n" +
+                        "Digite *menu* para ver as opções.");
+                }
+
+                _logger.LogInformation("✅ Avaliação do atendimento #{AtendimentoId} processada com sucesso - Nota: {Nota}",
+                    atendimentoId, nota);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao processar avaliação do cliente {Phone}", from);
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "Desculpe, ocorreu um erro.  Por favor, tente novamente.");
+            }
+        }
+
+
 
         #region Processamento de Listas
 
@@ -455,23 +827,60 @@ namespace AppSysoHelp.Service.WhatsService
         {
             _logger.LogInformation("Item da lista selecionado: {ListId}", listId);
 
+            // ========================================
+            // 🆕 NAVEGAÇÃO DE PÁGINAS (BOTÕES)
+            // ========================================
+            // Nota: Paginação é processada via BOTÕES, não via LISTA
+            // Mas adicionamos validação aqui por segurança
+            if (listId.StartsWith("cat_page_"))
+            {
+                _logger.LogWarning("Paginação '{ListId}' recebida via lista (deveria ser botão).  Ignorando.", listId);
+                return;
+            }
+
+            // ========================================
             // CATEGORIA SELECIONADA
-            if (listId.StartsWith("cat_"))
+            // ========================================
+            if (listId.StartsWith("cat_") && !listId.StartsWith("cat_page_"))
             {
-                var categoriaId = long.Parse(listId.Replace("cat_", ""));
-                await HandleCategorySelectionAsync(from, categoriaId, session);
-                return;
+                var categoriaIdStr = listId.Replace("cat_", "");
+
+                if (long.TryParse(categoriaIdStr, out long categoriaId))
+                {
+                    await HandleCategorySelectionAsync(from, categoriaId, session);
+                    return;
+                }
+                else
+                {
+                    _logger.LogWarning("ID de categoria inválido: {ListId}", listId);
+                    await _whatsAppService.SendTextMessageAsync(from, "❌ Categoria inválida.  Tente novamente.");
+                    return;
+                }
             }
 
+            // ========================================
             // SUBCATEGORIA SELECIONADA
-            if (listId.StartsWith("sub_"))
+            // ========================================
+            if (listId.StartsWith("sub_") && !listId.StartsWith("sub_page_"))
             {
-                var subCategoriaId = long.Parse(listId.Replace("sub_", ""));
-                await HandleSubCategorySelectionAsync(from, subCategoriaId, session);
-                return;
+                var subCategoriaIdStr = listId.Replace("sub_", "");
+
+                if (long.TryParse(subCategoriaIdStr, out long subCategoriaId))
+                {
+                    await HandleSubCategorySelectionAsync(from, subCategoriaId, session);
+                    return;
+                }
+                else
+                {
+                    _logger.LogWarning("ID de subcategoria inválido: {ListId}", listId);
+                    await _whatsAppService.SendTextMessageAsync(from, "❌ Subcategoria inválida. Tente novamente.");
+                    return;
+                }
             }
 
+            // ========================================
             // OUTROS (menu de serviços)
+            // ========================================
             switch (listId)
             {
                 case "srv_consultoria":
@@ -512,9 +921,9 @@ namespace AppSysoHelp.Service.WhatsService
 
             await Task.Delay(1000);
             var backButton = new List<(string id, string title)>
-            {
-                ("btn_voltar", "⬅️ Voltar ao Menu")
-            };
+    {
+        ("btn_voltar", "⬅️ Voltar ao Menu")
+    };
             await _whatsAppService.SendButtonMessageAsync(from,
                 "Precisa de mais alguma coisa? ",
                 backButton);
@@ -692,11 +1101,11 @@ namespace AppSysoHelp.Service.WhatsService
         /// </summary>
         private async Task SendFinanceiroMenuAsync(string to)
         {
-            var services = new List<(string id, string title, string description)>
+            var services = new List<(string id, string title)>
             {
-                ("srv_consultoria", "Consultoria", "Consultoria especializada em tecnologia"),
-                ("srv_desenvolvimento", "Desenvolvimento", "Desenvolvimento de sistemas personalizados"),
-                ("srv_suporte", "Suporte Técnico", "Suporte e manutenção de sistemas")
+                ("srv_consultoria", "Consultoria"),
+                ("srv_desenvolvimento", "Desenvolvimento"),
+                ("srv_suporte", "Suporte Técnico")
             };
 
             await _whatsAppService.SendListMessageAsync(
@@ -813,28 +1222,191 @@ namespace AppSysoHelp.Service.WhatsService
             }
             else
             {
-                // ❌ CLIENTE NÃO ENCONTRADO - Continua mesmo assim
-                var flowData = new
-                {
-                    contactName = contactName,  // Nome da PESSOA
-                    document = document,         // CPF/CNPJ informado (mas não cadastrado)
-                    clienteId = (long?)null,    // SEM vínculo
-                    companyName = (string?)null // SEM empresa
-                };
+                // ❌ CLIENTE NÃO ENCONTRADO - BLOQUEAR E PEDIR NOVAMENTE
 
-                session.CurrentFlow = "awaiting_category";
-                session.FlowData = JsonSerializer.Serialize(flowData);
-                await _sessionManager.UpdateSessionAsync(session);
+                _logger.LogWarning("Documento {Document} NÃO encontrado para {Phone}. Bloqueando abertura de chamado.", document, from);
 
                 await _whatsAppService.SendTextMessageAsync(from,
-                    $"⚠️ *CPF/CNPJ não encontrado em nosso sistema.*\n\n" +
-                    $"Sem problemas! Vou abrir o chamado mesmo assim.\n\n" +
-                    $"📄 Documento informado: {document}");
+                    $"❌ *CPF/CNPJ não encontrado!*\n\n" +
+                    $"📄 Documento informado: *{document}*\n\n" +
+                    $"⚠️ Somente *clientes cadastrados* podem abrir chamados.\n\n" +
+                    $"Por favor, verifique se digitou corretamente e tente novamente.\n\n" +
+                    $"Digite o *CPF* ou *CNPJ* da empresa:\n\n" +
+                    $"Digite *Menu* para volta ao início !");
 
-                await Task.Delay(1500);
-                await ShowCategoriasAsync(from);
+
+                // 🔥 MANTER NO ESTADO "aguardando_documento" para cliente tentar novamente
+                session.CurrentFlow = "awaiting_document";
+                session.FlowData = JsonSerializer.Serialize(new { contactName });
+                await _sessionManager.UpdateSessionAsync(session);
+
+                return; // 🔥 IMPORTANTE: Não continua o fluxo
             }
         }
+
+
+        /// <summary>
+        /// Processa clique em botão de comentário (comment_123_yes ou comment_123_no)
+        /// </summary>
+        private async Task HandleCommentButtonAsync(string from, string buttonId, CustomerSessions session)
+        {
+            try
+            {
+                // Formato esperado: comment_123_yes ou comment_123_no
+                var parts = buttonId.Split('_');
+
+                if (parts.Length != 3)
+                {
+                    _logger.LogWarning("Formato inválido de buttonId de comentário: {ButtonId}", buttonId);
+                    return;
+                }
+
+                var atendimentoIdStr = parts[1];
+                var escolha = parts[2]; // "yes" ou "no"
+
+                if (!long.TryParse(atendimentoIdStr, out long atendimentoId))
+                {
+                    _logger.LogError("AtendimentoId inválido no botão de comentário: {AtendimentoId}", atendimentoIdStr);
+                    return;
+                }
+
+                _logger.LogInformation("Cliente {Phone} clicou em '{Escolha}' para comentário do atendimento #{AtendimentoId}",
+                    from, escolha, atendimentoId);
+
+                if (escolha == "yes")
+                {
+                    // Cliente quer deixar comentário
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "📝 *Deixe seu comentário:*\n\n" +
+                        "Escreva o que podemos melhorar ou o que você achou do atendimento.\n\n" +
+                        "_Digite sua mensagem abaixo_ ⬇️");
+
+                    // Salvar no FlowData qual atendimento está comentando
+                    var flowData = new
+                    {
+                        atendimentoId = atendimentoId
+                    };
+
+                    session.CurrentFlow = "awaiting_rating_comment";
+                    session.FlowData = System.Text.Json.JsonSerializer.Serialize(flowData);
+                    await _sessionManager.UpdateSessionAsync(session);
+
+                    _logger.LogInformation("Aguardando comentário do cliente {Phone} para atendimento #{AtendimentoId}",
+                        from, atendimentoId);
+                }
+                else if (escolha == "no")
+                {
+                    // Cliente não quer deixar comentário
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "✅ *Obrigado pelo feedback!*\n\n" +
+                        "Sua avaliação é muito importante para nós!  😊\n\n" +
+                        "Se precisar de algo mais, estamos à disposição!\n\n" +
+                        "Digite *menu* para ver as opções.");
+
+                    // Limpar fluxo
+                    session.CurrentFlow = null;
+                    session.FlowData = null;
+                    await _sessionManager.UpdateSessionAsync(session);
+
+                    _logger.LogInformation("Cliente {Phone} optou por não deixar comentário para atendimento #{AtendimentoId}",
+                        from, atendimentoId);
+                }
+                else
+                {
+                    _logger.LogWarning("Escolha inválida no botão de comentário: {Escolha}", escolha);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao processar botão de comentário para {Phone}", from);
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "Desculpe, ocorreu um erro.  Digite *menu* para voltar.");
+            }
+        }
+
+        /// <summary>
+        /// Processa comentário digitado pelo cliente após avaliar com nota baixa
+        /// </summary>
+        private async Task HandleRatingCommentInputAsync(string from, string comentario, CustomerSessions session)
+        {
+            try
+            {
+                // Validação básica
+                if (string.IsNullOrWhiteSpace(comentario))
+                {
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "⚠️ Por favor, escreva seu comentário:");
+                    return;
+                }
+
+                if (comentario.Length < 3)
+                {
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "⚠️ Comentário muito curto. Por favor, escreva um pouco mais (mínimo 3 caracteres):");
+                    return;
+                }
+
+                // Recuperar atendimentoId do FlowData
+                var flowData = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(
+                    session.FlowData ?? "{}");
+
+                if (!flowData.ContainsKey("atendimentoId"))
+                {
+                    _logger.LogError("AtendimentoId não encontrado no FlowData para {Phone}", from);
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "❌ Ocorreu um erro.  Por favor, tente novamente.");
+                    await CancelCurrentFlowAsync(from, session);
+                    return;
+                }
+
+                var atendimentoId = flowData["atendimentoId"].GetInt64();
+
+                _logger.LogInformation("💬 Cliente {Phone} enviou comentário para atendimento #{AtendimentoId}: {Comentario}",
+                    from, atendimentoId, comentario.Substring(0, Math.Min(50, comentario.Length)) + "...");
+
+                // Mostrar loading
+                await _whatsAppService.SendTextMessageAsync(from, "💾 Salvando seu comentário...");
+
+                // Salvar comentário no banco
+                var sucesso = await _helpDeskService.SaveRatingCommentAsync(atendimentoId, comentario);
+
+                if (sucesso)
+                {
+                    await Task.Delay(500);
+
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "✅ *Comentário registrado! *\n\n" +
+                        "Muito obrigado pelo seu feedback detalhado! 🙏\n\n" +
+                        "Vamos trabalhar para melhorar nosso atendimento!\n\n" +
+                        "Se precisar de algo mais, estamos à disposição!\n\n" +
+                        "Digite *menu* para ver as opções.");
+
+                    // Limpar fluxo
+                    session.CurrentFlow = null;
+                    session.FlowData = null;
+                    await _sessionManager.UpdateSessionAsync(session);
+
+                    _logger.LogInformation("✅ Comentário salvo com sucesso - Atendimento #{AtendimentoId}, Cliente: {Phone}",
+                        atendimentoId, from);
+                }
+                else
+                {
+                    await _whatsAppService.SendTextMessageAsync(from,
+                        "❌ Não foi possível salvar o comentário.\n\n" +
+                        "Por favor, tente novamente ou digite *menu* para voltar.");
+
+                    _logger.LogError("Falha ao salvar comentário do atendimento #{AtendimentoId}", atendimentoId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao processar comentário da avaliação para {Phone}", from);
+                await _whatsAppService.SendTextMessageAsync(from,
+                    "❌ Ocorreu um erro ao salvar seu comentário.\n\nPor favor, tente novamente.");
+                await CancelCurrentFlowAsync(from, session);
+            }
+        }
+
 
     }
 }
