@@ -7,7 +7,7 @@ namespace AppSysoHelp.Controllers.Whats
 {
     [Route("api/webhook")]
     [ApiController]
-    public class WhatsAppWebhookController : ControllerBase
+    public sealed class WhatsAppWebhookController : ControllerBase
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;  // ✅ Mudança aqui
         private readonly IConfiguration _configuration;

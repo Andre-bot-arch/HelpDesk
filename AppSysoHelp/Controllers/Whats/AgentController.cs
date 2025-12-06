@@ -8,7 +8,7 @@ namespace AppSysoHelp.Controllers.Whats
 {
     [Route("api/agent")]
     [ApiController]
-    public class AgentController : ControllerBase
+    public sealed class  AgentController : ControllerBase
     {
         private readonly SessionManager _sessionManager;
         private readonly WhatsAppService _whatsAppService;
