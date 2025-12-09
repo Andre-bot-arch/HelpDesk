@@ -1,0 +1,165 @@
+﻿@model AppSysoHelp.Models.Chamados
+
+@{
+    var chamadoId = Model.ChamadoId;
+    var telefoneContato = Model.TelefoneContato ??  "";
+    var clienteNome = Model. Contato ??  "Cliente";
+}
+
+<!-- Container do Chat -->
+<div class="card shadow-sm" id="chat-container">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <div>
+            <i class="fab fa-whatsapp"></i>
+            <strong>Chat WhatsApp</strong>
+            <span class="badge bg-light text-dark ms-2">@clienteNome</span>
+        </div>
+        <div>
+            <small>@telefoneContato</small>
+            <span class="badge bg-warning ms-2" id="connection-status">Conectando...</span>
+        </div>
+    </div>
+
+    <div class="card-body p-0" style="height: 500px; display: flex; flex-direction: column;">
+        
+        <!-- Área de Mensagens -->
+        <div id="chat-messages" class="flex-grow-1 p-3" style="overflow-y: auto; background-color: #f5f5f5;">
+            <!-- Mensagens serão inseridas aqui via JavaScript -->
+            <div class="text-center text-muted py-5">
+                <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Carregando... </span>
+                </div>
+                <p class="mt-2">Carregando histórico... </p>
+            </div>
+        </div>
+
+        <!-- Área de Digitação -->
+        <div class="border-top p-3 bg-white">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="message-input" 
+                    class="form-control" 
+                    placeholder="Digite sua mensagem..." 
+                    maxlength="4096"
+                    autocomplete="off"
+                />
+                <button class="btn btn-success" type="button" id="send-button">
+                    <i class="fas fa-paper-plane"></i> Enviar
+                </button>
+            </div>
+            <small class="text-muted">Pressione Enter para enviar</small>
+        </div>
+    </div>
+</div>
+
+<!-- CSS do Chat -->
+<style>
+    /* Mensagens do Cliente (esquerda) */
+    .message-incoming {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 15px;
+        animation: slideInLeft 0.3s ease;
+    }
+
+    .message-incoming .message-bubble {
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 15px 15px 15px 0;
+        padding: 10px 15px;
+        max-width: 70%;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* Mensagens do Técnico (direita) */
+    .message-outgoing {
+        display:  flex;
+        justify-content:  flex-end;
+        margin-bottom: 15px;
+        animation: slideInRight 0.3s ease;
+    }
+
+    .message-outgoing .message-bubble {
+        background-color: #dcf8c6;
+        border-radius: 15px 15px 0 15px;
+        padding:  10px 15px;
+        max-width: 70%;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* Conteúdo da Mensagem */
+    .message-content {
+        margin:  0;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+    }
+
+    /* Informações da Mensagem (hora, remetente) */
+    .message-info {
+        font-size: 0.75rem;
+        color: #888;
+        margin-top: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Badge de remetente */
+    .sender-badge {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+    }
+
+    /* Animações */
+    @@keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform:  translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform:  translateX(0);
+        }
+    }
+
+    @@keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Scroll suave */
+    #chat-messages {
+        scroll-behavior: smooth;
+    }
+
+    /* Status de conexão */
+    #connection-status. connected {
+        background-color: #28a745 !important;
+    }
+
+    #connection-status. disconnected {
+        background-color: #dc3545 !important;
+    }
+
+    #connection-status. connecting {
+        background-color: #ffc107 !important;
+    }
+</style>
+
+<!-- Passar dados para JavaScript -->
+<script>
+    // Variáveis globais para uso no chat. js
+    window. CHAT_CONFIG = {
+        chamadoId: @chamadoId,
+        telefoneContato: '@telefoneContato',
+        clienteNome: '@clienteNome'
+    };
+</script>

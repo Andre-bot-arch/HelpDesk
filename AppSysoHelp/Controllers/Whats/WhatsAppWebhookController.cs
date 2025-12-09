@@ -1,7 +1,10 @@
-﻿using AppSysoHelp.Models.WhatApp;
+﻿using AppSysoHelp.Models;
+using AppSysoHelp.Models.WhatApp;
+using AppSysoHelp.Service.SignalRService;
 using AppSysoHelp.Service.WhatsService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace AppSysoHelp.Controllers.Whats
 {
@@ -12,8 +15,10 @@ namespace AppSysoHelp.Controllers.Whats
         private readonly IServiceScopeFactory _serviceScopeFactory;  // ✅ Mudança aqui
         private readonly IConfiguration _configuration;
         private readonly ILogger<WhatsAppWebhookController> _logger;
+        private readonly IHubContext<ChatHub> _hubContext;
 
         public WhatsAppWebhookController(
+            IHubContext<ChatHub> hubContext,
             IServiceScopeFactory serviceScopeFactory,  // ✅ Mudança aqui
             IConfiguration configuration,
             ILogger<WhatsAppWebhookController> logger)
@@ -21,6 +26,7 @@ namespace AppSysoHelp.Controllers.Whats
             _serviceScopeFactory = serviceScopeFactory;  // ✅ Mudança aqui
             _configuration = configuration;
             _logger = logger;
+            _hubContext = hubContext;
         }
 
         /// <summary>
@@ -97,6 +103,9 @@ namespace AppSysoHelp.Controllers.Whats
                                         {
                                             var messageProcessor = scope.ServiceProvider.GetRequiredService<MessageProcessorService>();
                                             await messageProcessor.ProcessMessageAsync(message, senderName);
+
+                                            // 🆕 ADICIONAR AQUI - Notificar SignalR
+                                            await NotifySignalRNewMessage(scope, message, senderName);
                                         }
                                     }
                                     catch (Exception ex)
@@ -135,7 +144,7 @@ namespace AppSysoHelp.Controllers.Whats
         /// <summary>
         /// Endpoint de teste para verificar se a API está funcionando
         /// Acesse: /api/webhook/test
-        /// </summary>
+        /// </summary>a
         [HttpGet("test")]
         public IActionResult Test()
         {
@@ -146,5 +155,66 @@ namespace AppSysoHelp.Controllers.Whats
                 timestamp = DateTime.UtcNow
             });
         }
+
+
+        /// <summary>
+        /// Notifica técnicos conectados via SignalR quando mensagem chega do WhatsApp
+        /// </summary>
+        private async Task NotifySignalRNewMessage(IServiceScope scope, WhatsAppMessage message, string senderName)
+        {
+            try
+            {
+                var context = scope.ServiceProvider.GetRequiredService<HelpdesksysoContext>();
+                var sessionManager = scope.ServiceProvider.GetRequiredService<SessionManager>();
+
+                // Corrigir número brasileiro (adicionar 9 se necessário)
+                var phoneNumber = message.From;
+                if (phoneNumber.StartsWith("55") && phoneNumber.Length == 12)
+                {
+                    var ddd = phoneNumber.Substring(2, 2);
+                    var numero = phoneNumber.Substring(4);
+                    phoneNumber = $"55{ddd}9{numero}";
+                }
+
+                // Buscar sessão para pegar chamado vinculado
+                var session = await sessionManager.GetOrCreateSessionAsync(phoneNumber);
+
+                if (session.LinkedTicketId.HasValue)
+                {
+                    var chamadoId = session.LinkedTicketId.Value;
+
+                    // Extrair conteúdo da mensagem
+                    var messageContent = message.Text?.Body
+                        ?? message.Interactive?.ButtonReply?.Title
+                        ?? message.Interactive?.ListReply?.Title
+                        ?? "[Mensagem não suportada]";
+
+                    // Enviar para grupo do chamado via SignalR
+                    await _hubContext.Clients
+                        .Group($"chamado_{chamadoId}")
+                        .SendAsync("ReceiveMessage", new
+                        {
+                            direction = "incoming",
+                            content = messageContent,
+                            sentBy = "customer",
+                            senderName = senderName,
+                            timestamp = DateTime.UtcNow,
+                            messageType = message.Type
+                        });
+
+                    _logger.LogInformation("📡 SignalR notificado - Chamado #{ChamadoId}, Cliente → Técnico:  {Message}",
+                        chamadoId, messageContent.Substring(0, Math.Min(50, messageContent.Length)));
+                }
+                else
+                {
+                    _logger.LogDebug("Mensagem de {Phone} não tem chamado vinculado.  SignalR não notificado.", phoneNumber);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao notificar SignalR para mensagem {MessageId}", message.Id);
+            }
+        }
     }
+
 }

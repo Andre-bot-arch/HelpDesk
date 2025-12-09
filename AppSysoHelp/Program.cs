@@ -1,5 +1,6 @@
 using AppSysoHelp.Models;
 using AppSysoHelp.Service;
+using AppSysoHelp.Service.SignalRService;
 using AppSysoHelp.Service.WhatsService;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +63,8 @@ builder.Services.AddControllers()
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddSignalR();
+
 
 var app = builder.Build();
 
@@ -87,5 +90,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Inicio}/{action=Index}/{id?}");
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();
