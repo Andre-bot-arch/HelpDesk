@@ -66,7 +66,7 @@ namespace AppSysoHelp.Service.WhatsService
 
                     await _sessionManager.SaveMessageAsync(from, "incoming", message.Type ?? "unknown",
                         message.Text?.Body ?? message.Interactive?.ButtonReply?.Id, "customer", message.Id);
-
+                      
                     return;
                 }
 

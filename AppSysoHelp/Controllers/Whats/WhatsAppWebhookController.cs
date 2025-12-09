@@ -95,9 +95,7 @@ namespace AppSysoHelp.Controllers.Whats
                                     {
                                         using (var scope = _serviceScopeFactory.CreateScope())
                                         {
-                                            var messageProcessor = scope.ServiceProvider
-                                                .GetRequiredService<MessageProcessorService>();
-
+                                            var messageProcessor = scope.ServiceProvider.GetRequiredService<MessageProcessorService>();
                                             await messageProcessor.ProcessMessageAsync(message, senderName);
                                         }
                                     }

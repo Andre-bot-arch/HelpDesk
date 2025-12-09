@@ -7,23 +7,23 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Log.Logger = new LoggerConfiguration()
-//    .ReadFrom.Configuration(builder.Configuration)
-//    .CreateLogger();
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
 
-//builder.Host.UseSerilog();
+builder.Host.UseSerilog();
 
-builder.Host.UseSerilog((ctx, cfg) =>
-    cfg.ReadFrom.Configuration(ctx.Configuration));
+//builder.Host.UseSerilog((ctx, cfg) =>
+//    cfg.ReadFrom.Configuration(ctx.Configuration));
 
 
 builder.Services.AddHttpClient();
-//builder.Logging.ClearProviders();
-//builder.Logging.AddConsole();
-//builder.Logging.AddDebug();
-
 builder.Logging.ClearProviders();
-builder.Logging.AddSerilog();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+//builder.Logging.ClearProviders();
+//builder.Logging.AddSerilog();
 
 
 builder.Services.AddScoped<HelpDeskIntegrationService>();

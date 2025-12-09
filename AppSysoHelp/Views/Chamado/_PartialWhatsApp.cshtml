@@ -1,0 +1,363 @@
+﻿@model IEnumerable<AppSysoHelp.Models.Chamados>
+@{
+}
+<div class="tab-pane fade" id="whats-end" role="tabpanel" aria-labelledby="whats-tab-end">
+    <ul class="nav nav-pills mb-3 nav-fill" id="pills-tab-1" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active text-primary" id="pills-home4-tab-fill" data-toggle="pill" href="#pills-home4-fill" role="tab" aria-controls="pills-home4" aria-selected="true">Abertos</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-primary" id="pills-atendimento4-tab-fill" data-toggle="pill" href="#pills-atendimento4-fill" role="tab" aria-controls="pills-atendimento4" aria-selected="false">Em Atendimento</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-primary" id="pills-profile4-tab-fill" data-toggle="pill" href="#pills-profile4-fill" role="tab" aria-controls="pills-profile4" aria-selected="false">Reagendados</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-primary" id="pills-contact4-tab-fill" data-toggle="pill" href="#pills-contact4-fill" role="tab" aria-controls="pills-contact4" aria-selected="false">Finalizados</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="pills-tabContent-1">
+        <!--Abertos-->
+        <div class="tab-pane fade active show" id="pills-home4-fill" role="tabpanel" aria-labelledby="pills-home4-tab-fill">
+            <table class="table table-striped mb-0 table-borderless" style="border-color: #222e35; ">
+                <thead>
+                    <tr sstyle="border-bottom: 1px solid #222e35;">
+                        <th scope="col">Protocolo</th>
+                        <th scope="col">Abertura</th>
+                        <th scope="col">Atendimento</th>
+                        <th scope="col" class="text-center">Prioridade</th>
+                        <th scope="col">Atendente</th>
+                        <th scope="col">Técnico</th>
+                        <th scope="col">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) == 0 && a.DataAgendamento <= DateTime.UtcNow.AddHours(-4)))
+                    {
+                        <tr>
+                            <td>
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br />
+                                @item.FkCliente.NomeCliente
+                            </td>
+                            <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
+                            @if (item.Atendimentos.Count > 0)
+                            {
+                                <td>@Convert.ToDateTime(item.Atendimentos.OrderByDescending(a => a.AtendimentoId).FirstOrDefault().DataAtendimento).ToString("dd/MM/yyyy HH:mm")</td>
+                            }
+                            else
+                            {
+                                <td>-------/-------/-------</td>
+                            }
+                            @if (item.Prioridade.Trim() == "Urgente")
+                            {
+                                <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
+                            }
+                            else if (item.Prioridade.Trim() == "Alta")
+                            {
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                            }
+                            else if (item.Prioridade.Trim() == "Media")
+                            {
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
+                            }
+                            else
+                            {
+                                <td class="text-center"><div class="badge badge-pill iq-bg-dark" style="width: 80px">NORMAL</div></td>
+                            }
+                            <td>
+                                @item.FkAtendenteNavigation.NomeCompleto.Substring(0, 8)
+                            </td>
+                            <td>
+                                @if (item.FkTecnicoId > 0)
+                                {
+                                    @item.FkTecnico.NomeCompleto.Substring(0, 8)
+                                }
+                                else
+                                {
+                                    <label class="text-white">-----------</label>
+                                }
+
+                            </td>
+                            <td>
+                                <div class="iq-card-header-toolbar d-flex align-items-center">
+                                    <div class="dropdown">
+                                        <span class="dropdown-toggle text-primary" id="dropdownMenuButton5" data-toggle="dropdown" aria-expanded="true">
+                                            <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
+                                        </span>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="Atendimento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                            @* <a class="dropdown-item btn-adicionarId" href="#" data-prioridade="@item.Prioridade.Trim()" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalRemarcarChamado"><i class="ri-pencil-fill mr-2"></i>Remarcar</a> *@
+                                            <a class="dropdown-item btn-adicionarIdPrint" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalPrintChamado"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
+                                            <a class="dropdown-item btn-adicionarIdCancelamento" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalCancelarChamado"><i class="ri-delete-bin-6-fill mr-2"></i>Excluir</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+        <!--Em Atendimento-->
+        <div class="tab-pane fade" id="pills-atendimento4-fill" role="tabpanel" aria-labelledby="pills-atendimento4-tab-fill">
+            <table class="table table-striped mb-0 table-borderless" style="border-color: #222e35; ">
+                <thead>
+                    <tr sstyle="border-bottom: 1px solid #222e35;">
+                        <th scope="col">Protocolo</th>
+                        <th scope="col">Abertura</th>
+                        <th scope="col">Agendamento</th>
+                        <th scope="col" class="text-center">Prioridade</th>
+                        <th scope="col">Atendente</th>
+                        <th scope="col">Técnico</th>
+                        <th scope="col">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.Atendimentos.Count(x => x.AtendimentoEncerrado == false) > 0 && a.DataAgendamento <= DateTime.UtcNow.AddHours(-4)))
+                    {
+                        <tr>
+                            <td>
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br />
+                                @item.FkCliente.NomeCliente
+                            </td>
+                            <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @if (!String.IsNullOrEmpty(item.DataAgendamento.ToString()))
+                                {
+                                    var dataUltimoAtendimento = Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy HH:mm");
+                                    @dataUltimoAtendimento
+                                    ;
+                                }
+                                else
+                                {
+                                    var dataUltimoAtendimento = "-------/ -------/ -------";
+                                    @dataUltimoAtendimento
+                                    ;
+                                }
+                            </td>
+                            @if (item.Prioridade.Trim() == "Urgente")
+                            {
+                                <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
+                            }
+                            else if (item.Prioridade.Trim() == "Alta")
+                            {
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                            }
+                            else if (item.Prioridade.Trim() == "Media")
+                            {
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
+                            }
+                            else
+                            {
+                                <td class="text-center"><div class="badge badge-pill iq-bg-dark" style="width: 80px">NORMAL</div></td>
+                            }
+                            <td>
+                                @item.FkAtendenteNavigation.NomeCompleto.Substring(0, 8)
+                            </td>
+                            <td>
+                                @if (item.FkTecnicoId > 0)
+                                {
+                                    @item.FkTecnico.NomeCompleto.Substring(0, 8)
+                                }
+                                else
+                                {
+                                    <label class="text-white">-----------</label>
+                                }
+
+                            </td>
+                            <td>
+                                <div class="iq-card-header-toolbar d-flex align-items-center">
+                                    <div class="dropdown">
+                                        <span class="dropdown-toggle text-primary" id="dropdownMenuButton5" data-toggle="dropdown" aria-expanded="true">
+                                            <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
+                                        </span>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="Atendimento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                            @* <a class="dropdown-item btn-adicionarId" href="#" data-prioridade="@item.Prioridade.Trim()" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalRemarcarChamado"><i class="ri-pencil-fill mr-2"></i>Remarcar</a> *@
+                                            <a class="dropdown-item btn-adicionarIdPrint" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalPrintChamado"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
+                                            <a class="dropdown-item btn-adicionarIdCancelamento" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalCancelarChamado"><i class="ri-delete-bin-6-fill mr-2"></i>Excluir</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!--Remarcados-->
+        <div class="tab-pane fade" id="pills-profile4-fill" role="tabpanel" aria-labelledby="pills-profile4-tab-fill">
+            <table class="table table-striped mb-0 table-borderless" style="border-color: #222e35; ">
+                <thead>
+                    <tr sstyle="border-bottom: 1px solid #222e35;">
+                        <th scope="col">Protocolo</th>
+                        <th scope="col">Abertura</th>
+                        <th scope="col">Agendamento</th>
+                        <th scope="col" class="text-center">Prioridade</th>
+                        <th scope="col">Atendente</th>
+                        <th scope="col">Técnico</th>
+                        <th scope="col">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 1 || a.FkSituacaoChamadoId == 2) && a.DataAgendamento > DateTime.UtcNow.AddHours(-4)))
+                    {
+                        <tr>
+                            <td>
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br />
+                                @item.FkCliente.NomeCliente
+                            </td>
+                            <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @if (!String.IsNullOrEmpty(item.DataAgendamento.ToString()))
+                                {
+                                    var dataUltimoAtendimento = Convert.ToDateTime(item.DataAgendamento).ToString("dd/MM/yyyy HH:mm");
+                                    @dataUltimoAtendimento
+                                    ;
+                                }
+                                else
+                                {
+                                    var dataUltimoAtendimento = "-------/ -------/ -------";
+                                    @dataUltimoAtendimento
+                                    ;
+                                }
+                            </td>
+                            @if (item.Prioridade.Trim() == "Urgente")
+                            {
+                                <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
+                            }
+                            else if (item.Prioridade.Trim() == "Alta")
+                            {
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                            }
+                            else if (item.Prioridade.Trim() == "Media")
+                            {
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
+                            }
+                            else
+                            {
+                                <td class="text-center"><div class="badge badge-pill iq-bg-dark" style="width: 80px">NORMAL</div></td>
+                            }
+                            <td>
+                                @item.FkAtendenteNavigation.NomeCompleto.Substring(0, 8)
+                            </td>
+                            <td>
+                                @if (item.FkTecnicoId > 0)
+                                {
+                                    @item.FkTecnico.NomeCompleto.Substring(0, 8)
+                                }
+                                else
+                                {
+                                    <label class="text-white">-----------</label>
+                                }
+
+                            </td>
+                            <td>
+                                <div class="iq-card-header-toolbar d-flex align-items-center">
+                                    <div class="dropdown">
+                                        <span class="dropdown-toggle text-primary" id="dropdownMenuButton5" data-toggle="dropdown" aria-expanded="true">
+                                            <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
+                                        </span>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                            <a class="dropdown-item" asp-controller="Chamado" asp-action="Atendimento" asp-route-id="@item.ChamadoId"><i class="ri-eye-fill mr-2"></i>Atender</a>
+                                            @* <a class="dropdown-item btn-adicionarId" href="#" data-prioridade="@item.Prioridade.Trim()" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalRemarcarChamado"><i class="ri-pencil-fill mr-2"></i>Remarcar</a> *@
+                                            <a class="dropdown-item btn-adicionarIdPrint" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalPrintChamado"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
+                                            <a class="dropdown-item btn-adicionarIdCancelamento" href="#" data-id="@item.ChamadoId" data-toggle="modal" data-target="#modalCancelarChamado"><i class="ri-delete-bin-6-fill mr-2"></i>Excluir</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!--Fechados-->
+        <div class="tab-pane fade" id="pills-contact4-fill" role="tabpanel" aria-labelledby="pills-contact4-tab-fill">
+            <table class="table table-striped mb-0 table-borderless" style="border-color: #222e35; ">
+                <thead>
+                    <tr sstyle="border-bottom: 1px solid #222e35;">
+                        <th scope="col">Protocolo</th>
+                        <th scope="col">Abertura</th>
+                        <th scope="col">Atendimento</th>
+                        <th scope="col" class="text-center">Prioridade</th>
+                        <th scope="col">Finalizado Por:</th>
+                        <th scope="col">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Where(a => (a.FkSituacaoChamadoId == 3 || a.FkSituacaoChamadoId == 4)))
+                    {
+                        var cancelado = "";
+                        if (item.FkSituacaoChamadoId == 4)
+                        {
+                            cancelado = "text-danger";
+                        }
+                        <tr class="@cancelado">
+                            <td>
+                                #@item.ChamadoId.ToString().PadLeft(8, '0')<i type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="@item.DescricaoCompleta" class="las la-info-circle text-warning"></i><br />@item.FkCliente.Fantasia<br />
+                                @item.FkCliente.NomeCliente
+                            </td>
+                            <td>@Convert.ToDateTime(item.DataCriacao).ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @if (!String.IsNullOrEmpty(item.DataFechamento.ToString()))
+                                {
+                                    var dataUltimoAtendimento = Convert.ToDateTime(item.DataFechamento).ToString("dd/MM/yyyy HH:mm");
+                                    @dataUltimoAtendimento
+                                    ;
+                                }
+                                else
+                                {
+                                    var dataUltimoAtendimento = "-------/ -------/ -------";
+                                    @dataUltimoAtendimento
+                                    ;
+                                }
+                            </td>
+                            @if (item.Prioridade.Trim() == "Urgente")
+                            {
+                                <td class="text-center"><div class="badge badge-pill iq-bg-black" style="width: 80px; background-color:black"> URGENTE </div></td>
+                            }
+                            else if (item.Prioridade.Trim() == "Alta")
+                            {
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: red">ALTA</div></td>
+                            }
+                            else if (item.Prioridade.Trim() == "Media")
+                            {
+                                <td class="text-center"><div class="badge badge-pill" style="width: 80px; background-color: yellow; color:black">MÉDIA</div></td>
+                            }
+                            else
+                            {
+                                <td class="text-center"><div class="badge badge-pill iq-bg-dark" style="width: 80px">NORMAL</div></td>
+                            }
+                            <td>
+                                @if (item.Atendimentos.Count() > 0)
+                                {
+                                    @item.Atendimentos.OrderByDescending(a => a.AtendimentoId).FirstOrDefault().FkTecnico.NomeCompleto.Substring(0, 8)
+                                }
+                                else
+                                {
+                                    <label class="text-white">-----------</label>
+                                }
+
+                            </td>
+                            <td>
+                                <div class="iq-card-header-toolbar d-flex align-items-center">
+                                    <div class="dropdown">
+                                        <span class="dropdown-toggle text-primary" id="dropdownMenuButton5" data-toggle="dropdown" aria-expanded="true">
+                                            <i class="ri-more-fill" style=" color: #A9A9A9;"></i>
+                                        </span>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-end" style="position: absolute; transform: translate3d(-138px, 21px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                            <a class="dropdown-item btn-adicionarIdPrint" href="#" data-id="@item.ChamadoId"><i class="ri-printer-fill mr-2"></i>Visualizar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
