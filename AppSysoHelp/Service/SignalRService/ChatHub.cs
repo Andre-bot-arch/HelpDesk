@@ -57,5 +57,27 @@ namespace AppSysoHelp.Service.SignalRService
 
             await base.OnDisconnectedAsync(exception);
         }
+
+        /// <summary>
+        /// Entrar no grupo de um telefone específico (para chat multi-conversas)
+        /// </summary>
+        public async Task JoinPhoneGroup(string phoneNumber)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, $"phone_{phoneNumber}");
+            _logger.LogInformation("👤 Usuário {ConnectionId} entrou no grupo do telefone {Phone}",
+                Context.ConnectionId, phoneNumber);
+        }
+
+        /// <summary>
+        /// Sair do grupo de um telefone específico
+        /// </summary>
+        public async Task LeavePhoneGroup(string phoneNumber)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"phone_{phoneNumber}");
+            _logger.LogInformation("👤 Usuário {ConnectionId} saiu do grupo do telefone {Phone}",
+                Context.ConnectionId, phoneNumber);
+        }
+
+
     }
 }

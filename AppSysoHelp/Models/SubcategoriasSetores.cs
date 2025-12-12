@@ -12,4 +12,6 @@ public partial class SubcategoriasSetores
     public int? FkSetorId { get; set; }
 
     public virtual SetoresChamados? FkSetor { get; set; }
+
+
 }

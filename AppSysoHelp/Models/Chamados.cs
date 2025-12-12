@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppSysoHelp.Models;
 
@@ -56,4 +57,8 @@ public partial class Chamados
     public virtual TecnicosSupervisores FkTecnico { get; set; } = null!;
 
     public virtual TiposChamados FkTipoChamado { get; set; } = null!;
+
+
+    [ForeignKey("FkSubCategoria")]
+    public virtual ChamadosSubCategoria? FkSubCategoriaNavigation { get; set; }
 }

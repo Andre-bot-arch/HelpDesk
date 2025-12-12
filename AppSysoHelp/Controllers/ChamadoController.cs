@@ -242,13 +242,17 @@ namespace AppSysoHelp.Controllers
         [HttpPost]
         public IActionResult BuscarDetalhes(long id)
         {
-            var chamado = _context.Chamados.Include(a => a.FkAtendenteNavigation)
-                                         .Include(a => a.FkCliente)
-                                         .Include(a => a.FkTecnico)
-                                         .Include(a => a.Atendimentos)
-                                         .ThenInclude(a => a.FkTecnico)
-                                         .FirstOrDefault(a => a.ChamadoId == id);
-            return PartialView("_DetalhesDoAtendimento", chamado);
+             var chamado = _context.Chamados
+                .Include(a => a.FkAtendenteNavigation)
+                .Include(a => a.FkCliente)
+                .Include(a => a.FkTecnico)
+                .Include(a => a.FkSubCategoriaNavigation)
+                    .ThenInclude(sc => sc!.FkCategoriaNavigation)
+                .Include(a => a.Atendimentos)
+                    .ThenInclude(at => at.FkTecnico)
+                .FirstOrDefault(a => a.ChamadoId == id);
+
+               return PartialView("_DetalhesDoAtendimento", chamado);
         }
 
         [HttpPost]
@@ -263,7 +267,6 @@ namespace AppSysoHelp.Controllers
             return PartialView("_DetalhesDoAtendimento2", chamado);
         }
 
-        [HttpPost]
         [HttpPost]
         public async Task<IActionResult> FinalizarChamado(Chamados d, IFormFile imagem, bool finalizar = true, TimeOnly? Inicio = null, TimeOnly? Fim = null)
         {

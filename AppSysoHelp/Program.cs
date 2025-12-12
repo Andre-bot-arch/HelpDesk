@@ -30,7 +30,8 @@ builder.Logging.AddDebug();
 builder.Services.AddScoped<HelpDeskIntegrationService>();
 builder.Services.AddScoped<MessageProcessorService>();
 builder.Services.AddScoped<SessionManager>();
-builder.Services.AddScoped<WhatsAppService>(); ;
+builder.Services.AddScoped<WhatsAppService>();
+builder.Services.AddScoped<WhatsAppMediaService>();
 
 builder.Services.AddTransient<ServiceContato>();
 builder.Services.AddScoped<ServiceGenerico>();

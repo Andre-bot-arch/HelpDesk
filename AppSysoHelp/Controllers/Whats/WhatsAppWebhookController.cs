@@ -5,6 +5,7 @@ using AppSysoHelp.Service.WhatsService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppSysoHelp.Controllers.Whats
 {
@@ -160,6 +161,65 @@ namespace AppSysoHelp.Controllers.Whats
         /// <summary>
         /// Notifica técnicos conectados via SignalR quando mensagem chega do WhatsApp
         /// </summary>
+        //private async Task NotifySignalRNewMessage(IServiceScope scope, WhatsAppMessage message, string senderName)
+        //{
+        //    try
+        //    {
+        //        var context = scope.ServiceProvider.GetRequiredService<HelpdesksysoContext>();
+        //        var sessionManager = scope.ServiceProvider.GetRequiredService<SessionManager>();
+
+        //        // Corrigir número brasileiro (adicionar 9 se necessário)
+        //        var phoneNumber = message.From;
+        //        if (phoneNumber.StartsWith("55") && phoneNumber.Length == 12)
+        //        {
+        //            var ddd = phoneNumber.Substring(2, 2);
+        //            var numero = phoneNumber.Substring(4);
+        //            phoneNumber = $"55{ddd}9{numero}";
+        //        }
+
+        //        // Buscar sessão para pegar chamado vinculado
+        //        var session = await sessionManager.GetOrCreateSessionAsync(phoneNumber);
+
+        //        if (session.LinkedTicketId.HasValue)
+        //        {
+        //            var chamadoId = session.LinkedTicketId.Value;
+
+        //            // Extrair conteúdo da mensagem
+        //            var messageContent = message.Text?.Body
+        //                ?? message.Interactive?.ButtonReply?.Title
+        //                ?? message.Interactive?.ListReply?.Title
+        //                ?? "[Mensagem não suportada]";
+
+        //            // Enviar para grupo do chamado via SignalR
+        //            await _hubContext.Clients
+        //                .Group($"chamado_{chamadoId}")
+        //                .SendAsync("ReceiveMessage", new
+        //                {
+        //                    direction = "incoming",
+        //                    content = messageContent,
+        //                    sentBy = "customer",
+        //                    senderName = senderName,
+        //                    timestamp = DateTime.UtcNow,
+        //                    messageType = message.Type
+        //                });
+
+        //            _logger.LogInformation("📡 SignalR notificado - Chamado #{ChamadoId}, Cliente → Técnico:  {Message}",
+        //                chamadoId, messageContent.Substring(0, Math.Min(50, messageContent.Length)));
+        //        }
+        //        else
+        //        {
+        //            _logger.LogDebug("Mensagem de {Phone} não tem chamado vinculado.  SignalR não notificado.", phoneNumber);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Erro ao notificar SignalR para mensagem {MessageId}", message.Id);
+        //    }
+        //}
+
+        /// <summary>
+        /// Notifica técnicos conectados via SignalR quando mensagem chega do WhatsApp
+        /// </summary>
         private async Task NotifySignalRNewMessage(IServiceScope scope, WhatsAppMessage message, string senderName)
         {
             try
@@ -167,7 +227,7 @@ namespace AppSysoHelp.Controllers.Whats
                 var context = scope.ServiceProvider.GetRequiredService<HelpdesksysoContext>();
                 var sessionManager = scope.ServiceProvider.GetRequiredService<SessionManager>();
 
-                // Corrigir número brasileiro (adicionar 9 se necessário)
+                // Corrigir número brasileiro
                 var phoneNumber = message.From;
                 if (phoneNumber.StartsWith("55") && phoneNumber.Length == 12)
                 {
@@ -176,20 +236,25 @@ namespace AppSysoHelp.Controllers.Whats
                     phoneNumber = $"55{ddd}9{numero}";
                 }
 
-                // Buscar sessão para pegar chamado vinculado
+                // Buscar sessão
                 var session = await sessionManager.GetOrCreateSessionAsync(phoneNumber);
 
                 if (session.LinkedTicketId.HasValue)
                 {
                     var chamadoId = session.LinkedTicketId.Value;
 
-                    // Extrair conteúdo da mensagem
-                    var messageContent = message.Text?.Body
-                        ?? message.Interactive?.ButtonReply?.Title
-                        ?? message.Interactive?.ListReply?.Title
-                        ?? "[Mensagem não suportada]";
+                    // ✅ BUSCAR A ÚLTIMA MENSAGEM SALVA PARA PEGAR A MEDIA URL
+                    var ultimaMensagem = await context.MessageHistories
+                        .Where(m => m.PhoneNumber == phoneNumber)
+                        .Where(m => m.WhatsAppMessageId == message.Id)
+                        .Take(10)
+                        .OrderByDescending(m => m.Timestamp)
+                        .FirstOrDefaultAsync();
 
-                    // Enviar para grupo do chamado via SignalR
+                    var messageContent = ultimaMensagem?.MessageContent ?? "[Mensagem]";
+                    var mediaUrl = ultimaMensagem?.MediaUrl;
+
+                    // Enviar para SignalR
                     await _hubContext.Clients
                         .Group($"chamado_{chamadoId}")
                         .SendAsync("ReceiveMessage", new
@@ -199,21 +264,95 @@ namespace AppSysoHelp.Controllers.Whats
                             sentBy = "customer",
                             senderName = senderName,
                             timestamp = DateTime.UtcNow,
-                            messageType = message.Type
+                            messageType = message.Type,
+                            mediaUrl = mediaUrl  // ✅ URL DA MÍDIA
                         });
 
-                    _logger.LogInformation("📡 SignalR notificado - Chamado #{ChamadoId}, Cliente → Técnico:  {Message}",
-                        chamadoId, messageContent.Substring(0, Math.Min(50, messageContent.Length)));
-                }
-                else
-                {
-                    _logger.LogDebug("Mensagem de {Phone} não tem chamado vinculado.  SignalR não notificado.", phoneNumber);
+                    _logger.LogInformation("📡 SignalR notificado - Chamado #{ChamadoId}, Tipo: {Type}, Media: {HasMedia}",
+                        chamadoId, message.Type, mediaUrl != null ? "Sim" : "Não");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao notificar SignalR para mensagem {MessageId}", message.Id);
+                _logger.LogError(ex, "Erro ao notificar SignalR");
             }
+        }
+
+        /// <summary>
+        /// Extrai o conteúdo da mensagem baseado no tipo
+        /// </summary>
+        private (string content, string? mediaId, string? mediaUrl) ExtractMessageContent(WhatsAppMessage message)
+        {
+            return message.Type?.ToLower() switch
+            {
+                "text" => (
+                    message.Text?.Body ?? "[Texto vazio]",
+                    null,
+                    null
+                ),
+
+                "interactive" => (
+                    message.Interactive?.ButtonReply?.Title
+                    ?? message.Interactive?.ListReply?.Title
+                    ?? "[Resposta interativa]",
+                    null,
+                    null
+                ),
+
+                "image" => (
+                    message.Image?.Caption ?? "📷 Imagem",
+                    message.Image?.Id,
+                    null // Você pode gerar URL depois do download
+                ),
+
+                "audio" => (
+                    "🎵 Áudio",
+                    message.Audio?.Id,
+                    null
+                ),
+
+                "voice" => (
+                    "🎤 Mensagem de voz",
+                    message.Voice?.Id,
+                    null
+                ),
+
+                "video" => (
+                    message.Video?.Caption ?? "🎥 Vídeo",
+                    message.Video?.Id,
+                    null
+                ),
+
+                "document" => (
+                    $"📄 {message.Document?.Filename ?? "Documento"}",
+                    message.Document?.Id,
+                    null
+                ),
+
+                "sticker" => (
+                    "😊 Figurinha",
+                    message.Sticker?.Id,
+                    null
+                ),
+
+                "location" => (
+                    $"📍 Localização:  {message.Location?.Name ?? "Sem nome"}",
+                    null,
+                    null
+                ),
+
+                "contacts" => (
+                    $"👤 Contato: {message.Contacts?.FirstOrDefault()?.Name?.FormattedName ?? "Desconhecido"}",
+                    null,
+                    null
+                ),
+
+                _ => (
+                    $"[Tipo não suportado: {message.Type}]",
+                    null,
+                    null
+                )
+            };
         }
     }
 

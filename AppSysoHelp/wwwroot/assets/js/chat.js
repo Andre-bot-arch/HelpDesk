@@ -12,7 +12,7 @@ async function initializeChat() {
     try {
         // Pegar configurações do HTML
         if (!window.CHAT_CONFIG) {
-            console.error('❌ CHAT_CONFIG não encontrado!');
+            console.error('❌ CHAT_CONFIG não encontrado! ');
             return;
         }
 
@@ -55,13 +55,13 @@ async function connectSignalR() {
 
         // Evento: Reconectando
         chatConnection.onreconnecting(() => {
-            console.log('🔄 Reconectando SignalR...');
-            updateConnectionStatus('connecting', 'Reconectando...');
+            console.log('🔄 Reconectando SignalR.. .');
+            updateConnectionStatus('connecting', 'Reconectando.. .');
         });
 
         // Evento: Reconectado
         chatConnection.onreconnected(() => {
-            console.log('✅ SignalR reconectado!');
+            console.log('✅ SignalR reconectado! ');
             updateConnectionStatus('connected', 'Conectado');
             // Entrar no grupo novamente
             chatConnection.invoke("JoinChamadoGroup", chatChamadoId.toString());
@@ -74,7 +74,7 @@ async function connectSignalR() {
         });
 
         // Conectar
-        updateConnectionStatus('connecting', 'Conectando...');
+        updateConnectionStatus('connecting', 'Conectando.. .');
         await chatConnection.start();
         console.log('✅ SignalR conectado! ');
         updateConnectionStatus('connected', 'Conectado');
@@ -169,17 +169,20 @@ function appendMessage(message, autoScroll = true) {
     if (message.sentBy === 'bot') {
         senderBadge = '<span class="sender-badge bg-info text-white">🤖 Bot</span>';
     } else if (message.sentBy === 'customer') {
-        senderBadge = '<span class="sender-badge bg-secondary text-white">👤 Cliente</span>';
+        senderBadge = '<span class="sender-badge bg-warning text-dark">👤 Cliente</span>';
     } else if (message.sentBy === 'agent') {
         senderBadge = '<span class="sender-badge bg-success text-white">👨‍💻 Você</span>';
     }
+
+    // ✅ RENDERIZAR CONTEÚDO BASEADO NO TIPO DE MENSAGEM
+    const messageContent = renderMessageContent(message);
 
     // Criar elemento da mensagem
     const messageDiv = document.createElement('div');
     messageDiv.className = messageClass;
     messageDiv.innerHTML = `
         <div class="message-bubble">
-            <p class="message-content">${escapeHtml(message.content)}</p>
+            ${messageContent}
             <div class="message-info">
                 <span>${timeString}</span>
                 ${senderBadge}
@@ -196,6 +199,222 @@ function appendMessage(message, autoScroll = true) {
 }
 
 // ============================================
+// RENDERIZAR CONTEÚDO DA MENSAGEM POR TIPO
+// ============================================
+function renderMessageContent(message) {
+    const messageType = message.messageType || 'text';
+
+    console.log(`🎨 Renderizando mensagem tipo: ${messageType}`, message);
+
+    switch (messageType.toLowerCase()) {
+        case 'text':
+        case 'interactive':
+        case 'button':
+            return `<p class="message-content">${escapeHtml(message.content)}</p>`;
+
+        case 'image':
+            return renderImageMessage(message);
+
+        case 'audio':
+        case 'voice':
+            return renderAudioMessage(message);
+
+        case 'video':
+            return renderVideoMessage(message);
+
+        case 'document':
+            return renderDocumentMessage(message);
+
+        case 'sticker':
+            return renderStickerMessage(message);
+
+        case 'location':
+            return renderLocationMessage(message);
+
+        case 'contacts':
+            return renderContactMessage(message);
+
+        default:
+            return `<p class="message-content text-muted"><em>${escapeHtml(message.content)}</em></p>`;
+    }
+}
+
+// ============================================
+// RENDERIZAR TIPOS ESPECÍFICOS DE MENSAGEM
+// ============================================
+
+function renderImageMessage(message) {
+    let html = '<div class="message-media">';
+
+    if (message.mediaUrl) {
+        html += `
+            <img src="${escapeHtml(message.mediaUrl)}" 
+                 alt="Imagem" 
+                 class="img-fluid rounded mb-2" 
+                 style="max-width: 300px; cursor: pointer;" 
+                 onclick="window.open('${escapeHtml(message.mediaUrl)}', '_blank')" />
+        `;
+    } else if (message.mediaId) {
+        html += `
+            <div class="media-placeholder bg-light p-3 rounded mb-2">
+                <i class="fas fa-image fa-2x text-muted"></i>
+                <p class="mb-0 mt-2"><small>📷 Imagem (ID: ${escapeHtml(message.mediaId)})</small></p>
+                <button class="btn btn-sm btn-outline-primary mt-2" onclick="downloadMedia('${escapeHtml(message.mediaId)}', 'image')">
+                    <i class="fas fa-download"></i> Baixar
+                </button>
+            </div>
+        `;
+    } else {
+        html += `<p class="message-content">📷 ${escapeHtml(message.content)}</p>`;
+    }
+
+    // Adicionar caption se houver
+    if (message.content && message.content !== '📷 Imagem') {
+        html += `<p class="message-content mt-2">${escapeHtml(message.content)}</p>`;
+    }
+
+    html += '</div>';
+    return html;
+}
+
+function renderAudioMessage(message) {
+    let html = '<div class="message-media">';
+    html += '<i class="fas fa-volume-up me-2"></i>';
+
+    if (message.mediaUrl) {
+        html += `
+            <p class="message-content mb-2">${escapeHtml(message.content)}</p>
+            <audio controls class="w-100" style="max-width: 300px;">
+                <source src="${escapeHtml(message.mediaUrl)}" type="audio/ogg">
+                <source src="${escapeHtml(message.mediaUrl)}" type="audio/mpeg">
+                Seu navegador não suporta áudio.
+            </audio>
+        `;
+    } else if (message.mediaId) {
+        html += `
+            <p class="message-content">${escapeHtml(message.content)}</p>
+            <button class="btn btn-sm btn-outline-primary mt-2" onclick="downloadMedia('${escapeHtml(message.mediaId)}', 'audio')">
+                <i class="fas fa-download"></i> Baixar áudio
+            </button>
+        `;
+    } else {
+        html += `<p class="message-content">${escapeHtml(message.content)}</p>`;
+    }
+
+    html += '</div>';
+    return html;
+}
+
+function renderVideoMessage(message) {
+    let html = '<div class="message-media">';
+
+    if (message.mediaUrl) {
+        html += `
+            <video controls class="w-100 rounded mb-2" style="max-width: 300px;">
+                <source src="${escapeHtml(message.mediaUrl)}" type="video/mp4">
+                Seu navegador não suporta vídeo. 
+            </video>
+        `;
+    } else if (message.mediaId) {
+        html += `
+            <div class="media-placeholder bg-light p-3 rounded mb-2">
+                <i class="fas fa-video fa-2x text-muted"></i>
+                <p class="mb-0 mt-2"><small>🎥 Vídeo</small></p>
+                <button class="btn btn-sm btn-outline-primary mt-2" onclick="downloadMedia('${escapeHtml(message.mediaId)}', 'video')">
+                    <i class="fas fa-download"></i> Baixar
+                </button>
+            </div>
+        `;
+    } else {
+        html += `<p class="message-content">🎥 ${escapeHtml(message.content)}</p>`;
+    }
+
+    // Adicionar caption se houver
+    if (message.content && message.content !== '🎥 Vídeo') {
+        html += `<p class="message-content mt-2">${escapeHtml(message.content)}</p>`;
+    }
+
+    html += '</div>';
+    return html;
+}
+
+function renderDocumentMessage(message) {
+    return `
+        <div class="message-media">
+            <i class="fas fa-file-alt fa-2x text-primary"></i>
+            <p class="message-content mt-2 mb-2">${escapeHtml(message.content)}</p>
+            ${message.mediaUrl ? `
+                <a href="${escapeHtml(message.mediaUrl)}" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-download"></i> Baixar documento
+                </a>
+            ` : message.mediaId ? `
+                <button class="btn btn-sm btn-outline-primary" onclick="downloadMedia('${escapeHtml(message.mediaId)}', 'document')">
+                    <i class="fas fa-download"></i> Baixar documento
+                </button>
+            ` : ''}
+        </div>
+    `;
+}
+
+function renderStickerMessage(message) {
+    return `
+        <div class="message-media">
+            <i class="far fa-smile fa-3x text-warning"></i>
+            <p class="message-content mt-2">${escapeHtml(message.content)}</p>
+        </div>
+    `;
+}
+
+function renderLocationMessage(message) {
+    return `
+        <div class="message-media">
+            <i class="fas fa-map-marker-alt fa-2x text-danger"></i>
+            <p class="message-content mt-2">${escapeHtml(message.content)}</p>
+        </div>
+    `;
+}
+
+function renderContactMessage(message) {
+    return `
+        <div class="message-media">
+            <i class="fas fa-address-card fa-2x text-info"></i>
+            <p class="message-content mt-2">${escapeHtml(message.content)}</p>
+        </div>
+    `;
+}
+
+// ============================================
+// DOWNLOAD DE MÍDIA
+// ============================================
+async function downloadMedia(mediaId, mediaType) {
+    try {
+        console.log(`📥 Baixando mídia: ${mediaId} (${mediaType})`);
+
+        // Você precisará implementar um endpoint para download
+        const response = await fetch(`/api/chat/media/${mediaId}`);
+
+        if (!response.ok) {
+            throw new Error('Erro ao baixar mídia');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${mediaType}_${mediaId}`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        console.log('✅ Mídia baixada com sucesso');
+    } catch (error) {
+        console.error('❌ Erro ao baixar mídia:', error);
+        alert('Erro ao baixar arquivo');
+    }
+}
+
+// ============================================
 // ENVIAR MENSAGEM
 // ============================================
 async function sendMessage() {
@@ -207,7 +426,7 @@ async function sendMessage() {
     }
 
     try {
-        console.log(`📤 Enviando mensagem:  "${message}"`);
+        console.log(`📤 Enviando mensagem: "${message}"`);
 
         // Desabilitar input temporariamente
         input.disabled = true;
@@ -285,6 +504,7 @@ function scrollToBottom() {
 
 // Escapar HTML (prevenir XSS)
 function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;

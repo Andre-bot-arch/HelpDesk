@@ -117,7 +117,7 @@ namespace AppSysoHelp.Service.WhatsService
 
         // Salvar mensagem no histórico
         public async Task SaveMessageAsync(string phoneNumber, string direction, string messageType,
-            string? content, string? sentBy = null, string? whatsappMessageId = null)
+            string? content, string? sentBy = null, string? whatsappMessageId = null, string? mediaUrl = null)
         {
 
             var session =  await GetOrCreateSessionAsync(phoneNumber);
@@ -145,7 +145,8 @@ namespace AppSysoHelp.Service.WhatsService
                 WhatsAppMessageId = whatsappMessageId,
                 Timestamp = DateTime.UtcNow,
                 ChamadoId = session.LinkedTicketId,
-                AtendimentoId = AtendimentoId
+                AtendimentoId = AtendimentoId,
+                MediaUrl = mediaUrl
             };
 
             _context.MessageHistories.Add(message);

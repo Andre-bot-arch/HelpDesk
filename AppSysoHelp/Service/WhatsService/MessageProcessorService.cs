@@ -10,8 +10,10 @@ namespace AppSysoHelp.Service.WhatsService
         private readonly ILogger<MessageProcessorService> _logger;
         private readonly SessionManager _sessionManager;
         private readonly HelpDeskIntegrationService _helpDeskService;
+        private readonly WhatsAppMediaService _mediaService;
 
         public MessageProcessorService(
+             WhatsAppMediaService mediaService,
             WhatsAppService whatsAppService,
             ILogger<MessageProcessorService> logger,
             SessionManager sessionManager,
@@ -21,9 +23,104 @@ namespace AppSysoHelp.Service.WhatsService
             _logger = logger;
             _sessionManager = sessionManager;
             _helpDeskService = helpDeskService;
+            _mediaService = mediaService;
         }
 
         #region Processamento Principal
+
+        /// <summary>
+        /// Método principal para processar mensagem recebida
+        /// </summary>
+        //public async Task ProcessMessageAsync(WhatsAppMessage message, string senderName)
+        //{
+        //    try
+        //    {
+        //        var from = message.From;
+        //        var messageType = message.Type;
+
+        //        // Correção de número brasileiro (adiciona o 9)
+        //        if (from.StartsWith("55") && from.Length == 12)
+        //        {
+        //            var ddd = from.Substring(2, 2);
+        //            var numero = from.Substring(4);
+        //            from = $"55{ddd}9{numero}";
+
+        //            _logger.LogWarning("Número corrigido de {Original} para {Corrected}",
+        //                message.From, from);
+        //        }
+
+        //        // Obter sessão
+        //        var session = await _sessionManager.GetOrCreateSessionAsync(from);
+
+        //        _logger.LogInformation("Mensagem de {From} ({Name}) - Estado: {State}, Fluxo: {Flow}",
+        //            from, senderName, session.State, session.CurrentFlow ?? "nenhum");
+
+        //        if (messageType == "interactive" && message.Interactive != null)
+        //        {
+        //            _logger.LogWarning("🔍 DEBUG Interactive - ButtonReply: {Button}, ListReply: {List}",
+        //                message.Interactive.ButtonReply?.Id ?? "null",
+        //                message.Interactive.ListReply?.Id ?? "null");
+        //        }
+
+        //        // SE ATENDENTE ESTÁ ATIVO → NÃO PROCESSAR
+        //        if (session.State == 2) // AgentActive
+        //        {
+        //            _logger.LogInformation("⚠️ Atendente ativo para {From}.  Bot não irá responder.", from);
+
+        //            await _sessionManager.SaveMessageAsync(from, "incoming", message.Type ?? "unknown",
+        //                message.Text?.Body ?? message.Interactive?.ButtonReply?.Id, "customer", message.Id);
+
+        //            return;
+        //        }
+
+        //        // SE ESTÁ AGUARDANDO ATENDENTE → APENAS CONFIRMAR
+        //        if (session.State == 1) // WaitingForAgent
+        //        {
+        //            _logger.LogInformation("⏳ Cliente {From} aguardando atendente", from);
+
+        //            await _whatsAppService.SendTextMessageAsync(from,
+        //                "Você já está na fila de atendimento. ⏳\n\nEm breve um atendente irá responder!");
+
+        //            return;
+        //        }
+
+        //        // BOT ATIVO - PROCESSAR MENSAGEM
+        //        _logger.LogInformation("🤖 Bot ativo para {From}. Processando mensagem...", from);
+
+        //        // Salvar mensagem recebida
+        //        await _sessionManager.SaveMessageAsync(from, "incoming", message.Type ?? "unknown",
+        //            message.Text?.Body ?? message.Interactive?.ButtonReply?.Id, "customer", message.Id);
+
+        //        // Processar mensagem de texto
+        //        if (messageType == "text" && message.Text != null)
+        //        {
+        //            var userMessage = message.Text.Body.Trim();
+        //            await ProcessTextMessageAsync(from, userMessage, senderName, session);
+        //        }
+        //        // Processar resposta de botão
+        //        else if (messageType == "interactive" && message.Interactive != null)
+        //        {
+        //            if (message.Interactive.ButtonReply != null)
+        //            {
+        //                var buttonId = message.Interactive.ButtonReply.Id;
+        //                await ProcessButtonResponseAsync(from, buttonId, session);
+        //            }
+        //            else if (message.Interactive.ListReply != null)
+        //            {
+        //                var listId = message.Interactive.ListReply.Id;
+        //                await ProcessListResponseAsync(from, listId, session);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            _logger.LogWarning("Tipo de mensagem não suportado: {Type}", messageType);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Erro ao processar mensagem");
+        //    }
+        //}
 
         /// <summary>
         /// Método principal para processar mensagem recebida
@@ -49,8 +146,8 @@ namespace AppSysoHelp.Service.WhatsService
                 // Obter sessão
                 var session = await _sessionManager.GetOrCreateSessionAsync(from);
 
-                _logger.LogInformation("Mensagem de {From} ({Name}) - Estado: {State}, Fluxo: {Flow}",
-                    from, senderName, session.State, session.CurrentFlow ?? "nenhum");
+                _logger.LogInformation("Mensagem de {From} ({Name}) - Estado: {State}, Fluxo: {Flow}, Tipo: {Type}",
+                    from, senderName, session.State, session.CurrentFlow ?? "nenhum", messageType);
 
                 if (messageType == "interactive" && message.Interactive != null)
                 {
@@ -59,14 +156,16 @@ namespace AppSysoHelp.Service.WhatsService
                         message.Interactive.ListReply?.Id ?? "null");
                 }
 
-                // SE ATENDENTE ESTÁ ATIVO → NÃO PROCESSAR
+                // SE ATENDENTE ESTÁ ATIVO → SALVAR MAS NÃO PROCESSAR BOT
                 if (session.State == 2) // AgentActive
                 {
-                    _logger.LogInformation("⚠️ Atendente ativo para {From}.  Bot não irá responder.", from);
+                    _logger.LogInformation("⚠️ Atendente ativo para {From}. Bot não irá responder.", from);
 
-                    await _sessionManager.SaveMessageAsync(from, "incoming", message.Type ?? "unknown",
-                        message.Text?.Body ?? message.Interactive?.ButtonReply?.Id, "customer", message.Id);
-                      
+                    // Salvar mensagem de acordo com o tipo
+                    await SaveMessageByTypeAsync(from, message, "customer");
+                   
+
+
                     return;
                 }
 
@@ -76,41 +175,81 @@ namespace AppSysoHelp.Service.WhatsService
                     _logger.LogInformation("⏳ Cliente {From} aguardando atendente", from);
 
                     await _whatsAppService.SendTextMessageAsync(from,
-                        "Você já está na fila de atendimento. ⏳\n\nEm breve um atendente irá responder!");
+                        "Você já está na fila de atendimento.  ⏳\n\nEm breve um atendente irá responder!");
 
                     return;
                 }
 
                 // BOT ATIVO - PROCESSAR MENSAGEM
-                _logger.LogInformation("🤖 Bot ativo para {From}. Processando mensagem...", from);
+                _logger.LogInformation("🤖 Bot ativo para {From}.  Processando mensagem tipo: {Type}", from, messageType);
 
-                // Salvar mensagem recebida
-                await _sessionManager.SaveMessageAsync(from, "incoming", message.Type ?? "unknown",
-                    message.Text?.Body ?? message.Interactive?.ButtonReply?.Id, "customer", message.Id);
+                // Salvar mensagem recebida de acordo com o tipo
+                await SaveMessageByTypeAsync(from, message, "customer");
 
-                // Processar mensagem de texto
-                if (messageType == "text" && message.Text != null)
+                // Processar de acordo com o tipo
+                switch (messageType?.ToLower())
                 {
-                    var userMessage = message.Text.Body.Trim();
-                    await ProcessTextMessageAsync(from, userMessage, senderName, session);
-                }
-                // Processar resposta de botão
-                else if (messageType == "interactive" && message.Interactive != null)
-                {
-                    if (message.Interactive.ButtonReply != null)
-                    {
-                        var buttonId = message.Interactive.ButtonReply.Id;
-                        await ProcessButtonResponseAsync(from, buttonId, session);
-                    }
-                    else if (message.Interactive.ListReply != null)
-                    {
-                        var listId = message.Interactive.ListReply.Id;
-                        await ProcessListResponseAsync(from, listId, session);
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning("Tipo de mensagem não suportado: {Type}", messageType);
+                    case "text":
+                        if (message.Text != null)
+                        {
+                            var userMessage = message.Text.Body.Trim();
+                            await ProcessTextMessageAsync(from, userMessage, senderName, session);
+                        }
+                        break;
+
+                    case "interactive":
+                        if (message.Interactive != null)
+                        {
+                            if (message.Interactive.ButtonReply != null)
+                            {
+                                var buttonId = message.Interactive.ButtonReply.Id;
+                                await ProcessButtonResponseAsync(from, buttonId, session);
+                            }
+                            else if (message.Interactive.ListReply != null)
+                            {
+                                var listId = message.Interactive.ListReply.Id;
+                                await ProcessListResponseAsync(from, listId, session);
+                            }
+                        }
+                        break;
+
+                    case "image":
+                        await ProcessImageMessageAsync(from, message, session);
+                        break;
+
+                    case "audio":
+                        await ProcessAudioMessageAsync(from, message, session);
+                        break;
+
+                    case "voice":
+                        await ProcessVoiceMessageAsync(from, message, session);
+                        break;
+
+                    case "document":
+                        await ProcessDocumentMessageAsync(from, message, session);
+                        break;
+
+                    case "video":
+                        await ProcessVideoMessageAsync(from, message, session);
+                        break;
+
+                    case "sticker":
+                        await ProcessStickerMessageAsync(from, message, session);
+                        break;
+
+                    case "location":
+                        await ProcessLocationMessageAsync(from, message, session);
+                        break;
+
+                    case "contacts":
+                        await ProcessContactMessageAsync(from, message, session);
+                        break;
+
+                    default:
+                        _logger.LogWarning("❌ Tipo de mensagem não suportado: {Type}", messageType);
+                        await _whatsAppService.SendTextMessageAsync(from,
+                            "Desculpe, não consigo processar esse tipo de mensagem no momento. 😔");
+                        break;
                 }
             }
             catch (Exception ex)
@@ -118,6 +257,342 @@ namespace AppSysoHelp.Service.WhatsService
                 _logger.LogError(ex, "Erro ao processar mensagem");
             }
         }
+
+        /// <summary>
+        /// Salva mensagem de acordo com o tipo (e baixa mídia se necessário)
+        /// </summary>
+        private async Task SaveMessageByTypeAsync(string from, WhatsAppMessage message, string sender)
+        {
+            var messageType = message.Type ?? "unknown";
+            string? mediaUrl = null;
+            string content;
+
+            // ✅ PROCESSAR CADA TIPO E BAIXAR MÍDIA SE NECESSÁRIO
+            switch (messageType.ToLower())
+            {
+                case "text":
+                    content = message.Text?.Body ?? "[Texto vazio]";
+                    break;
+
+                case "interactive":
+                    content = message.Interactive?.ButtonReply?.Id
+                        ?? message.Interactive?.ListReply?.Id
+                        ?? "[Resposta interativa]";
+                    break;
+
+                case "image":
+                    // ✅ BAIXAR IMAGEM
+                    if (!string.IsNullOrEmpty(message.Image?.Id))
+                    {
+                        mediaUrl = await _mediaService.DownloadAndSaveMediaAsync(message.Image.Id, "image");
+                    }
+                    content = message.Image?.Caption ?? "📷 Imagem";
+                    break;
+
+                case "audio":
+                    // ✅ BAIXAR ÁUDIO
+                    if (!string.IsNullOrEmpty(message.Audio?.Id))
+                    {
+                        mediaUrl = await _mediaService.DownloadAndSaveMediaAsync(message.Audio.Id, "audio");
+                    }
+                    content = "🎵 Áudio";
+                    break;
+
+                case "voice":
+                    // ✅ BAIXAR VOZ
+                    if (!string.IsNullOrEmpty(message.Voice?.Id))
+                    {
+                        mediaUrl = await _mediaService.DownloadAndSaveMediaAsync(message.Voice.Id, "voice");
+                    }
+                    content = "🎤 Mensagem de voz";
+                    break;
+
+                case "video":
+                    // ✅ BAIXAR VÍDEO
+                    if (!string.IsNullOrEmpty(message.Video?.Id))
+                    {
+                        mediaUrl = await _mediaService.DownloadAndSaveMediaAsync(message.Video.Id, "video");
+                    }
+                    content = message.Video?.Caption ?? "🎥 Vídeo";
+                    break;
+
+                case "document":
+                    // ✅ BAIXAR DOCUMENTO
+                    if (!string.IsNullOrEmpty(message.Document?.Id))
+                    {
+                        mediaUrl = await _mediaService.DownloadAndSaveMediaAsync(message.Document.Id, "document");
+                    }
+                    content = $"📄 {message.Document?.Filename ?? "Documento"}";
+                    break;
+
+                case "sticker":
+                    // ✅ BAIXAR FIGURINHA
+                    if (!string.IsNullOrEmpty(message.Sticker?.Id))
+                    {
+                        mediaUrl = await _mediaService.DownloadAndSaveMediaAsync(message.Sticker.Id, "sticker");
+                    }
+                    content = "😊 Figurinha";
+                    break;
+
+                case "location":
+                    var locationName = message.Location?.Name ?? "Localização";
+                    content = $"📍 {locationName}";
+                    if (message.Location != null)
+                    {
+                        content += $"\nLat: {message.Location.Latitude}, Long: {message.Location.Longitude}";
+                    }
+                    break;
+
+                case "contacts":
+                    var contactName = message.Contacts?.FirstOrDefault()?.Name?.FormattedName ?? "Desconhecido";
+                    content = $"👤 Contato: {contactName}";
+                    break;
+
+                default:
+                    content = $"[Tipo não suportado: {messageType}]";
+                    break;
+            }
+
+            // ✅ SALVAR COM MEDIA URL
+            await _sessionManager.SaveMessageAsync(
+                from,
+                "incoming",
+                messageType,
+                content,
+                sender,
+                message.Id,
+                mediaUrl  // ✅ PASSAR URL DA MÍDIA
+            );
+
+            _logger.LogInformation("💾 Mensagem salva:  {Type} - {Content} - MediaUrl: {Url}",
+                messageType, content, mediaUrl ?? "nenhuma");
+        }
+
+        /// <summary>
+        /// Processar mensagem de imagem
+        /// </summary>
+        private async Task ProcessImageMessageAsync(string from, WhatsAppMessage message, CustomerSessions session)
+        {
+            _logger.LogInformation("📷 Imagem recebida de {From}", from);
+
+            string? mediaUrl = null;
+
+            // ✅ USAR DIRETAMENTE
+            if (!string.IsNullOrEmpty(message.Image?.Id))
+            {
+                mediaUrl = await _mediaService.DownloadAndSaveMediaAsync(message.Image.Id, "image");
+            }
+
+            // Salvar mensagem com URL da mídia
+            var caption = message.Image?.Caption ?? "📷 Imagem";
+            await _sessionManager.SaveMessageAsync(
+                from,
+                "incoming",
+                "image",
+                caption,
+                "customer",
+                message.Id,
+                mediaUrl
+            );
+
+            await _whatsAppService.SendTextMessageAsync(from,
+                "Recebi sua imagem! 📷\n\nUm atendente irá visualizá-la em breve.");
+        }
+
+        /// <summary>
+        /// Processar mensagem de áudio
+        /// </summary>
+        private async Task ProcessAudioMessageAsync(string from, WhatsAppMessage message, CustomerSessions session)
+        {
+            _logger.LogInformation("🎵 Áudio recebido de {From}", from);
+
+            string? mediaUrl = null;
+
+            if (!string.IsNullOrEmpty(message.Audio?.Id))
+            {
+                mediaUrl = await _mediaService.DownloadAndSaveMediaAsync(message.Audio.Id, "audio");
+            }
+
+            await _sessionManager.SaveMessageAsync(
+                from,
+                "incoming",
+                "audio",
+                "🎵 Áudio",
+                "customer",
+                message.Id,
+                mediaUrl
+            );
+
+            await _whatsAppService.SendTextMessageAsync(from,
+                "Recebi seu áudio! 🎵");
+        }
+
+        /// <summary>
+        /// Processar mensagem de voz
+        /// </summary>
+        private async Task ProcessVoiceMessageAsync(string from, WhatsAppMessage message, CustomerSessions session)
+        {
+            _logger.LogInformation("🎤 Mensagem de voz recebida de {From}", from);
+
+            string? mediaUrl = null;
+
+            if (!string.IsNullOrEmpty(message.Voice?.Id))
+            {
+                mediaUrl = await _mediaService.DownloadAndSaveMediaAsync(message.Voice.Id, "voice");
+            }
+
+            await _sessionManager.SaveMessageAsync(
+                from,
+                "incoming",
+                "voice",
+                "🎤 Mensagem de voz",
+                "customer",
+                message.Id,
+                mediaUrl
+            );
+
+            await _whatsAppService.SendTextMessageAsync(from,
+                "Recebi sua mensagem de voz! 🎤");
+        }
+
+        /// <summary>
+        /// Processar documento (PDF, Word, etc.)
+        /// </summary>
+        private async Task ProcessDocumentMessageAsync(string from, WhatsAppMessage message, CustomerSessions session)
+        {
+            _logger.LogInformation("📄 Documento recebido de {From}", from);
+
+            string? mediaUrl = null;
+
+            if (!string.IsNullOrEmpty(message.Document?.Id))
+            {
+                mediaUrl = await _mediaService.DownloadAndSaveMediaAsync(message.Document.Id, "document");
+            }
+
+            var filename = message.Document?.Filename ?? "documento";
+            await _sessionManager.SaveMessageAsync(
+                from,
+                "incoming",
+                "document",
+                $"📄 {filename}",
+                "customer",
+                message.Id,
+                mediaUrl
+            );
+
+            await _whatsAppService.SendTextMessageAsync(from,
+                $"Recebi seu documento:  *{filename}* 📄");
+        }
+
+        /// <summary>
+        /// Processar vídeo
+        /// </summary>
+        private async Task ProcessVideoMessageAsync(string from, WhatsAppMessage message, CustomerSessions session)
+        {
+            _logger.LogInformation("🎥 Vídeo recebido de {From}", from);
+
+            string? mediaUrl = null;
+
+            if (!string.IsNullOrEmpty(message.Video?.Id))
+            {
+                mediaUrl = await _mediaService.DownloadAndSaveMediaAsync(message.Video.Id, "video");
+            }
+
+            var caption = message.Video?.Caption ?? "🎥 Vídeo";
+            await _sessionManager.SaveMessageAsync(
+                from,
+                "incoming",
+                "video",
+                caption,
+                "customer",
+                message.Id,
+                mediaUrl
+            );
+
+            await _whatsAppService.SendTextMessageAsync(from,
+                "Recebi seu vídeo! 🎥");
+        }
+
+        /// <summary>
+        /// Processar figurinha
+        /// </summary>
+        private async Task ProcessStickerMessageAsync(string from, WhatsAppMessage message, CustomerSessions session)
+        {
+            _logger.LogInformation("😊 Figurinha recebida de {From}", from);
+
+            string? mediaUrl = null;
+
+            if (!string.IsNullOrEmpty(message.Sticker?.Id))
+            {
+                mediaUrl = await _mediaService.DownloadAndSaveMediaAsync(message.Sticker.Id, "sticker");
+            }
+
+            await _sessionManager.SaveMessageAsync(
+                from,
+                "incoming",
+                "sticker",
+                "😊 Figurinha",
+                "customer",
+                message.Id,
+                mediaUrl
+            );
+
+            await _whatsAppService.SendTextMessageAsync(from,
+                "Legal sua figurinha! 😊");
+        }
+
+        /// <summary>
+        /// Processar localização
+        /// </summary>
+        private async Task ProcessLocationMessageAsync(string from, WhatsAppMessage message, CustomerSessions session)
+        {
+            _logger.LogInformation("📍 Localização recebida de {From}", from);
+
+            var locationName = message.Location?.Name ?? "Localização";
+            var locationInfo = $"📍 {locationName}";
+
+            if (message.Location != null)
+            {
+                locationInfo += $"\nLat: {message.Location.Latitude}, Long: {message.Location.Longitude}";
+            }
+
+            await _sessionManager.SaveMessageAsync(
+                from,
+                "incoming",
+                "location",
+                locationInfo,
+                "customer",
+                message.Id,
+                null
+            );
+
+            await _whatsAppService.SendTextMessageAsync(from,
+                "Recebi sua localização! 📍");
+        }
+
+        /// <summary>
+        /// Processar contato
+        /// </summary>
+        private async Task ProcessContactMessageAsync(string from, WhatsAppMessage message, CustomerSessions session)
+        {
+            _logger.LogInformation("👤 Contato recebido de {From}", from);
+
+            var contactName = message.Contacts?.FirstOrDefault()?.Name?.FormattedName ?? "Contato";
+
+            await _sessionManager.SaveMessageAsync(
+                from,
+                "incoming",
+                "contacts",
+                $"👤 {contactName}",
+                "customer",
+                message.Id,
+                null
+            );
+
+            await _whatsAppService.SendTextMessageAsync(from,
+                "Recebi o contato compartilhado! 👤");
+        }
+
 
         #endregion
 

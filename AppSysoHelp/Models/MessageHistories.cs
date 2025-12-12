@@ -21,6 +21,8 @@
         public long? ChamadoId { get; set; }
         public long? AtendimentoId { get; set; }
 
+        public string? MediaUrl { get; set; }
+
         public virtual Chamados? Chamado { get; set; }
         public virtual Atendimentos? Atendimento { get; set; }
 

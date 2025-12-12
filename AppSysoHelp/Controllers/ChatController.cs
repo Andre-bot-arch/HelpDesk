@@ -58,7 +58,7 @@ namespace AppSysoHelp.Controllers
                 // Buscar mensagens do telefone
                 var messages = await _sessionManager.GetMessageHistoryAsync(
                     phoneNumber: chamado.TelefoneContato,
-                    limit: 100
+                    limit: 30
                 );
 
                 // Mapear para formato JSON
@@ -69,7 +69,8 @@ namespace AppSysoHelp.Controllers
                     content = m.MessageContent,
                     sentBy = m.SentBy,
                     timestamp = m.Timestamp,
-                    messageType = m.MessageType
+                    messageType = m.MessageType,
+                    mediaUrl = m.MediaUrl  
                 }).ToList();
 
                 return Ok(new { messages = result });
@@ -151,12 +152,229 @@ namespace AppSysoHelp.Controllers
                 return StatusCode(500, new { error = "Erro ao enviar mensagem" });
             }
         }
+    
+
+    /// <summary>
+        /// GET: api/chat/conversations
+        /// Lista todas as conversas ativas do WhatsApp
+        /// </summary>
+        [HttpGet("conversations")]
+        public async Task<IActionResult> GetConversations()
+        {
+            try
+            {
+                // Buscar todas as conversas com a última mensagem e informações do chamado
+                var conversations = await _context.MessageHistories
+                    .GroupBy(m => m.PhoneNumber)
+                    .Select(g => new
+                    {
+                        phoneNumber = g.Key,
+                        lastMessage = g.OrderByDescending(m => m.Timestamp).First().MessageContent,
+                        lastMessageTime = g.OrderByDescending(m => m.Timestamp).First().Timestamp,
+                        lastMessageType = g.OrderByDescending(m => m.Timestamp).First().MessageType,
+                        chamadoId = g.OrderByDescending(m => m.Timestamp).First().ChamadoId,
+
+                        // Buscar nome do cliente do chamado relacionado
+                        customerName = _context.Chamados
+                            .Where(c => c.TelefoneContato == g.Key)
+                            .OrderByDescending(c => c.DataCriacao)
+                            .Select(c => c.Contato)
+                            .FirstOrDefault() ?? g.Key,
+
+                        // Contar mensagens não lidas (incoming do customer)
+                        unreadCount = g.Count(m => m.Direction == "incoming" && m.SentBy == "customer")
+                    })
+                    .OrderByDescending(c => c.lastMessageTime)
+                    .ToListAsync();
+
+                _logger.LogInformation("📋 Listadas {Count} conversas", conversations.Count);
+
+                return Ok(new { conversations });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao buscar conversas");
+                return StatusCode(500, new { error = "Erro ao buscar conversas" });
+            }
+        }
+
+        /// <summary>
+        /// GET: api/chat/phone/{phoneNumber}/messages
+        /// Busca mensagens por número de telefone (para o chat multi-conversas)
+        /// </summary>
+        [HttpGet("phone/{phoneNumber}/messages")]
+        public async Task<IActionResult> GetMessagesByPhone(string phoneNumber, [FromQuery] int limit = 50)
+        {
+            try
+            {
+                var messages = await _context.MessageHistories
+                    .Where(m => m.PhoneNumber == phoneNumber)
+                    .OrderByDescending(m => m.Timestamp)
+                    .Take(limit)
+                    .OrderBy(m => m.Timestamp)
+                    .Select(m => new
+                    {
+                        id = m.Id,
+                        content = m.MessageContent,
+                        direction = m.Direction,
+                        messageType = m.MessageType,
+                        sentBy = m.SentBy,
+                        timestamp = m.Timestamp,
+                        mediaUrl = m.MediaUrl
+                    })
+                    .ToListAsync();
+
+                _logger.LogInformation("📥 Carregadas {Count} mensagens do telefone {Phone}",
+                    messages.Count, phoneNumber);
+
+                return Ok(new { messages });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao buscar mensagens do telefone {Phone}", phoneNumber);
+                return StatusCode(500, new { error = "Erro ao buscar mensagens" });
+            }
+        }
+
+        /// <summary>
+        /// POST: api/chat/send-to-phone
+        /// Envia mensagem para um telefone específico (para o chat multi-conversas)
+        /// </summary>
+        [HttpPost("send-to-phone")]
+        public async Task<IActionResult> SendMessageToPhone([FromBody] SendMessageToPhoneRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.Message))
+                {
+                    return BadRequest(new { error = "Mensagem não pode ser vazia" });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+                {
+                    return BadRequest(new { error = "Telefone não pode ser vazio" });
+                }
+
+                // Enviar mensagem via WhatsApp
+                var sent = await _whatsAppService.SendTextMessageAsync(
+                    to: request.PhoneNumber,
+                    message: request.Message
+                );
+
+                if (!sent)
+                {
+                    return StatusCode(500, new { error = "Falha ao enviar mensagem via WhatsApp" });
+                }
+
+                // Salvar mensagem no histórico
+                await _sessionManager.SaveMessageAsync(
+                    phoneNumber: request.PhoneNumber,
+                    direction: "outgoing",
+                    messageType: "text",
+                    content: request.Message,
+                    sentBy: "agent"
+                );
+
+                // Buscar se há chamado associado para notificar via SignalR
+                var chamado = await _context.Chamados
+                    .Where(c => c.TelefoneContato == request.PhoneNumber)
+                    .OrderByDescending(c => c.DataCriacao)
+                    .FirstOrDefaultAsync();
+
+                if (chamado != null)
+                {
+                    await _hubContext.Clients
+                        .Group($"chamado_{chamado.ChamadoId}")
+                        .SendAsync("ReceiveMessage", new
+                        {
+                            direction = "outgoing",
+                            content = request.Message,
+                            sentBy = "agent",
+                            timestamp = DateTime.UtcNow,
+                            messageType = "text"
+                        });
+                }
+
+                // Notificar grupo do telefone (para chat multi-conversas)
+                await _hubContext.Clients
+                    .Group($"phone_{request.PhoneNumber}")
+                    .SendAsync("ReceiveMessage", new
+                    {
+                        phoneNumber = request.PhoneNumber,
+                        direction = "outgoing",
+                        content = request.Message,
+                        sentBy = "agent",
+                        timestamp = DateTime.UtcNow,
+                        messageType = "text"
+                    });
+
+                _logger.LogInformation("✅ Mensagem enviada para {Phone}", request.PhoneNumber);
+
+                return Ok(new { success = true, message = "Mensagem enviada com sucesso" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao enviar mensagem para {Phone}", request.PhoneNumber);
+                return StatusCode(500, new { error = "Erro ao enviar mensagem" });
+            }
+        }
+
+        /// <summary>
+        /// GET: api/chat/conversation/{phoneNumber}/info
+        /// Busca informações de uma conversa específica
+        /// </summary>
+        [HttpGet("conversation/{phoneNumber}/info")]
+        public async Task<IActionResult> GetConversationInfo(string phoneNumber)
+        {
+            try
+            {
+                // Buscar chamado relacionado
+                var chamado = await _context.Chamados
+                    .Where(c => c.TelefoneContato == phoneNumber)
+                    .OrderByDescending(c => c.DataCriacao)
+                    .FirstOrDefaultAsync();
+
+                // Buscar sessão
+                var session = await _sessionManager.GetOrCreateSessionAsync(phoneNumber);
+
+                // Contar mensagens
+                var messageCount = await _context.MessageHistories
+                    .Where(m => m.PhoneNumber == phoneNumber)
+                    .CountAsync();
+
+                var info = new
+                {
+                    phoneNumber,
+                    customerName = chamado?.Contato ?? phoneNumber,
+                    chamadoId = chamado?.ChamadoId,
+                    sessionState = session.State,
+                    currentFlow = session.CurrentFlow,
+                    messageCount,
+                    linkedTicketId = session.LinkedTicketId
+                };
+
+                return Ok(info);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao buscar info da conversa {Phone}", phoneNumber);
+                return StatusCode(500, new { error = "Erro ao buscar informações" });
+            }
+        }
     }
+
 
     // Modelo para receber requisição de envio
     public class SendMessageRequest
     {
         public long ChamadoId { get; set; }
+        public string Message { get; set; } = string.Empty;
+    }
+
+
+    public class SendMessageToPhoneRequest
+    {
+        public string PhoneNumber { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
     }
 }
