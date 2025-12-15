@@ -253,13 +253,15 @@
                                     </div>
                                 </div>
 
+
+
                                 <div class="col-lg-5">
                                     <div class="col-12">
                                        @*  <h4 class="text-primary">
                                             <i class="fab fa-whatsapp"></i> Chat WhatsApp
                                         </h4> *@
 
-                                        @if (!string.IsNullOrEmpty(Model.TelefoneContato))
+                                        @if (!string.IsNullOrEmpty(Model.TelefoneContato) && (Model.DescricaoCompleta.Contains("[WHATSAPP]", StringComparison.OrdinalIgnoreCase)))
                                         {
                                             <partial name="_ChatWhatsApp" model="Model" />
                                         }
@@ -267,7 +269,7 @@
                                         {
                                             <div class="alert alert-info">
                                                 <i class="fas fa-info-circle"></i>
-                                                Este chamado não possui telefone de contato WhatsApp.
+                                                Este chamado foi aberto por um técnico ou não possui telefone de contato WhatsApp.
                                             </div>
                                         }
                                     </div>

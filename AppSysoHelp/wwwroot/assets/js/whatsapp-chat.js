@@ -205,7 +205,7 @@ async function openConversation(phoneNumber, customerName) {
 // ============================================
 async function loadMessages(phoneNumber) {
     try {
-        const response = await fetch(`/api/chat/phone/${phoneNumber}/messages? limit=50`);
+        const response = await fetch(`/api/chat/phone/${phoneNumber}/messages? limit=30`);
 
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
